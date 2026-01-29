@@ -1,60 +1,127 @@
-# My Claude Config
+# SuperClaude++
 
-Claude Code를 위한 생산성 향상 설정 모음입니다.
+Claude Code를 위한 고급 프레임워크 - 생산성 향상, 자동화, 전문가 수준 워크플로우를 제공합니다.
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ## Features
 
 ### 🎯 Core Framework
-- **CLAUDE.md** - 엔트리 포인트 및 언어 설정 (한국어)
-- **FLAGS.md** - 행동 플래그 시스템 (`--think`, `--ultrathink`, `--uc` 등)
-- **RULES.md** - 개발 규칙 및 자동화 트리거
-- **PRINCIPLES.md** - 소프트웨어 엔지니어링 원칙
-- **MODES.md** - 상황별 행동 모드 (Brainstorming, Orchestration 등)
-- **MCP_SERVERS.md** - MCP 서버 통합 가이드
-
-### 🔧 Automation Hooks
-| Hook | 기능 |
+| 파일 | 설명 |
 |------|------|
-| **todo-continuation** | TODO 미완료 시 작업 중단 방지 |
-| **pre-compact-note** | 컴팩션 전 자동 노트 저장 요청 |
-| **suggest-compact** | 컨텍스트 임계치 도달 시 컴팩션 제안 |
-| **evaluate-session** | 세션 종료 시 패턴 추출 제안 |
-| **type-check** | 파일 수정 후 타입 체크 |
-| **auto-format** | 파일 수정 후 자동 포맷팅 |
+| **CLAUDE.md** | 엔트리 포인트 및 언어 설정 (한국어) |
+| **FLAGS.md** | 행동 플래그 시스템 (`--think`, `--ultrathink`, `--uc` 등) |
+| **RULES.md** | 개발 규칙 및 자동화 트리거 |
+| **PRINCIPLES.md** | SOLID, DRY, KISS 등 소프트웨어 엔지니어링 원칙 |
+| **MODES.md** | 상황별 행동 모드 (Brainstorming, Orchestration, Token Efficiency 등) |
+| **MCP_SERVERS.md** | MCP 서버 통합 가이드 (Context7, Magic, Serena 등) |
+| **CONTEXTS.md** | DEV/REVIEW/RESEARCH/PLANNING 컨텍스트 모드 |
+| **CONVENTIONS.md** | 네이밍 컨벤션 (Python, TypeScript, React, CSS 등) |
+| **PATTERNS.md** | 재사용 가능한 코드 패턴 모음 |
+| **KNOWLEDGE.md** | 축적된 인사이트 및 트러블슈팅 가이드 |
 
-### 📚 Skills
+### 🤖 Specialist Agents
+| Agent | 역할 |
+|-------|------|
+| `backend-architect` | 백엔드 시스템 설계 |
+| `frontend-architect` | UI/UX 및 프론트엔드 아키텍처 |
+| `security-engineer` | 보안 취약점 분석 |
+| `performance-engineer` | 성능 최적화 |
+| `deep-research-agent` | 심층 리서치 |
+| `business-panel-experts` | 비즈니스 전략 분석 (9명의 전문가 패널) |
+| 그 외 10+ agents | system-architect, quality-engineer, pm-agent 등 |
+
+### 📚 Skills (40+)
+
+#### Core Skills
 | Skill | 설명 |
 |-------|------|
-| `/note` | 컴팩션에서 살아남는 영구 메모 시스템 |
-| `/learn` | 세션에서 재사용 가능한 패턴 추출 |
-| `/confidence-check` | 구현 전 신뢰도 평가 |
-| `/verify` | 완료 후 검증 체크리스트 |
+| `/confidence-check` | 구현 전 신뢰도 평가 (≥90% 필요) |
+| `/verify` | 완료 후 6단계 검증 체크리스트 |
 | `/checkpoint` | 위험 작업 전 복원 지점 생성 |
-| `/build-fix` | 빌드 에러 자동 수정 |
-| `/feature-planner` | 기능 구현 계획 수립 |
-| `/react-best-practices` | React 코드 리뷰 |
-| `/python-best-practices` | Python 코드 리뷰 |
-| `/pytest-runner` | pytest 실행 및 분석 |
-| `/poetry-package` | Poetry 패키지 관리 |
+| `/note` | 컴팩션에서 살아남는 영구 메모 시스템 |
+| `/learn` | 재사용 가능한 패턴 추출 및 저장 |
 
-### 📊 HUD StatusLine
-실시간 상태 표시:
-- 컨텍스트 사용량 (🟢/🟡/🔴)
-- TODO 진행률
-- 세션 정보
-- 토큰 사용량
+#### Development Skills
+| Skill | 설명 |
+|-------|------|
+| `/react-best-practices` | React/Next.js 코드 리뷰 (40+ 규칙) |
+| `/python-best-practices` | Python 코드 리뷰 및 베스트 프랙티스 |
+| `/pytest-runner` | pytest 실행, 커버리지 분석 |
+| `/poetry-package` | Poetry 패키지 관리 |
+| `/feature-planner` | 기능 구현 계획 수립 |
+
+#### Document Skills (NEW)
+| Skill | 설명 |
+|-------|------|
+| `/docx` | Word 문서 생성/편집 (OOXML 기반) |
+| `/pdf` | PDF 폼 처리 및 조작 |
+| `/pptx` | PowerPoint 프레젠테이션 생성 |
+| `/xlsx` | Excel 스프레드시트 처리 |
+
+#### Domain Skills
+- **Architecture**: `/architecture`, `/api-design`, `/db-design`, `/design-patterns`
+- **Security**: `/security-audit`, `/auth`, `/error-handling`
+- **Performance**: `/perf-optimize`, `/caching`, `/scaling`
+- **DevOps**: `/docker`, `/cicd`, `/monitoring`, `/env`
+- **Quality**: `/clean-code`, `/refactoring`, `/testing`, `/code-review`
+
+### 🔧 Automation
+
+#### Auto-Invoked Skills
+| 트리거 | 스킬 | 키워드 |
+|--------|------|--------|
+| 구현 시작 전 | `/confidence-check` | 구현, 만들어, implement |
+| 기능 완료 후 | `/verify` | 완료, done, PR |
+| 빌드 에러 | `/build-fix` | error TS, Build failed |
+| React 파일 리뷰 | `/react-best-practices` | .tsx + 리뷰 |
+| Python 파일 리뷰 | `/python-best-practices` | .py + 리뷰 |
+| 위험 작업 전 | `/checkpoint` | 리팩토링, 삭제 |
+
+#### Hooks
+| Hook | 기능 |
+|------|------|
+| `todo-continuation` | TODO 미완료 시 작업 중단 방지 |
+| `pre-compact-note` | 컴팩션 전 자동 노트 저장 요청 |
+| `suggest-compact` | 컨텍스트 임계치 도달 시 컴팩션 제안 |
+| `evaluate-session` | 세션 종료 시 패턴 추출 제안 |
+
+### 🎛️ Flags & Modes
+
+#### Analysis Depth
+| Flag | 토큰 | 용도 |
+|------|------|------|
+| `--think` | ~4K | 중간 복잡도 |
+| `--think-hard` | ~10K | 아키텍처 분석 |
+| `--ultrathink` | ~32K | 시스템 재설계 |
+
+#### MCP Server Flags
+| Flag | 서버 | 용도 |
+|------|------|------|
+| `--c7` | Context7 | 공식 문서 조회 |
+| `--magic` | Magic | UI 컴포넌트 생성 |
+| `--seq` | Sequential | 다단계 추론 |
+| `--serena` | Serena | 시맨틱 코드 이해 |
+| `--tavily` | Tavily | 웹 검색/리서치 |
+
+#### Context Modes
+| Flag | 모드 | 특성 |
+|------|------|------|
+| `--ctx dev` | 개발 | 작동 > 완벽, 코드 먼저 |
+| `--ctx review` | 리뷰 | 심층 분석, 심각도별 정리 |
+| `--ctx research` | 리서치 | 완전성 > 속도, 증거 기반 |
 
 ## Installation
 
-### Quick Install (추천)
+### Quick Install
 ```bash
-curl -fsSL https://raw.githubusercontent.com/YOUR_USERNAME/my-claude-config/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/excatt/superclaude-plusplus/main/install.sh | bash
 ```
 
 ### Manual Install
 ```bash
-git clone https://github.com/YOUR_USERNAME/my-claude-config.git
-cd my-claude-config
+git clone https://github.com/excatt/superclaude-plusplus.git
+cd superclaude-plusplus
 ./install.sh
 ```
 
@@ -67,73 +134,78 @@ cd my-claude-config
 
 ```
 ~/.claude/
-├── CLAUDE.md           # 메인 설정
-├── FLAGS.md            # 플래그 참조
-├── RULES.md            # 규칙 정의
-├── PRINCIPLES.md       # 원칙
-├── MODES.md            # 모드 정의
-├── MCP_SERVERS.md      # MCP 서버 참조
-├── notepad.md          # 영구 메모
-├── settings.json       # hooks, statusLine 설정
-├── scripts/            # hook 스크립트
-│   ├── todo-continuation.sh
-│   ├── pre-compact-note.sh
-│   ├── suggest-compact.sh
-│   └── ...
-├── skills/             # 스킬 정의
-│   ├── note/
-│   ├── learn/
-│   └── ...
-└── state/              # 런타임 상태
+├── CLAUDE.md              # 메인 엔트리 포인트
+├── FLAGS.md               # 플래그 시스템
+├── RULES.md               # 행동 규칙
+├── PRINCIPLES.md          # 엔지니어링 원칙
+├── MODES.md               # 행동 모드
+├── MCP_SERVERS.md         # MCP 서버 가이드
+├── CONTEXTS.md            # 컨텍스트 모드
+├── CONVENTIONS.md         # 네이밍 컨벤션
+├── PATTERNS.md            # 코드 패턴
+├── KNOWLEDGE.md           # 인사이트/트러블슈팅
+├── notepad.md             # 영구 메모
+├── settings.json          # hooks, statusLine 설정
+├── scripts/
+│   └── statusline.sh      # 상태바 스크립트
+├── skills/
+│   ├── confidence-check/SKILL.md
+│   ├── verify/SKILL.md
+│   ├── document-skills/   # docx, pdf, pptx, xlsx
+│   └── ...                # 40+ skills
+├── agents/                # 전문가 에이전트 정의
+├── commands/              # 슬래시 커맨드 정의
+└── templates/             # 템플릿 파일
 ```
 
 ## Key Concepts
 
-### Persistence Enforcement
-TODO 항목이 남아있으면 작업 중단을 방지합니다.
+### Confidence Check (신뢰도 체크)
+구현 전 90% 이상의 신뢰도가 필요합니다:
+- 중복 구현 확인
+- 아키텍처 준수 검증
+- 공식 문서 검토
+- 근본 원인 파악
+
+### Persistence Enforcement (끈기 강제)
+TODO 항목이 남아있으면 작업 중단을 방지합니다:
 - 최대 10회 반복 후 자동 해제 (무한 루프 방지)
 - `.claude/state/`에 진행 상황 저장
 
-### Note System
-세션 컴팩션에서 중요 정보를 보존합니다.
+### Note System (노트 시스템)
+세션 컴팩션에서 중요 정보를 보존합니다:
 ```bash
-/note <content>           # Working Memory (7일 후 정리)
+/note <content>            # Working Memory (7일 후 정리)
 /note --priority <content> # Priority Context (항상 로드, 500자)
 /note --manual <content>   # MANUAL (영구 저장)
 ```
 
-### Auto-Skill Invocation
-특정 상황에서 자동으로 스킬이 실행됩니다:
-| 상황 | 스킬 |
-|------|------|
-| 구현 시작 전 | `/confidence-check` |
-| 기능 완료 후 | `/verify` |
-| 빌드 에러 | `/build-fix` |
-| React 리뷰 | `/react-best-practices` |
-| Python 리뷰 | `/python-best-practices` |
+### Token Efficiency Mode
+컨텍스트 >75% 시 자동 활성화:
+- 심볼 시스템 사용 (→, ⇒, ✅, ❌, ⚠️)
+- 30-50% 토큰 감소, ≥95% 정보 품질 유지
 
 ## Configuration
 
 ### Language
 기본값: 한국어
 
-`settings.json`에서 변경:
-```json
-{
-  "language": "English"
-}
+CLAUDE.md에서 변경:
+```markdown
+## Language
+- **ALWAYS respond in English**
 ```
 
 ### Hooks Customization
 `settings.json`의 `hooks` 섹션에서 스크립트 추가/제거 가능.
 
 ### StatusLine
-`statusline.sh`를 수정하여 표시 항목 커스터마이즈.
+`scripts/statusline.sh`를 수정하여 표시 항목 커스터마이즈.
 
 ## Updating
 
 ```bash
-cd my-claude-config
+cd superclaude-plusplus
 git pull
 ./install.sh
 ```
@@ -141,12 +213,8 @@ git pull
 ## Uninstall
 
 ```bash
-# 설정 파일만 제거 (스킬, 스크립트 유지)
-rm ~/.claude/CLAUDE.md ~/.claude/FLAGS.md ~/.claude/RULES.md \
-   ~/.claude/PRINCIPLES.md ~/.claude/MODES.md ~/.claude/MCP_SERVERS.md
-
 # 전체 제거
-rm -rf ~/.claude/scripts ~/.claude/skills ~/.claude/state
+rm -rf ~/.claude
 ```
 
 ## Requirements
@@ -156,11 +224,20 @@ rm -rf ~/.claude/scripts ~/.claude/skills ~/.claude/state
 - macOS/Linux (Windows는 WSL 권장)
 - `jq` (선택사항, 일부 스크립트에서 사용)
 
+## Contributing
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes
+4. Push to the branch
+5. Open a Pull Request
+
 ## Credits
 
 - Inspired by [oh-my-claudecode](https://github.com/Yeachan-Heo/oh-my-claudecode)
 - [cc-statusline](https://www.npmjs.com/package/@chongdashu/cc-statusline)
+- Business Panel experts methodology from classic business literature
 
 ## License
 
-MIT
+MIT License - see [LICENSE](LICENSE) for details.
