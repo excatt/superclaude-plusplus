@@ -1,41 +1,16 @@
-# Personal/cache files (never commit these)
-history.jsonl
-settings.json
-settings.local.json
-notepad.md
-stats-cache.json
-statusline.log
-
-# Directories with personal data
-backups/
-cache/
-debug/
-file-history/
-ide/
-logs/
-memory/
-mistakes/
-paste-cache/
-plans/
-plugins/
-projects/
-session-env/
-shell-snapshots/
-state/
-statsig/
-tasks/
-telemetry/
-todos/
-transcripts/
-
-# Learned patterns (personal)
-skills/learned/
-
-# OS files
+# OS
 .DS_Store
 Thumbs.db
 
-# Editor files
+# Editor
 *.swp
 *.swo
 *~
+.idea/
+.vscode/
+
+# Logs
+*.log
+
+# Temp
+*.tmp

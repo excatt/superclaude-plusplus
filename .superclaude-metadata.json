@@ -1,0 +1,111 @@
+{
+  "commands": {
+    "auto_update": false,
+    "enabled": true,
+    "version": "4.1.6"
+  },
+  "components": {
+    "agents": {
+      "agents_count": 17,
+      "agents_list": [
+        "backend-architect.md",
+        "business-panel-experts.md",
+        "deep-research-agent.md",
+        "devops-architect.md",
+        "frontend-architect.md",
+        "learning-guide.md",
+        "performance-engineer.md",
+        "pm-agent.md",
+        "python-expert.md",
+        "quality-engineer.md",
+        "refactoring-expert.md",
+        "requirements-analyst.md",
+        "root-cause-analyst.md",
+        "security-engineer.md",
+        "socratic-mentor.md",
+        "system-architect.md",
+        "technical-writer.md"
+      ],
+      "category": "agents",
+      "installed_at": "2025-10-18T17:55:04.491460",
+      "version": "4.1.6"
+    },
+    "commands": {
+      "category": "commands",
+      "files_count": 26,
+      "installed_at": "2025-10-18T17:55:04.502454",
+      "version": "4.1.6"
+    },
+    "core": {
+      "category": "core",
+      "files_count": 6,
+      "installed_at": "2025-10-18T17:55:04.483950",
+      "version": "4.1.6"
+    },
+    "mcp": {
+      "category": "integration",
+      "installed_at": "2025-10-18T17:55:40.378264",
+      "installed_servers": [
+        "chrome-devtools",
+        "morphllm-fast-apply",
+        "serena",
+        "playwright",
+        "sequential-thinking",
+        "magic",
+        "tavily",
+        "context7"
+      ],
+      "servers_count": 8,
+      "version": "4.1.6"
+    },
+    "mcp_docs": {
+      "files_count": 8,
+      "installed": true,
+      "servers_documented": [
+        "morphllm-fast-apply",
+        "serena",
+        "morphllm",
+        "playwright",
+        "sequential-thinking",
+        "magic",
+        "tavily",
+        "context7"
+      ],
+      "version": "4.1.6"
+    },
+    "modes": {
+      "files_count": 7,
+      "installed": true,
+      "version": "4.1.6"
+    }
+  },
+  "framework": {
+    "components": [
+      "core"
+    ],
+    "description": "AI-enhanced development framework for Claude Code",
+    "installation_type": "global",
+    "name": "superclaude",
+    "version": "4.1.6"
+  },
+  "mcp": {
+    "auto_update": false,
+    "enabled": true,
+    "servers": [
+      "chrome-devtools",
+      "morphllm-fast-apply",
+      "serena",
+      "playwright",
+      "sequential-thinking",
+      "magic",
+      "tavily",
+      "context7"
+    ]
+  },
+  "superclaude": {
+    "auto_update": false,
+    "enabled": true,
+    "profile": "default",
+    "version": "4.1.6"
+  }
+}

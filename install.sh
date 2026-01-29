@@ -1,93 +1,138 @@
 #!/bin/bash
-
-# SuperClaude++ Installer
-# https://github.com/excatt/superclaude-plusplus
+# My Claude Config - Installation Script
+# Enhanced Claude Code configuration with productivity features
+#
+# Usage:
+#   curl -fsSL https://raw.githubusercontent.com/YOUR_USERNAME/my-claude-config/main/install.sh | bash
+#
+# Or clone and run:
+#   git clone https://github.com/YOUR_USERNAME/my-claude-config.git
+#   cd my-claude-config && ./install.sh
 
 set -e
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-CLAUDE_DIR="$HOME/.claude"
+# Colors
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
 
-echo "🚀 SuperClaude++ Installer"
-echo "=========================="
+# Paths
+CLAUDE_DIR="$HOME/.claude"
+SCRIPTS_DIR="$CLAUDE_DIR/scripts"
+SKILLS_DIR="$CLAUDE_DIR/skills"
+STATE_DIR="$CLAUDE_DIR/state"
+BACKUP_DIR="$CLAUDE_DIR/backup-$(date +%Y%m%d-%H%M%S)"
+
+# Determine script directory (works for both curl and local execution)
+if [[ -n "$BASH_SOURCE" ]] && [[ -f "${BASH_SOURCE[0]}" ]]; then
+  SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+else
+  # Running via curl - need to clone first
+  TEMP_DIR=$(mktemp -d)
+  echo -e "${BLUE}Downloading configuration...${NC}"
+  git clone --depth 1 https://github.com/YOUR_USERNAME/my-claude-config.git "$TEMP_DIR" 2>/dev/null || {
+    echo -e "${RED}Failed to clone repository. Please check the URL.${NC}"
+    exit 1
+  }
+  SCRIPT_DIR="$TEMP_DIR"
+fi
+
+echo ""
+echo -e "${BLUE}╔════════════════════════════════════════════╗${NC}"
+echo -e "${BLUE}║     My Claude Config - Installation        ║${NC}"
+echo -e "${BLUE}╚════════════════════════════════════════════╝${NC}"
 echo ""
 
-# Check if ~/.claude exists
-if [ -d "$CLAUDE_DIR" ]; then
-    echo "⚠️  기존 ~/.claude 디렉토리가 발견되었습니다."
-    echo ""
-    echo "선택하세요:"
-    echo "  1) 백업 후 덮어쓰기 (권장)"
-    echo "  2) 병합 (기존 파일 유지, 새 파일만 추가)"
-    echo "  3) 취소"
-    echo ""
-    read -p "선택 (1/2/3): " choice
+# Check for existing installation
+if [[ -f "$CLAUDE_DIR/CLAUDE.md" ]]; then
+  echo -e "${YELLOW}⚠️  Existing configuration detected.${NC}"
+  echo ""
+  read -p "Create backup and proceed? (y/N): " -n 1 -r
+  echo ""
+  if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+    echo -e "${RED}Installation cancelled.${NC}"
+    exit 1
+  fi
 
-    case $choice in
-        1)
-            BACKUP_DIR="$HOME/.claude.backup.$(date +%Y%m%d_%H%M%S)"
-            echo "📦 백업 중: $BACKUP_DIR"
-            mv "$CLAUDE_DIR" "$BACKUP_DIR"
-            mkdir -p "$CLAUDE_DIR"
-            ;;
-        2)
-            echo "🔀 병합 모드로 설치합니다."
-            ;;
-        3)
-            echo "❌ 설치가 취소되었습니다."
-            exit 0
-            ;;
-        *)
-            echo "❌ 잘못된 선택입니다."
-            exit 1
-            ;;
-    esac
-else
-    mkdir -p "$CLAUDE_DIR"
+  # Backup existing configuration
+  echo -e "${BLUE}Creating backup at: $BACKUP_DIR${NC}"
+  mkdir -p "$BACKUP_DIR"
+  [[ -f "$CLAUDE_DIR/CLAUDE.md" ]] && cp "$CLAUDE_DIR/CLAUDE.md" "$BACKUP_DIR/"
+  [[ -f "$CLAUDE_DIR/settings.json" ]] && cp "$CLAUDE_DIR/settings.json" "$BACKUP_DIR/"
+  [[ -d "$SCRIPTS_DIR" ]] && cp -r "$SCRIPTS_DIR" "$BACKUP_DIR/"
+  [[ -d "$SKILLS_DIR" ]] && cp -r "$SKILLS_DIR" "$BACKUP_DIR/"
+  echo -e "${GREEN}✓ Backup created${NC}"
 fi
 
 # Create directories
-echo "📁 디렉토리 생성 중..."
-mkdir -p "$CLAUDE_DIR"/{agents,commands/sc,skills,scripts,optional}
+echo -e "${BLUE}Creating directories...${NC}"
+mkdir -p "$SCRIPTS_DIR"
+mkdir -p "$SKILLS_DIR"
+mkdir -p "$STATE_DIR"
 
-# Copy core files
-echo "📄 핵심 설정 파일 복사 중..."
-cp "$SCRIPT_DIR"/core/*.md "$CLAUDE_DIR/"
+# Install configuration files
+echo -e "${BLUE}Installing configuration files...${NC}"
+cp "$SCRIPT_DIR/config/CLAUDE.md" "$CLAUDE_DIR/"
+cp "$SCRIPT_DIR/config/FLAGS.md" "$CLAUDE_DIR/"
+cp "$SCRIPT_DIR/config/RULES.md" "$CLAUDE_DIR/"
+cp "$SCRIPT_DIR/config/PRINCIPLES.md" "$CLAUDE_DIR/"
+cp "$SCRIPT_DIR/config/MODES.md" "$CLAUDE_DIR/"
+cp "$SCRIPT_DIR/config/MCP_SERVERS.md" "$CLAUDE_DIR/"
+echo -e "${GREEN}✓ Configuration files installed${NC}"
 
-# Copy agents
-echo "🤖 에이전트 복사 중..."
-cp "$SCRIPT_DIR"/agents/*.md "$CLAUDE_DIR/agents/"
+# Install scripts
+echo -e "${BLUE}Installing scripts...${NC}"
+cp "$SCRIPT_DIR/scripts/"*.sh "$SCRIPTS_DIR/"
+chmod +x "$SCRIPTS_DIR/"*.sh
+echo -e "${GREEN}✓ Scripts installed${NC}"
 
-# Copy commands
-echo "⚡ 커맨드 복사 중..."
-cp "$SCRIPT_DIR"/commands/*.md "$CLAUDE_DIR/commands/" 2>/dev/null || true
-cp "$SCRIPT_DIR"/commands/sc/*.md "$CLAUDE_DIR/commands/sc/" 2>/dev/null || true
-
-# Copy skills
-echo "🎯 스킬 복사 중..."
-for skill_dir in "$SCRIPT_DIR"/skills/*/; do
-    skill_name=$(basename "$skill_dir")
-    mkdir -p "$CLAUDE_DIR/skills/$skill_name"
-    cp "$skill_dir"/*.md "$CLAUDE_DIR/skills/$skill_name/" 2>/dev/null || true
+# Install skills
+echo -e "${BLUE}Installing skills...${NC}"
+for skill_dir in "$SCRIPT_DIR/skills/"*/; do
+  skill_name=$(basename "$skill_dir")
+  if [[ -d "$skill_dir" ]]; then
+    cp -r "$skill_dir" "$SKILLS_DIR/"
+    echo -e "  ✓ $skill_name"
+  fi
 done
+echo -e "${GREEN}✓ Skills installed${NC}"
 
-# Copy optional
-echo "📚 선택적 설정 복사 중..."
-cp "$SCRIPT_DIR"/optional/*.md "$CLAUDE_DIR/" 2>/dev/null || true
+# Install templates
+echo -e "${BLUE}Installing templates...${NC}"
+cp "$SCRIPT_DIR/templates/notepad.md" "$CLAUDE_DIR/"
+echo -e "${GREEN}✓ Templates installed${NC}"
 
-# Copy scripts
-echo "📜 스크립트 복사 중..."
-cp "$SCRIPT_DIR"/scripts/*.sh "$CLAUDE_DIR/scripts/"
-chmod +x "$CLAUDE_DIR/scripts/"*.sh
+# Handle settings.json
+if [[ -f "$CLAUDE_DIR/settings.json" ]]; then
+  echo -e "${YELLOW}⚠️  settings.json already exists.${NC}"
+  echo "   To use the new hooks configuration, either:"
+  echo "   1. Manually merge from: $SCRIPT_DIR/templates/settings.json"
+  echo "   2. Or replace: cp $SCRIPT_DIR/templates/settings.json $CLAUDE_DIR/settings.json"
+else
+  cp "$SCRIPT_DIR/templates/settings.json" "$CLAUDE_DIR/"
+  echo -e "${GREEN}✓ settings.json installed${NC}"
+fi
+
+# Cleanup temp directory if used
+if [[ -n "$TEMP_DIR" ]] && [[ -d "$TEMP_DIR" ]]; then
+  rm -rf "$TEMP_DIR"
+fi
 
 echo ""
-echo "✅ 설치 완료!"
+echo -e "${GREEN}╔════════════════════════════════════════════╗${NC}"
+echo -e "${GREEN}║     Installation Complete!                 ║${NC}"
+echo -e "${GREEN}╚════════════════════════════════════════════╝${NC}"
 echo ""
-echo "📍 설치 위치: $CLAUDE_DIR"
+echo -e "Installed components:"
+echo -e "  📄 Configuration: CLAUDE.md, FLAGS.md, RULES.md, etc."
+echo -e "  📜 Scripts: $(ls -1 "$SCRIPTS_DIR" | wc -l | tr -d ' ') hook scripts"
+echo -e "  🛠️  Skills: $(ls -1 "$SKILLS_DIR" | wc -l | tr -d ' ') skills"
 echo ""
-echo "다음 단계:"
-echo "  1. Claude Code를 재시작하세요"
-echo "  2. '/help' 명령으로 사용 가능한 커맨드를 확인하세요"
+echo -e "${YELLOW}Next steps:${NC}"
+echo -e "  1. Restart Claude Code to apply changes"
+echo -e "  2. Run /note --show to verify note system"
+echo -e "  3. Check /help for available skills"
 echo ""
-echo "문제가 있으면 이슈를 등록해주세요:"
-echo "  https://github.com/excatt/superclaude-plusplus/issues"
+echo -e "${BLUE}Enjoy your enhanced Claude Code experience!${NC}"

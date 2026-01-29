@@ -1,0 +1,80 @@
+{
+  "permissions": {
+    "allow": [
+      "Skill(*)"
+    ],
+    "defaultMode": "default"
+  },
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/scripts/pre-compact-note.sh",
+            "timeout": 2000
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "CLAUDE_FILE_PATH=\"$CLAUDE_FILE_PATH\" ~/.claude/scripts/type-check.sh",
+            "timeout": 10000
+          },
+          {
+            "type": "command",
+            "command": "CLAUDE_FILE_PATH=\"$CLAUDE_FILE_PATH\" ~/.claude/scripts/console-log-check.sh",
+            "timeout": 5000
+          },
+          {
+            "type": "command",
+            "command": "CLAUDE_FILE_PATH=\"$CLAUDE_FILE_PATH\" ~/.claude/scripts/auto-format.sh",
+            "timeout": 10000
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/scripts/todo-continuation.sh",
+            "timeout": 5000
+          },
+          {
+            "type": "command",
+            "command": "~/.claude/scripts/evaluate-session.sh",
+            "timeout": 5000
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/scripts/suggest-compact.sh",
+            "timeout": 2000
+          }
+        ]
+      }
+    ]
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "~/.claude/statusline.sh",
+    "padding": 0
+  },
+  "alwaysThinkingEnabled": true,
+  "language": "한국어"
+}
