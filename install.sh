@@ -80,6 +80,26 @@ if [[ -f "$CLAUDE_DIR/CLAUDE.md" ]]; then
   echo -e "${GREEN}✓ Backup created${NC}"
 fi
 
+# Clean existing directories (backup already created above)
+echo -e "${BLUE}Cleaning existing installation...${NC}"
+if [[ -d "$SKILLS_DIR" ]]; then
+  rm -rf "$SKILLS_DIR"
+  echo -e "  ✓ Cleaned skills directory"
+fi
+if [[ -d "$AGENTS_DIR" ]]; then
+  rm -rf "$AGENTS_DIR"
+  echo -e "  ✓ Cleaned agents directory"
+fi
+if [[ -d "$COMMANDS_DIR" ]]; then
+  rm -rf "$COMMANDS_DIR"
+  echo -e "  ✓ Cleaned commands directory"
+fi
+if [[ -d "$TEMPLATES_DIR" ]]; then
+  rm -rf "$TEMPLATES_DIR"
+  echo -e "  ✓ Cleaned templates directory"
+fi
+# Note: SCRIPTS_DIR and STATE_DIR are preserved (user may have custom scripts/state)
+
 # Create directories
 echo -e "${BLUE}Creating directories...${NC}"
 mkdir -p "$SCRIPTS_DIR"
@@ -132,7 +152,9 @@ if [[ -d "$SCRIPT_DIR/skills" ]]; then
   for skill_dir in "$SCRIPT_DIR/skills/"*/; do
     if [[ -d "$skill_dir" ]]; then
       skill_name=$(basename "$skill_dir")
-      cp -r "$skill_dir" "$SKILLS_DIR/"
+      # Remove trailing slash to copy directory itself, not just contents
+      skill_dir_clean="${skill_dir%/}"
+      cp -r "$skill_dir_clean" "$SKILLS_DIR/"
       ((skill_count++))
     fi
   done
