@@ -25,6 +25,7 @@
 | 빌드 에러 | `/build-fix` | error TS, Build failed |
 | React 리뷰 | `/react-best-practices` | .tsx + 리뷰 |
 | Python 리뷰 | `/python-best-practices` | .py + 리뷰 |
+| UI 리뷰 | `/web-design-guidelines` | UI 리뷰, 접근성, a11y |
 | 위험 작업 | `/checkpoint` | 리팩토링, 삭제 |
 
 ### By Domain (Suggest when relevant)
@@ -32,7 +33,7 @@
 - **Architecture**: `/architecture`, `/api-design`, `/db-design`, `/design-patterns`
 - **Security**: `/security-audit`, `/auth`, `/error-handling`
 - **Performance**: `/perf-optimize`, `/caching`, `/scaling`
-- **Frontend**: `/react-best-practices`, `/responsive`, `/a11y`, `/state`, `/seo`
+- **Frontend**: `/react-best-practices`, `/composition-patterns`, `/web-design-guidelines`, `/responsive`, `/a11y`, `/state`, `/seo`
 - **Backend**: `/graphql`, `/websocket`, `/queue`, `/pagination`, `/rate-limit`
 - **Python**: `/python-best-practices`, `/pytest-runner`, `/poetry-package`, `/fastapi`
 - **DevOps**: `/docker`, `/cicd`, `/monitoring`, `/env`
@@ -43,6 +44,6 @@
 - **Pre-Implementation**: `/confidence-check` → ≥90% proceed
 - **Planning**: `/feature-planner` → `/architecture`
 - **Implementation**: Domain-specific skills
-- **Review**: `/code-review`, `/security-audit`
+- **Review**: `/code-review`, `/security-audit`, `/web-design-guidelines`
 - **Deployment**: `/docker`, `/cicd`, `/monitoring`
 - **Post-Implementation**: `/verify`, `/learn`

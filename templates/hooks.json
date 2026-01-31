@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-hooks.json",
+  "description": "SuperClaude Hooks v1.1 - RULES.md 강화 + Convention 자동 체크",
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "matcher": ".*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ${HOME}/.claude/scripts/pre-compact-note.sh",
+            "timeout": 3000
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ${HOME}/.claude/scripts/post-write-check.sh",
+            "timeout": 3000
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ${HOME}/.claude/scripts/todo-continuation.sh",
+            "timeout": 5000
+          }
+        ]
+      }
+    ],
+    "PreCompact": [
+      {
+        "matcher": "auto|manual",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ${HOME}/.claude/scripts/pre-compact-save.sh",
+            "timeout": 5000
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -5,6 +5,37 @@
 형식은 [Keep a Changelog](https://keepachangelog.com/ko/1.0.0/)를 따르며,
 [Semantic Versioning](https://semver.org/lang/ko/)을 준수합니다.
 
+## [0.3.0] - 2026-01-31
+
+### Added
+- **PDCA Workflow Rule**: 체계적인 개발 사이클 (Plan → Design → Do → Check → Act → Report)
+  - Match Rate 기반 품질 게이트 (≥90% 통과, 70-89% 자동 수정, <70% 설계 재검토)
+  - Gap Analysis 자동 트리거 ("맞아?", "확인해", "설계대로야?")
+  - `.pdca-status.json` 상태 추적
+- **새로운 스킬 3개**:
+  - `/web-design-guidelines` - Vercel Web Interface Guidelines 기반 UI/UX 리뷰 (100+ 규칙)
+  - `/composition-patterns` - React Compound Components 패턴 가이드
+  - `/gap-analysis` - 설계-구현 비교 및 Match Rate 계산
+- **PDCA 템플릿 4개**:
+  - `templates/plan.template.md` - 기능 계획 문서
+  - `templates/design.template.md` - 설계 문서
+  - `templates/analysis.template.md` - Gap 분석 리포트
+  - `templates/report.template.md` - 완료 리포트
+- **훅 스크립트**:
+  - `scripts/post-write-check.sh` - 파일 작성 후 Convention 체크
+  - `scripts/pre-compact-save.sh` - 컴팩션 전 상태 저장
+- `templates/hooks.json` - SuperClaude 훅 설정 예시
+
+### Changed
+- **CLAUDE.md**:
+  - Auto-Invoke 테이블에 UI 리뷰(`/web-design-guidelines`) 추가
+  - Frontend 도메인에 `/composition-patterns`, `/web-design-guidelines` 추가
+  - Review 워크플로우에 `/web-design-guidelines` 추가
+- **RULES.md**:
+  - Auto-Skill Invocation Rule에 PDCA Check/Act 트리거 추가
+  - Quick Reference에 PDCA Workflow 의사결정 트리 추가
+  - IMPORTANT 우선순위에 PDCA 관련 규칙 추가
+
 ## [0.2.0] - 2025-01-30
 
 ### Added
@@ -79,5 +110,6 @@
 
 | 버전 | 날짜 | 주요 변경 |
 |------|------|----------|
+| 0.3.0 | 2026-01-31 | PDCA Workflow, 새 스킬 3개, 템플릿 4개 |
 | 0.2.0 | 2025-01-30 | Document Skills 추가, 디렉토리 구조 단순화 |
 | 0.1.0 | 2025-01-29 | 초기 릴리스 |

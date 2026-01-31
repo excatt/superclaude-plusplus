@@ -71,12 +71,15 @@ Actionable rules for enhanced Claude Code framework operation.
 | 기능 완료 후 | `/verify` | 완료, 끝, done, finished, PR, commit |
 | 빌드 에러 | `/build-fix` | error TS, Build failed, TypeError |
 | React 리뷰 | `/react-best-practices` | .tsx 파일 + 리뷰/검토 키워드 |
+| **UI 리뷰** | `/web-design-guidelines` | UI 리뷰, 접근성, a11y, 디자인 검토 |
 | **Python 리뷰** | `/python-best-practices` | .py 파일 + 리뷰/검토 키워드 |
 | **Python 테스트** | `/pytest-runner` | pytest, 테스트 돌려, coverage |
 | **Python 패키지** | `/poetry-package` | ModuleNotFoundError, poetry install |
 | 위험 작업 전 | `/checkpoint` | 리팩토링, 마이그레이션, 삭제, refactor |
 | 문제 해결 후 | `/learn` (제안) | 해결, 찾았다, solved, root cause |
 | **긴 세션** | `/note` (제안) | 메시지 50+, 컨텍스트 70%+, 기억해, remember |
+| **PDCA Check** | Gap Analysis | 맞아?, 확인해, verify, 설계대로야? |
+| **PDCA Act** | 반복 수정 | matchRate <90%, 갭 수정, fix gaps |
 
 **실행 우선순위**:
 1. `/confidence-check` (구현 전) - 잘못된 방향 방지
@@ -139,6 +142,86 @@ Actionable rules for enhanced Claude Code framework operation.
 ✅ **Right**: Multi-file feature → Create phase-based plan with quality gates
 ❌ **Wrong**: Start coding immediately without planning phase
 ❌ **Wrong**: Skip quality gates or TDD workflow
+
+## PDCA Workflow Rule
+**Priority**: 🟡 **Triggers**: 기능 구현, 설계 문서 작성, 구현 완료 검증
+
+체계적인 개발 사이클을 위한 PDCA (Plan-Do-Check-Act) 워크플로우.
+
+**PDCA Cycle**:
+```
+Plan → Design → Do → Check → Act → Report
+ │       │       │      │       │       │
+ │       │       │      │       │       └─ 완료 리포트 생성
+ │       │       │      │       └─ Gap 기반 자동 수정 (반복)
+ │       │       │      └─ Gap Analysis (설계 vs 구현)
+ │       │       └─ 실제 구현
+ │       └─ 상세 설계 문서
+ └─ 기능 계획 문서
+```
+
+**Phase별 산출물**:
+| Phase | 문서 경로 | 내용 |
+|-------|----------|------|
+| Plan | `docs/01-plan/{feature}.plan.md` | 요구사항, 범위, 마일스톤 |
+| Design | `docs/02-design/{feature}.design.md` | API 스펙, 데이터 모델, 아키텍처 |
+| Do | 소스 코드 | 실제 구현 |
+| Check | `docs/03-analysis/{feature}.analysis.md` | Gap 분석 리포트 |
+| Act | 코드 수정 | Gap 기반 반복 수정 |
+| Report | `docs/04-report/{feature}.report.md` | 완료 리포트 |
+
+**Match Rate & Iteration**:
+```
+Check 결과
+├─ matchRate >= 90% → ✅ Report 단계로 진행
+├─ matchRate 70-89% → ⚠️ Act 단계 (자동 수정)
+└─ matchRate < 70%  → 🔴 설계 재검토 필요
+
+Act 반복 조건:
+├─ maxIterations: 5 (무한 루프 방지)
+├─ 매 반복 후 자동 re-Check
+└─ 90% 도달 또는 5회 반복 시 종료
+```
+
+**Gap Analysis 비교 항목**:
+1. **API 비교**: 엔드포인트, HTTP 메서드, 요청/응답 형식
+2. **데이터 모델**: 엔티티, 필드 정의, 관계
+3. **기능 비교**: 비즈니스 로직, 에러 핸들링
+4. **Convention**: 네이밍, import 순서, 폴더 구조
+
+**Auto-Trigger Conditions**:
+| 트리거 | 실행 Phase | 키워드 |
+|--------|-----------|--------|
+| 기능 계획 | Plan | "계획", "plan", "기획" |
+| 설계 요청 | Design | "설계", "design", "API 스펙" |
+| 구현 시작 | Do | "구현", "개발", "implement" |
+| 완료 검증 | Check | "검증", "확인", "맞아?", "verify" |
+| 수정 요청 | Act | "수정", "고쳐", "fix gaps" |
+| 리포트 | Report | "리포트", "보고서", "summary" |
+
+**PDCA Status 추적**:
+```json
+// .pdca-status.json
+{
+  "feature": "user-auth",
+  "phase": "check",
+  "matchRate": 85,
+  "iteration": 2,
+  "maxIterations": 5,
+  "gaps": { "missing": 2, "changed": 1 }
+}
+```
+
+**Integration with Existing Rules**:
+- `/confidence-check` → Plan 전 신뢰도 확인
+- `/verify` → Check 단계와 통합
+- Feature Planning Rule → Plan/Design 단계와 연계
+
+✅ **Right**: Plan 문서 → Design 문서 → 구현 → Check(90%) → Report
+✅ **Right**: Check 결과 75% → Act 반복 → 90% 도달 → Report
+❌ **Wrong**: 설계 문서 없이 바로 구현
+❌ **Wrong**: Check 결과 무시하고 완료 선언
+**Detection**: `docs/` 폴더에 plan/design 문서 없이 구현 시작
 
 ## Planning Efficiency
 **Priority**: 🔴 **Triggers**: All planning phases, TodoWrite operations, multi-step tasks
@@ -529,6 +612,17 @@ New feature request?
 └─ Framework deps? → Check package.json first
 ```
 
+**🟡 PDCA Workflow**
+```
+Feature development?
+├─ Plan exists? → No → Create docs/01-plan/{feature}.plan.md
+├─ Design exists? → No → Create docs/02-design/{feature}.design.md
+├─ Implementation done?
+│   └─ Yes → Run Check (Gap Analysis)
+├─ matchRate >= 90%? → Yes → Generate Report
+└─ matchRate < 90%? → Run Act (iterate, max 5)
+```
+
 **🟢 Tool Selection Matrix**
 ```
 Task type → Best tool:
@@ -556,6 +650,8 @@ Task type → Best tool:
 - Build only what's asked (MVP first)
 - Professional language (no marketing superlatives)
 - Clean workspace (remove temp files)
+- **PDCA: Plan/Design 문서 먼저, 구현은 그 다음**
+- **Check 90% 미달 시 Act 반복 (max 5)**
 
 #### 🟢 RECOMMENDED (Apply When Practical)  
 - Parallel operations over sequential
