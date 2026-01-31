@@ -46,10 +46,13 @@ Claude Code를 위한 고급 프레임워크 - 생산성 향상, 자동화, 전�
 | Skill | 설명 |
 |-------|------|
 | `/react-best-practices` | React/Next.js 코드 리뷰 (40+ 규칙) |
+| `/web-design-guidelines` | Vercel UI/UX 리뷰 (100+ 규칙) |
+| `/composition-patterns` | React Compound Components 패턴 |
 | `/python-best-practices` | Python 코드 리뷰 및 베스트 프랙티스 |
 | `/pytest-runner` | pytest 실행, 커버리지 분석 |
 | `/poetry-package` | Poetry 패키지 관리 |
 | `/feature-planner` | 기능 구현 계획 수립 |
+| `/gap-analysis` | 설계-구현 비교, Match Rate 계산 |
 
 #### Document Skills (NEW)
 | Skill | 설명 |
@@ -75,14 +78,18 @@ Claude Code를 위한 고급 프레임워크 - 생산성 향상, 자동화, 전�
 | 기능 완료 후 | `/verify` | 완료, done, PR |
 | 빌드 에러 | `/build-fix` | error TS, Build failed |
 | React 파일 리뷰 | `/react-best-practices` | .tsx + 리뷰 |
+| UI 리뷰 | `/web-design-guidelines` | UI 리뷰, 접근성, a11y |
 | Python 파일 리뷰 | `/python-best-practices` | .py + 리뷰 |
 | 위험 작업 전 | `/checkpoint` | 리팩토링, 삭제 |
+| PDCA Check | `/gap-analysis` | 맞아?, 확인해, 설계대로야? |
 
 #### Hooks
 | Hook | 기능 |
 |------|------|
 | `todo-continuation` | TODO 미완료 시 작업 중단 방지 |
 | `pre-compact-note` | 컴팩션 전 자동 노트 저장 요청 |
+| `pre-compact-save` | 컴팩션 전 상태 저장 |
+| `post-write-check` | 파일 작성 후 Convention 체크 |
 | `suggest-compact` | 컨텍스트 임계치 도달 시 컴팩션 제안 |
 | `evaluate-session` | 세션 종료 시 패턴 추출 제안 |
 
@@ -147,18 +154,37 @@ cd superclaude-plusplus
 ├── notepad.md             # 영구 메모
 ├── settings.json          # hooks, statusLine 설정
 ├── scripts/
-│   └── statusline.sh      # 상태바 스크립트
+│   ├── statusline.sh      # 상태바 스크립트
+│   ├── post-write-check.sh # Convention 체크
+│   └── pre-compact-save.sh # 컴팩션 전 저장
 ├── skills/
 │   ├── confidence-check/SKILL.md
 │   ├── verify/SKILL.md
+│   ├── gap-analysis/SKILL.md      # 설계-구현 비교
+│   ├── web-design-guidelines/     # UI/UX 리뷰
+│   ├── composition-patterns/      # React 패턴
 │   ├── document-skills/   # docx, pdf, pptx, xlsx
 │   └── ...                # 40+ skills
 ├── agents/                # 전문가 에이전트 정의
 ├── commands/              # 슬래시 커맨드 정의
-└── templates/             # 템플릿 파일
+└── templates/
+    ├── plan.template.md       # PDCA Plan
+    ├── design.template.md     # PDCA Design
+    ├── analysis.template.md   # PDCA Check (Gap Analysis)
+    ├── report.template.md     # PDCA Report
+    └── hooks.json             # 훅 설정 예시
 ```
 
 ## Key Concepts
+
+### PDCA Workflow (NEW)
+체계적인 개발 사이클을 위한 Plan-Do-Check-Act 워크플로우:
+```
+Plan → Design → Do → Check → Act → Report
+```
+- **Match Rate 기반 품질 게이트**: ≥90% 통과, 70-89% 자동 수정, <70% 설계 재검토
+- **Gap Analysis**: 설계 문서와 구현 코드 자동 비교
+- **템플릿 제공**: `plan.template.md`, `design.template.md`, `analysis.template.md`, `report.template.md`
 
 ### Confidence Check (신뢰도 체크)
 구현 전 90% 이상의 신뢰도가 필요합니다:
