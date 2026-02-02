@@ -101,25 +101,53 @@ result = db.execute(query, {"id": user_id})
 
 ### 5. Dependencies (15%)
 
+**필수 규칙**: **Poetry** 사용 (pip, uv, pipenv 금지)
+
 **체크 항목**:
-- `pyproject.toml` 또는 `requirements.txt` 존재
-- 버전 고정
-- 취약한 패키지
-- 불필요한 의존성
+- `pyproject.toml` (Poetry 형식) 존재
+- `poetry.lock` 존재 및 커밋됨
+- 버전 범위 적절히 지정 (`^`, `~`)
+- 개발 의존성 그룹 분리
 
 ```toml
-# ✅ Good pyproject.toml
-[project]
-dependencies = [
-    "fastapi>=0.100.0,<1.0.0",
-    "pydantic>=2.0.0,<3.0.0",
-]
+# ✅ Good pyproject.toml (Poetry)
+[tool.poetry]
+name = "my-project"
+version = "0.1.0"
+package-mode = false  # 앱 프로젝트인 경우
 
-[project.optional-dependencies]
-dev = ["pytest>=7.0.0", "mypy>=1.0.0", "ruff>=0.1.0"]
+[tool.poetry.dependencies]
+python = "^3.11"
+fastapi = "^0.109.0"
+pydantic = "^2.5.0"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.0.0"
+mypy = "^1.8.0"
+ruff = "^0.1.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
 ```
 
-**검증 도구**: `poetry check`, `pip-audit`
+```toml
+# ❌ Bad - requirements.txt 또는 [project] 형식 사용
+[project]
+dependencies = ["fastapi>=0.100.0"]
+
+# ❌ Bad - uv.lock 사용
+```
+
+**검증 도구**: `poetry check`, `poetry lock --check`
+
+**Docker 패턴**:
+```dockerfile
+RUN pip install poetry
+COPY pyproject.toml poetry.lock ./
+RUN poetry config virtualenvs.create false \
+    && poetry install --only main --no-interaction
+```
 
 ---
 
@@ -179,22 +207,30 @@ dev = ["pytest>=7.0.0", "mypy>=1.0.0", "ruff>=0.1.0"]
 ## Verification Commands
 
 ```bash
+# Poetry 환경에서 실행 (poetry run 또는 poetry shell 후)
+
 # Type checking
-mypy --strict src/
+poetry run mypy --strict src/
 
 # Linting & formatting
-ruff check src/
-ruff format --check src/
+poetry run ruff check src/
+poetry run ruff format --check src/
 
 # Testing
-pytest --cov=src --cov-report=term-missing
+poetry run pytest --cov=src --cov-report=term-missing
 
 # Security
-bandit -r src/
+poetry run bandit -r src/
 
 # Dependencies
-poetry check
-pip-audit
+poetry check           # pyproject.toml 검증
+poetry lock --check    # lock 파일 동기화 확인
+poetry show --outdated # 업데이트 가능한 패키지
+
+# 가상환경 관리
+poetry env info        # 환경 정보
+poetry install         # 의존성 설치
+poetry update          # 의존성 업데이트
 ```
 
 ---

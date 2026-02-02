@@ -5,6 +5,36 @@
 형식은 [Keep a Changelog](https://keepachangelog.com/ko/1.0.0/)를 따르며,
 [Semantic Versioning](https://semver.org/lang/ko/)을 준수합니다.
 
+## [0.4.0] - 2026-02-02
+
+### Added
+- **optional/ 디렉토리**: 선택적 로딩을 위한 상세 문서 분리 (20개 파일)
+  - MCP 서버별 상세 가이드 (Context7, Magic, Morphllm, Playwright, Sequential, Serena, Tavily)
+  - MODE별 상세 가이드 (Brainstorming, Business_Panel, DeepResearch, Introspection, Orchestration, Task_Management, Token_Efficiency)
+  - BUSINESS_PANEL_EXAMPLES.md, BUSINESS_SYMBOLS.md, CONTEXTS.md, KNOWLEDGE.md, PATTERNS.md, RESEARCH_CONFIG.md
+- **scripts/convention-check.sh**: 네이밍 컨벤션 자동 체크 스크립트
+  - Python snake_case 검사
+  - TypeScript camelCase 검사
+  - 파일명 규칙 검사
+
+### Changed
+- **CONVENTIONS.md**:
+  - Python 패키지 관리 규칙 추가 (Poetry 필수, pip/uv/pipenv 금지)
+  - Node.js/TypeScript 패키지 관리 규칙 추가 (pnpm 필수, npm/yarn 금지)
+  - pyproject.toml, Dockerfile, CI/CD 패턴 예시 추가
+- **RULES.md**:
+  - Python Project Rules 추가 (Poetry 필수, Detection 규칙)
+  - Node.js Project Rules 추가 (pnpm 필수, Detection 규칙)
+- **skills/python-best-practices/SKILL.md**:
+  - Poetry 필수 규칙 추가
+  - pyproject.toml Poetry 형식 예시
+  - Docker 패턴 추가
+  - poetry run 명령어 사용 가이드
+- **skills/react-best-practices/SKILL.md**:
+  - Priority 0: Package Management (MANDATORY) 섹션 추가
+  - pnpm 필수 규칙 (npm, yarn 금지)
+  - Dockerfile 패턴, CI/CD 패턴 추가
+
 ## [0.3.0] - 2026-01-31
 
 ### Added
@@ -110,6 +140,7 @@
 
 | 버전 | 날짜 | 주요 변경 |
 |------|------|----------|
+| 0.4.0 | 2026-02-02 | optional/ 디렉토리, 패키지 관리 규칙 (Poetry/pnpm 필수) |
 | 0.3.0 | 2026-01-31 | PDCA Workflow, 새 스킬 3개, 템플릿 4개 |
 | 0.2.0 | 2025-01-30 | Document Skills 추가, 디렉토리 구조 단순화 |
 | 0.1.0 | 2025-01-29 | 초기 릴리스 |

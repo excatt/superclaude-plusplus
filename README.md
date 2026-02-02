@@ -16,7 +16,7 @@ Claude Code를 위한 고급 프레임워크 - 생산성 향상, 자동화, 전�
 | **MODES.md** | 상황별 행동 모드 (Brainstorming, Orchestration, Token Efficiency 등) |
 | **MCP_SERVERS.md** | MCP 서버 통합 가이드 (Context7, Magic, Serena 등) |
 | **CONTEXTS.md** | DEV/REVIEW/RESEARCH/PLANNING 컨텍스트 모드 |
-| **CONVENTIONS.md** | 네이밍 컨벤션 (Python, TypeScript, React, CSS 등) |
+| **CONVENTIONS.md** | 네이밍 컨벤션 + 패키지 관리 규칙 (Poetry/pnpm 필수) |
 | **PATTERNS.md** | 재사용 가능한 코드 패턴 모음 |
 | **KNOWLEDGE.md** | 축적된 인사이트 및 트러블슈팅 가이드 |
 
@@ -154,9 +154,14 @@ cd superclaude-plusplus
 ├── notepad.md             # 영구 메모
 ├── settings.json          # hooks, statusLine 설정
 ├── scripts/
-│   ├── statusline.sh      # 상태바 스크립트
+│   ├── statusline.sh       # 상태바 스크립트
+│   ├── convention-check.sh # 네이밍 컨벤션 자동 체크
 │   ├── post-write-check.sh # Convention 체크
 │   └── pre-compact-save.sh # 컴팩션 전 저장
+├── optional/               # 선택적 로딩 문서
+│   ├── MCP_*.md            # MCP 서버별 상세 가이드 (7개)
+│   ├── MODE_*.md           # MODE별 상세 가이드 (7개)
+│   └── *.md                # 기타 참조 문서 (6개)
 ├── skills/
 │   ├── confidence-check/SKILL.md
 │   ├── verify/SKILL.md
@@ -210,6 +215,17 @@ TODO 항목이 남아있으면 작업 중단을 방지합니다:
 컨텍스트 >75% 시 자동 활성화:
 - 심볼 시스템 사용 (→, ⇒, ✅, ❌, ⚠️)
 - 30-50% 토큰 감소, ≥95% 정보 품질 유지
+
+### Package Management Rules (NEW)
+프로젝트별 패키지 매니저 강제:
+
+| 언어 | 필수 | 금지 |
+|------|------|------|
+| **Python** | Poetry | pip, uv, pipenv |
+| **Node.js** | pnpm | npm, yarn |
+
+- 자동 감지: `requirements.txt`, `uv.lock`, `package-lock.json`, `yarn.lock` 발견 시 마이그레이션 제안
+- Dockerfile/CI 패턴 예시 포함
 
 ## Configuration
 

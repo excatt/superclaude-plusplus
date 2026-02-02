@@ -367,8 +367,104 @@ Act 반복 조건:
 - **Separation of Concerns**: Keep tests, scripts, docs, and source code properly separated
 - **Purpose-Based Organization**: Organize files by their intended function and audience
 
-✅ **Right**: `tests/auth.test.js`, `scripts/deploy.sh`, `claudedocs/analysis.md`  
+✅ **Right**: `tests/auth.test.js`, `scripts/deploy.sh`, `claudedocs/analysis.md`
 ❌ **Wrong**: `auth.test.js` next to `auth.js`, `debug.sh` in project root
+
+## Python Project Rules
+**Priority**: 🔴 **Triggers**: Python 프로젝트 생성, 의존성 관리, Dockerfile 작성
+
+**패키지 매니저**: **Poetry 필수** (pip, uv, pipenv 금지)
+
+| 항목 | 규칙 |
+|------|------|
+| 설정 파일 | `pyproject.toml` (Poetry 형식) |
+| Lock 파일 | `poetry.lock` (반드시 커밋) |
+| 가상환경 | Poetry 자동 관리 |
+| 앱 프로젝트 | `package-mode = false` 추가 |
+
+**프로젝트 초기화**:
+```bash
+poetry init
+poetry add fastapi uvicorn
+poetry add -G dev pytest mypy ruff
+```
+
+**Dockerfile 패턴**:
+```dockerfile
+RUN pip install poetry
+COPY pyproject.toml poetry.lock ./
+RUN poetry config virtualenvs.create false \
+    && poetry install --only main --no-interaction
+```
+
+**pyproject.toml 필수 구조**:
+```toml
+[tool.poetry]
+name = "project-name"
+package-mode = false
+
+[tool.poetry.dependencies]
+python = "^3.11"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+```
+
+✅ **Right**: `pyproject.toml` + `poetry.lock` + Poetry 명령어 사용
+❌ **Wrong**: `requirements.txt`, `uv.lock`, `pip install` 직접 사용
+**Detection**: `ls *.txt uv.lock` → 존재하면 Poetry로 마이그레이션 제안
+
+## Node.js Project Rules
+**Priority**: 🔴 **Triggers**: React, Next.js, NestJS, Vue, Node.js 프로젝트
+
+**패키지 매니저**: **pnpm 필수** (npm, yarn 금지)
+
+| 항목 | 규칙 |
+|------|------|
+| 설정 파일 | `package.json` |
+| Lock 파일 | `pnpm-lock.yaml` (반드시 커밋) |
+| 워크스페이스 | `pnpm-workspace.yaml` (모노레포) |
+| Node 버전 | `.nvmrc` 또는 `package.json engines` |
+
+**프로젝트 초기화**:
+```bash
+pnpm init
+pnpm add react next    # React/Next.js
+pnpm add @nestjs/core  # NestJS
+pnpm add -D typescript @types/node
+```
+
+**Dockerfile 패턴**:
+```dockerfile
+FROM node:20-slim
+RUN corepack enable && corepack prepare pnpm@latest --activate
+WORKDIR /app
+COPY package.json pnpm-lock.yaml ./
+RUN pnpm install --frozen-lockfile --prod
+COPY . .
+CMD ["pnpm", "start"]
+```
+
+**CI/CD 패턴** (GitHub Actions):
+```yaml
+- uses: pnpm/action-setup@v2
+  with:
+    version: 9
+- uses: actions/setup-node@v4
+  with:
+    node-version: '20'
+    cache: 'pnpm'
+- run: pnpm install --frozen-lockfile
+- run: pnpm test
+```
+
+✅ **Right**: `pnpm add`, `pnpm install`, `pnpm-lock.yaml`
+❌ **Wrong**: `npm install`, `yarn add`, `package-lock.json`, `yarn.lock`
+**Detection**: `ls package-lock.json yarn.lock` → 존재하면 pnpm으로 마이그레이션 제안
 
 ## Safety Rules
 **Priority**: 🔴 **Triggers**: File operations, library usage, codebase changes

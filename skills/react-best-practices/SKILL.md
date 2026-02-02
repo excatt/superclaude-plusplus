@@ -20,6 +20,62 @@ Reference these guidelines when:
 
 ---
 
+## Priority 0: Package Management (MANDATORY)
+
+**필수 규칙**: **pnpm** 사용 (npm, yarn 금지)
+
+### Rule 0.1: Package Manager
+
+| 항목 | 규칙 |
+|------|------|
+| 패키지 매니저 | **pnpm** (필수) |
+| Lock 파일 | `pnpm-lock.yaml` (커밋 필수) |
+| 워크스페이스 | `pnpm-workspace.yaml` (모노레포) |
+
+```bash
+# ✅ Correct
+pnpm add react next
+pnpm add -D typescript @types/react
+pnpm install --frozen-lockfile
+
+# ❌ Incorrect
+npm install react next
+yarn add react next
+```
+
+### Rule 0.2: Dockerfile Pattern
+
+```dockerfile
+# ✅ Correct - pnpm in Docker
+FROM node:20-slim
+RUN corepack enable && corepack prepare pnpm@latest --activate
+WORKDIR /app
+COPY package.json pnpm-lock.yaml ./
+RUN pnpm install --frozen-lockfile --prod
+COPY . .
+CMD ["pnpm", "start"]
+```
+
+### Rule 0.3: CI/CD Pattern (GitHub Actions)
+
+```yaml
+# ✅ Correct - pnpm in CI
+- uses: pnpm/action-setup@v2
+  with:
+    version: 9
+- uses: actions/setup-node@v4
+  with:
+    node-version: '20'
+    cache: 'pnpm'
+- run: pnpm install --frozen-lockfile
+- run: pnpm test
+- run: pnpm build
+```
+
+**Detection**: `package-lock.json` 또는 `yarn.lock` 발견 시 pnpm으로 마이그레이션 제안
+
+---
+
 ## Priority 1: Eliminating Waterfalls (CRITICAL)
 
 **Impact**: 2-10x performance improvement
