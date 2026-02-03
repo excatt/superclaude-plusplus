@@ -43,6 +43,128 @@ Actionable rules for enhanced Claude Code framework operation.
 ❌ **Wrong**: Skip documentation after implementation (no PM Agent activation)
 ❌ **Wrong**: Continue implementing after mistake (no root cause analysis)
 
+## Orchestrator vs Worker Pattern
+**Priority**: 🔴 **Triggers**: 복잡한 작업, 다중 에이전트 스폰, Task tool 사용 시
+
+에이전트 역할 분리를 통한 효율적인 작업 분배.
+
+**역할 구분**:
+```
+┌─────────────────────────────────────────────────────────────┐
+│  ORCHESTRATOR (당신)              │  WORKER (스폰된 에이전트)  │
+├───────────────────────────────────┼──────────────────────────┤
+│  ✓ 작업 분해 및 Task 생성          │  ✓ 구체적 작업 실행        │
+│  ✓ 에이전트 스폰                   │  ✓ 도구 직접 사용          │
+│  ✓ 진행상황 추적 및 합성           │  ✓ 결과를 절대 경로로 보고  │
+│  ✓ AskUserQuestion 사용           │                           │
+│  ✗ 직접 코드 작성/실행 금지        │  ✗ 서브 에이전트 스폰 금지  │
+│  ✗ 직접 코드베이스 탐색 금지       │  ✗ TaskCreate/Update 금지  │
+└───────────────────────────────────┴──────────────────────────┘
+```
+
+**Orchestrator 직접 사용 도구**:
+- `Read` (참조 파일, 에이전트 출력 합성용 - 1-2개 파일만)
+- `TaskCreate`, `TaskUpdate`, `TaskGet`, `TaskList`
+- `AskUserQuestion`
+- `Task` (워커 스폰용)
+
+**Worker에게 위임할 도구**:
+- `Write`, `Edit`, `Glob`, `Grep`, `Bash`, `WebFetch`, `WebSearch`
+- 3개 이상 파일 읽기/분석
+
+**Worker 프롬프트 템플릿** (MANDATORY):
+```
+CONTEXT: You are a WORKER agent, not an orchestrator.
+
+RULES:
+- Complete ONLY the task described below
+- Use tools directly (Read, Write, Edit, Bash, etc.)
+- Do NOT spawn sub-agents
+- Do NOT call TaskCreate or TaskUpdate
+- Report results with absolute file paths
+
+TASK:
+[구체적 작업 내용]
+```
+
+**스폰 예시**:
+```python
+Task(
+    subagent_type="general-purpose",
+    description="Implement auth routes",
+    prompt="""CONTEXT: You are a WORKER agent, not an orchestrator.
+
+RULES:
+- Complete ONLY the task described below
+- Use tools directly (Read, Write, Edit, Bash, etc.)
+- Do NOT spawn sub-agents
+- Do NOT call TaskCreate or TaskUpdate
+- Report your results with absolute file paths
+
+TASK:
+Create src/routes/auth.ts with:
+- POST /login - verify credentials, return JWT
+- POST /signup - create user, hash password
+- Use bcrypt for hashing, jsonwebtoken for tokens
+- Follow existing patterns in src/routes/
+""",
+    run_in_background=True  # 항상 백그라운드 실행
+)
+```
+
+✅ **Right**: Orchestrator가 작업 분해 → Worker들에게 위임 → 결과 합성
+✅ **Right**: Worker 프롬프트에 CONTEXT + RULES + TASK 포함
+❌ **Wrong**: Orchestrator가 직접 코드 작성/실행
+❌ **Wrong**: Worker 프롬프트 템플릿 없이 스폰
+
+## Agent Model Selection
+**Priority**: 🟡 **Triggers**: Task tool 사용, 에이전트 스폰 시
+
+작업 유형에 따른 모델 선택 가이드. **기본: 부모 모델 상속** (model 파라미터 생략)
+
+**Model Selection Matrix**:
+```
+┌─────────────────────────────────────────────────────────────┐
+│  Model       │  용도                    │  스폰 패턴         │
+├──────────────┼─────────────────────────┼───────────────────┤
+│  (생략)      │  부모 모델 상속 (기본)    │  대부분의 작업     │
+├──────────────┼─────────────────────────┼───────────────────┤
+│  haiku       │  정보 수집, 간단한 검색   │  5-10개 병렬      │
+│  sonnet      │  잘 정의된 구현 작업      │  1-3개            │
+│  opus        │  아키텍처, 복잡한 추론    │  1-2개            │
+└──────────────┴─────────────────────────┴───────────────────┘
+```
+
+**스폰 예시**:
+```python
+# 기본: 부모 모델 상속 (model 파라미터 생략)
+Task(subagent_type="Explore", description="Find auth files", ...)
+Task(subagent_type="general-purpose", description="Implement login", ...)
+
+# 필요시 명시적 지정
+Task(..., model="haiku")   # 간단한 정보 수집
+Task(..., model="sonnet")  # 구현 작업
+Task(..., model="opus")    # 복잡한 판단 필요
+```
+
+**Background Agent 필수**:
+```python
+# ✅ ALWAYS: run_in_background=True
+Task(subagent_type="general-purpose", prompt="...", run_in_background=True)
+
+# ❌ NEVER: blocking agents (오케스트레이션 시간 낭비)
+Task(subagent_type="general-purpose", prompt="...")
+```
+
+**Non-blocking Mindset**: "에이전트가 작업 중 — 다음에 할 일은?"
+- 더 많은 에이전트 스폰
+- 사용자에게 진행상황 업데이트
+- 합성 구조 준비
+- 알림 도착 시 처리 후 계속
+
+✅ **Right**: `run_in_background=True` 항상 포함, 필요시만 model 명시
+❌ **Wrong**: blocking 에이전트 사용
+
 ## Workflow Rules
 **Priority**: 🟡 **Triggers**: All development tasks
 
