@@ -216,7 +216,35 @@ TODO 항목이 남아있으면 작업 중단을 방지합니다:
 - 심볼 시스템 사용 (→, ⇒, ✅, ❌, ⚠️)
 - 30-50% 토큰 감소, ≥95% 정보 품질 유지
 
-### Package Management Rules (NEW)
+### Orchestrator/Worker Pattern (NEW)
+에이전트 역할 분리를 통한 효율적인 작업 분배:
+
+| 역할 | 책임 | 도구 |
+|------|------|------|
+| **Orchestrator** | 작업 분해, 에이전트 스폰, 결과 합성 | Task, AskUserQuestion, TaskCreate/Update |
+| **Worker** | 구체적 작업 실행, 결과 보고 | Read, Write, Edit, Bash, Grep |
+
+- Worker 프롬프트 템플릿 필수 (CONTEXT + RULES + TASK)
+- `run_in_background=True` 항상 사용
+- 부모 모델 상속 기본, 필요시 명시적 지정 (haiku/sonnet/opus)
+
+### Orchestration Pipeline (NEW)
+4단계 오케스트레이션 파이프라인:
+```
+Step 1: CLARIFY (AskUserQuestion 4×4)
+    ↓
+Step 2: PARALLELIZE (의존성 분석)
+    ↓
+Step 3: EXECUTE (병렬 스폰)
+    ↓
+Step 4: SYNTHESIZE (결과 합성)
+```
+
+- **4×4 전략**: 4 questions × 4 options, Rich descriptions
+- **의존성 분석**: 독립 작업 → 병렬, 의존 작업 → 순차
+- **Non-blocking Mindset**: 에이전트 작업 중 다음 할 일 준비
+
+### Package Management Rules
 프로젝트별 패키지 매니저 강제:
 
 | 언어 | 필수 | 금지 |

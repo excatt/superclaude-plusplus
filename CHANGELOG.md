@@ -5,6 +5,28 @@
 형식은 [Keep a Changelog](https://keepachangelog.com/ko/1.0.0/)를 따르며,
 [Semantic Versioning](https://semver.org/lang/ko/)을 준수합니다.
 
+## [0.5.0] - 2026-02-04
+
+### Added
+- **Orchestrator vs Worker Pattern** (RULES.md):
+  - 에이전트 역할 분리 (Orchestrator: 조율, Worker: 실행)
+  - Worker 프롬프트 템플릿 (CONTEXT + RULES + TASK)
+  - 도구 소유권 가이드라인 (Orchestrator용 vs Worker용)
+- **Agent Model Selection** (RULES.md):
+  - 기본: 부모 모델 상속 (model 파라미터 생략)
+  - 필요시 명시적 지정 (haiku/sonnet/opus)
+  - Background Agent 필수 규칙 (`run_in_background=True`)
+  - Non-blocking Mindset 가이드
+- **Orchestration Pipeline** (MODES.md):
+  - 4단계 파이프라인: Clarify → Parallelize → Execute → Synthesize
+  - AskUserQuestion 4×4 전략 (4 questions × 4 options, Rich descriptions)
+  - 의존성 분석 기준 (파일/데이터/논리적 독립)
+  - 복잡도별 스폰 패턴 (1-2개 ~ 4+개)
+
+### Changed
+- **MODES.md - Orchestration Mode**: 기존 Tool Selection Matrix에 4단계 파이프라인 통합
+- **README.md**: Orchestrator/Worker Pattern, Orchestration Pipeline 섹션 추가
+
 ## [0.4.0] - 2026-02-02
 
 ### Added
@@ -140,6 +162,7 @@
 
 | 버전 | 날짜 | 주요 변경 |
 |------|------|----------|
+| 0.5.0 | 2026-02-04 | Orchestrator/Worker 패턴, Orchestration Pipeline 4단계 |
 | 0.4.0 | 2026-02-02 | optional/ 디렉토리, 패키지 관리 규칙 (Poetry/pnpm 필수) |
 | 0.3.0 | 2026-01-31 | PDCA Workflow, 새 스킬 3개, 템플릿 4개 |
 | 0.2.0 | 2025-01-30 | Document Skills 추가, 디렉토리 구조 단순화 |
