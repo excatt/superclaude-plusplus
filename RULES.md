@@ -165,6 +165,73 @@ Task(subagent_type="general-purpose", prompt="...")
 ✅ **Right**: `run_in_background=True` 항상 포함, 필요시만 model 명시
 ❌ **Wrong**: blocking 에이전트 사용
 
+## Agent Error Recovery
+**Priority**: 🟡 **Triggers**: 에이전트 실패, Timeout, 부분 완료, 잘못된 접근
+
+에이전트 실패 시 자동 복구 전략.
+
+**실패 유형 (Failure Types)**:
+| 유형 | 설명 | 복구 전략 |
+|------|------|----------|
+| **Timeout** | 제한 시간 초과 | 작업 분할 후 재시도 |
+| **Incomplete** | 부분적으로만 완료 | 남은 부분만 재시도 |
+| **Wrong Approach** | 잘못된 방향으로 진행 | 명시적 제약과 함께 재시도 |
+| **Blocked** | 진행 불가 (파일/권한 없음) | 차단 요소 먼저 해결 |
+| **Conflict** | 여러 에이전트 결과 충돌 | 사용자에게 선택 요청 |
+
+**복구 프로토콜**:
+```
+에이전트 결과 수신
+├─ 성공 → 결과 합성에 포함
+├─ 실패 감지
+│   ├─ 재시도 횟수 < 2
+│   │   ├─ 프롬프트 조정 (더 구체적인 지시)
+│   │   └─ 재스폰
+│   └─ 재시도 횟수 >= 2
+│       └─ 에스컬레이션 (사용자에게 질문)
+└─ 부분 성공 (50-99%)
+    ├─ 완료된 부분 사용
+    └─ 남은 부분만 재시도
+```
+
+**프롬프트 조정 전략 (Adjusted Prompts)**:
+| 실패 원인 | 조정 내용 | 예시 |
+|----------|----------|------|
+| 모호한 지시 | 명시적 단계 추가 | `EXPLICIT: You MUST do X, Y, Z in order` |
+| 범위 초과 | 스코프 제한 | `SCOPE: Only modify files in src/auth/` |
+| 잘못된 기술 | 제약 명시 | `CONSTRAINT: Use React hooks, NOT class components` |
+| 누락된 컨텍스트 | 컨텍스트 추가 | `CONTEXT: The database uses PostgreSQL 14` |
+| 시간 초과 | 범위 축소 | `REDUCED SCOPE: Only handle the first 3 items` |
+
+**에스컬레이션 규칙**:
+```
+2회 재시도 실패 후:
+├─ AskUserQuestion 호출
+│   ├─ 옵션 1: "다른 접근법 시도"
+│   ├─ 옵션 2: "작업 건너뛰기"
+│   ├─ 옵션 3: "수동으로 처리"
+│   └─ 옵션 4: "중단하고 현재 상태 유지"
+└─ 포함 정보:
+    - 실패한 작업 요약
+    - 시도한 접근법
+    - 실패 원인
+    - 권장 대안
+```
+
+**부분 성공 처리**:
+```
+에이전트 결과 평가
+├─ 100% 성공 → 결과 합성에 포함
+├─ 50-99% 성공 → 부분 결과 사용 + 나머지 재시도
+├─ 1-49% 성공 → 사용 가능 여부 평가
+└─ 0% 성공 → 완전 재시도 또는 에스컬레이션
+```
+
+✅ **Right**: 실패 감지 → 프롬프트 조정 → 재시도 (최대 2회) → 에스컬레이션
+✅ **Right**: 부분 성공 시 완료된 부분 활용 + 남은 부분만 재처리
+❌ **Wrong**: 실패 무시하고 진행
+❌ **Wrong**: 무한 재시도 (최대 2회 제한)
+
 ## Workflow Rules
 **Priority**: 🟡 **Triggers**: All development tasks
 

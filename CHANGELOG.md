@@ -5,6 +5,19 @@
 형식은 [Keep a Changelog](https://keepachangelog.com/ko/1.0.0/)를 따르며,
 [Semantic Versioning](https://semver.org/lang/ko/)을 준수합니다.
 
+## [0.6.0] - 2026-02-04
+
+### Added
+- **Agent Error Recovery** (RULES.md):
+  - 실패 유형 분류 (Timeout, Incomplete, Wrong Approach, Blocked, Conflict)
+  - 복구 프로토콜 (최대 2회 재시도 → 에스컬레이션)
+  - 프롬프트 조정 전략 (EXPLICIT, SCOPE, CONSTRAINT, CONTEXT, REDUCED SCOPE)
+  - 에스컬레이션 규칙 (AskUserQuestion으로 4가지 선택지 제공)
+  - 부분 성공 처리 (50-99% 완료 시 활용 전략)
+
+### Changed
+- **README.md**: Agent Error Recovery 섹션 추가
+
 ## [0.5.0] - 2026-02-04
 
 ### Added
@@ -162,6 +175,7 @@
 
 | 버전 | 날짜 | 주요 변경 |
 |------|------|----------|
+| 0.6.0 | 2026-02-04 | Agent Error Recovery (실패 복구, 재시도, 에스컬레이션) |
 | 0.5.0 | 2026-02-04 | Orchestrator/Worker 패턴, Orchestration Pipeline 4단계 |
 | 0.4.0 | 2026-02-02 | optional/ 디렉토리, 패키지 관리 규칙 (Poetry/pnpm 필수) |
 | 0.3.0 | 2026-01-31 | PDCA Workflow, 새 스킬 3개, 템플릿 4개 |
