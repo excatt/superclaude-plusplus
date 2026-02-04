@@ -4,6 +4,10 @@ Claude Code를 위한 고급 프레임워크 - 생산성 향상, 자동화, 전�
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
+## About
+
+SuperClaude++는 [SuperClaude Framework](https://github.com/SuperClaude-Org/SuperClaude_Framework)를 기반으로 개인 사용에 맞게 확장한 프로젝트입니다. 원본 SuperClaude의 강력한 구조 위에 다양한 커뮤니티 베스트 프랙티스, 자동화 워크플로우, 전문가 에이전트 시스템을 통합하여 Claude Code의 잠재력을 최대한 끌어냅니다.
+
 ## Features
 
 ### 🎯 Core Framework
@@ -317,11 +321,31 @@ rm -rf ~/.claude
 4. Push to the branch
 5. Open a Pull Request
 
-## Credits
+## Credits & Acknowledgements
 
-- Inspired by [oh-my-claudecode](https://github.com/Yeachan-Heo/oh-my-claudecode)
-- [cc-statusline](https://www.npmjs.com/package/@chongdashu/cc-statusline)
-- Business Panel experts methodology from classic business literature
+### 🙏 Special Thanks
+
+이 프로젝트는 [**SuperClaude Framework**](https://github.com/SuperClaude-Org/SuperClaude_Framework)의 뛰어난 기반 위에 구축되었습니다. SuperClaude 팀의 혁신적인 접근 방식과 잘 설계된 아키텍처 덕분에 이 확장이 가능했습니다.
+
+> *"거인의 어깨 위에 서서 더 멀리 본다"* - SuperClaude가 그 거인입니다.
+
+### Inspirations & Integrations
+
+- **[SuperClaude Framework](https://github.com/SuperClaude-Org/SuperClaude_Framework)** - 핵심 프레임워크 구조 및 모드 시스템
+- **[oh-my-claudecode](https://github.com/Yeachan-Heo/oh-my-claudecode)** - 자동화 훅 및 워크플로우 아이디어
+- **[cc-statusline](https://www.npmjs.com/package/@chongdashu/cc-statusline)** - 상태바 구현 참고
+- **Business Panel** - 클래식 비즈니스 문헌 기반 전문가 패널 방법론 (Christensen, Porter, Drucker 등)
+
+### What's Added
+
+SuperClaude++ = SuperClaude + 다음 요소들의 통합:
+- 🔄 PDCA 워크플로우 및 Gap Analysis
+- 🤖 Orchestrator/Worker 패턴 및 에이전트 에러 복구
+- 📝 Note 시스템 (컴팩션 대응)
+- 🎯 40+ 도메인별 Skills
+- 🔧 자동 스킬 호출 시스템
+- 📦 패키지 관리 규칙 강제 (Poetry/pnpm)
+- 🌐 한국어 우선 지원
 
 ## License
 
