@@ -5,6 +5,15 @@
 형식은 [Keep a Changelog](https://keepachangelog.com/ko/1.0.0/)를 따르며,
 [Semantic Versioning](https://semver.org/lang/ko/)을 준수합니다.
 
+## [0.6.1] - 2026-02-04
+
+### Added
+- **Progress Communication** (MODES.md - Orchestration Mode):
+  - 핵심 원칙: "Absorb complexity, radiate simplicity"
+  - 상황별 자연어 표현 가이드 (기술 용어 → 자연어)
+  - 마일스톤 박스 형식 (Phase 완료 시 시각적 피드백)
+  - 숨겨야 할 것 vs 보여줄 것 가이드라인
+
 ## [0.6.0] - 2026-02-04
 
 ### Added
@@ -175,6 +184,7 @@
 
 | 버전 | 날짜 | 주요 변경 |
 |------|------|----------|
+| 0.6.1 | 2026-02-04 | Progress Communication (자연어 표현, 마일스톤 박스) |
 | 0.6.0 | 2026-02-04 | Agent Error Recovery (실패 복구, 재시도, 에스컬레이션) |
 | 0.5.0 | 2026-02-04 | Orchestrator/Worker 패턴, Orchestration Pipeline 4단계 |
 | 0.4.0 | 2026-02-02 | optional/ 디렉토리, 패키지 관리 규칙 (Poetry/pnpm 필수) |
