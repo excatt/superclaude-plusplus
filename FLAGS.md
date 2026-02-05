@@ -67,6 +67,18 @@
 
 ---
 
+## Proactive Suggestion
+
+| Flag | Description |
+|------|-------------|
+| `--suggest-all` | 모든 관련 도구 적극 제안 (기본값) |
+| `--suggest-minimal` | 핵심 도구만 제안 |
+| `--suggest-off`, `--no-suggest` | 자동 제안 비활성화 |
+| `--auto-agent` | 에이전트 자동 제안 활성화 |
+| `--auto-mcp` | MCP 서버 자동 활성화 제안 |
+
+---
+
 ## Model Selection
 
 | Flag | 강점 | Use Case |

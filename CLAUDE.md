@@ -28,6 +28,21 @@
 | UI 리뷰 | `/web-design-guidelines` | UI 리뷰, 접근성, a11y |
 | 위험 작업 | `/checkpoint` | 리팩토링, 삭제 |
 
+### Proactive Suggestions (Confirm before run)
+**💡 적극 제안 모드**: 관련 도구를 자동 감지하여 제안 (실행 전 확인)
+
+| 상황 | 제안 도구 | 트리거 |
+|------|----------|--------|
+| 복잡한 함수 | `/code-review`, `/code-smell` | 50줄+ 함수 |
+| API 설계 | `/api-design`, `backend-architect` | endpoint, REST |
+| 성능 이슈 | `performance-engineer` | 느림, slow, optimize |
+| 보안 관련 | `security-engineer`, `/auth` | 로그인, JWT, 보안 |
+| 프레임워크 | **Context7** MCP | React, Next.js, Vue |
+| UI 컴포넌트 | **Magic** MCP | button, form, modal |
+| 복잡한 분석 | **Sequential** MCP | 디버깅 3회+, 설계 |
+
+**제안 강도**: `--suggest-all` (기본) | `--suggest-minimal` | `--suggest-off`
+
 ### By Domain (Suggest when relevant)
 - **Analysis**: `/think`, `/debug`, `/code-review`, `/code-smell`
 - **Architecture**: `/architecture`, `/api-design`, `/db-design`, `/design-patterns`
@@ -39,6 +54,20 @@
 - **DevOps**: `/docker`, `/cicd`, `/monitoring`, `/env`
 - **Git**: `/git-workflow`, `/commit-msg`, `/versioning`
 - **Quality**: `/clean-code`, `/refactoring`, `/testing`
+
+### Agent Auto-Suggestion
+| 작업 유형 | 추천 에이전트 |
+|----------|--------------|
+| 프론트엔드 | `frontend-architect` |
+| 백엔드/API | `backend-architect` |
+| 시스템 설계 | `system-architect` |
+| Python 작업 | `python-expert` |
+| 테스트/QA | `quality-engineer` |
+| 보안 검토 | `security-engineer` |
+| 성능 최적화 | `performance-engineer` |
+| 문서 작성 | `technical-writer` |
+| 문제 분석 | `root-cause-analyst` |
+| 리팩토링 | `refactoring-expert` |
 
 ## Workflow Integration
 - **Pre-Implementation**: `/confidence-check` → ≥90% proceed

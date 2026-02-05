@@ -286,6 +286,85 @@ Task(subagent_type="general-purpose", prompt="...")
 ❌ **Wrong**: 구현 요청에 바로 코딩 시작 (confidence-check 스킵)
 ❌ **Wrong**: 완료 선언에 검증 없이 종료 (verify 스킵)
 
+## Proactive Suggestion Rule
+**Priority**: 🟡 **Triggers**: 모든 작업 시 관련 도구/스킬/에이전트 적극 제안
+
+작업 컨텍스트에 맞는 스킬, 에이전트, MCP 서버를 **적극적으로 제안**합니다.
+실행 전 사용자 확인을 받아 학습 효과와 안전성을 보장합니다.
+
+### Suggestion Format
+```
+💡 **제안**: [스킬/에이전트명]
+   - 이유: [왜 이 도구가 적합한지]
+   - 효과: [사용 시 기대 효과]
+   → 실행하시겠습니까? (Y/n)
+```
+
+### 코드 품질 제안 트리거
+| 상황 | 제안 스킬/에이전트 | 트리거 조건 |
+|------|-------------------|-------------|
+| 함수/파일 읽기 후 | `/code-review`, `/code-smell` | 50줄+ 함수, 복잡한 로직 |
+| 리팩토링 언급 | `/refactoring`, `refactoring-expert` | 리팩토링, 정리, cleanup |
+| 테스트 관련 | `/testing`, `quality-engineer` | test, 테스트, coverage |
+| 클린 코드 논의 | `/clean-code`, `/solid` | 가독성, 유지보수, 클린 |
+| 중복 코드 발견 | `/refactoring` | 유사 패턴 3회+ 발견 시 |
+| 에러 핸들링 부재 | `/error-handling` | try-catch 없는 async/await |
+
+### 아키텍처/설계 제안 트리거
+| 상황 | 제안 스킬/에이전트 | 트리거 조건 |
+|------|-------------------|-------------|
+| 새 기능 설계 | `/architecture`, `system-architect` | 설계, design, 구조 |
+| API 작업 | `/api-design`, `backend-architect` | API, endpoint, REST, GraphQL |
+| DB 스키마 | `/db-design` | schema, 테이블, 모델, entity |
+| 패턴 논의 | `/design-patterns` | 패턴, pattern, singleton, factory |
+| 마이크로서비스 | `/microservices` | MSA, 마이크로서비스, 분리 |
+| 인증/보안 | `/auth`, `/security-audit`, `security-engineer` | 로그인, auth, JWT, 보안 |
+
+### MCP 서버 자동 제안
+| 상황 | 제안 MCP | 트리거 조건 |
+|------|---------|-------------|
+| 프레임워크 구현 | **Context7** | React, Next.js, Vue, NestJS 작업 |
+| 복잡한 분석 | **Sequential** | 디버깅 3회+, 아키텍처 분석 |
+| UI 컴포넌트 | **Magic** | button, form, modal, card, table |
+| 다중 파일 편집 | **Morphllm** | 3개+ 파일 동일 패턴 수정 |
+| 최신 정보 필요 | **Tavily** | 2024/2025/2026, latest, 최신 |
+| 브라우저 테스트 | **Playwright** | E2E, 스크린샷, 폼 테스트 |
+
+### 에이전트 자동 제안
+| 상황 | 제안 에이전트 | 트리거 조건 |
+|------|-------------|-------------|
+| 성능 이슈 | `performance-engineer` | 느림, slow, 최적화, optimize |
+| 프론트엔드 작업 | `frontend-architect` | React, CSS, 컴포넌트 설계 |
+| 백엔드 작업 | `backend-architect` | API, DB, 서버, 인프라 |
+| Python 코드 | `python-expert` | .py 파일 작업, FastAPI, Django |
+| 문서 작성 | `technical-writer` | 문서, docs, README, 설명 |
+| 요구사항 분석 | `requirements-analyst` | 요구사항, spec, 기획 |
+| 루트 코즈 분석 | `root-cause-analyst` | 원인, why, 왜, 이유 |
+| 학습/설명 | `learning-guide`, `socratic-mentor` | 설명해줘, 알려줘, 이해 |
+
+### Suggestion Intensity Levels
+```
+--suggest-all       : 모든 관련 도구 적극 제안 (기본값)
+--suggest-minimal   : 핵심 도구만 제안
+--suggest-off       : 자동 제안 비활성화
+```
+
+### 제안 우선순위
+1. **안전 관련** (security, checkpoint) - 항상 최우선
+2. **품질 관련** (review, test) - 코드 변경 시
+3. **효율 관련** (MCP, agent) - 복잡한 작업 시
+4. **학습 관련** (learn, explain) - 새로운 개념 시
+
+**제안 빈도 조절**:
+- 같은 스킬 연속 제안 방지 (세션당 1회)
+- 사용자가 거절한 제안은 같은 세션에서 재제안 안 함
+- `--no-suggest` 플래그로 일시 비활성화 가능
+
+✅ **Right**: 복잡한 함수 읽기 → "💡 `/code-review` 제안: 복잡도 높음" → 확인 후 실행
+✅ **Right**: API 설계 논의 → "💡 `backend-architect` 제안" → 확인 후 에이전트 활용
+❌ **Wrong**: 관련 도구 있는데 제안 없이 직접 작업
+❌ **Wrong**: 매 턴마다 같은 도구 반복 제안
+
 ## React Code Review Rule
 **Priority**: 🔴 **Triggers**: Code review requests, React/Next.js file detection, performance analysis
 
