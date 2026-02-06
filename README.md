@@ -87,6 +87,21 @@ SuperClaude++는 [SuperClaude Framework](https://github.com/SuperClaude-Org/Supe
 | 위험 작업 전 | `/checkpoint` | 리팩토링, 삭제 |
 | PDCA Check | `/gap-analysis` | 맞아?, 확인해, 설계대로야? |
 
+#### Proactive Suggestions (NEW)
+작업 컨텍스트에 맞는 스킬/에이전트/MCP 서버를 **적극 제안** (확인 후 실행):
+
+| 상황 | 제안 도구 | 트리거 조건 |
+|------|----------|-------------|
+| 복잡한 함수 | `/code-review`, `/code-smell` | 50줄+ 함수 |
+| API 설계 | `/api-design`, `backend-architect` | endpoint, REST |
+| 성능 이슈 | `performance-engineer` | 느림, slow, optimize |
+| 보안 관련 | `security-engineer`, `/auth` | 로그인, JWT, 보안 |
+| 프레임워크 | **Context7** MCP | React, Next.js, Vue |
+| UI 컴포넌트 | **Magic** MCP | button, form, modal |
+| 복잡한 분석 | **Sequential** MCP | 디버깅 3회+, 설계 |
+
+**제안 강도 플래그**: `--suggest-all` (기본) | `--suggest-minimal` | `--suggest-off`
+
 #### Hooks
 | Hook | 기능 |
 |------|------|
@@ -121,6 +136,15 @@ SuperClaude++는 [SuperClaude Framework](https://github.com/SuperClaude-Org/Supe
 | `--ctx dev` | 개발 | 작동 > 완벽, 코드 먼저 |
 | `--ctx review` | 리뷰 | 심층 분석, 심각도별 정리 |
 | `--ctx research` | 리서치 | 완전성 > 속도, 증거 기반 |
+
+#### Proactive Suggestion Flags (NEW)
+| Flag | 설명 |
+|------|------|
+| `--suggest-all` | 모든 관련 도구 적극 제안 (기본값) |
+| `--suggest-minimal` | 핵심 도구만 제안 |
+| `--suggest-off` | 자동 제안 비활성화 |
+| `--auto-agent` | 에이전트 자동 제안 활성화 |
+| `--auto-mcp` | MCP 서버 자동 활성화 제안 |
 
 ## Installation
 
@@ -341,6 +365,7 @@ rm -rf ~/.claude
 SuperClaude++ = SuperClaude + 다음 요소들의 통합:
 - 🔄 PDCA 워크플로우 및 Gap Analysis
 - 🤖 Orchestrator/Worker 패턴 및 에이전트 에러 복구
+- 💡 Proactive Suggestion (스킬/에이전트/MCP 적극 제안)
 - 📝 Note 시스템 (컴팩션 대응)
 - 🎯 40+ 도메인별 Skills
 - 🔧 자동 스킬 호출 시스템

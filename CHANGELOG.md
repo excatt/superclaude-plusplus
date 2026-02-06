@@ -5,6 +5,28 @@
 형식은 [Keep a Changelog](https://keepachangelog.com/ko/1.0.0/)를 따르며,
 [Semantic Versioning](https://semver.org/lang/ko/)을 준수합니다.
 
+## [0.7.0] - 2026-02-06
+
+### Added
+- **Proactive Suggestion Rule** (RULES.md):
+  - 작업 컨텍스트에 맞는 스킬/에이전트/MCP 서버 적극 제안
+  - 실행 전 사용자 확인으로 안전성 보장
+  - 코드 품질 트리거 (50줄+ 함수, 복잡한 로직, 중복 코드)
+  - 아키텍처/설계 트리거 (API, DB, 패턴, 마이크로서비스)
+  - MCP 서버 자동 제안 (Context7, Sequential, Magic, Morphllm, Tavily, Playwright)
+  - 에이전트 자동 제안 (10개 전문가 에이전트)
+  - 제안 강도 조절 (`--suggest-all`, `--suggest-minimal`, `--suggest-off`)
+- **Proactive Suggestion Flags** (FLAGS.md):
+  - `--suggest-all`: 모든 관련 도구 적극 제안 (기본값)
+  - `--suggest-minimal`: 핵심 도구만 제안
+  - `--suggest-off`, `--no-suggest`: 자동 제안 비활성화
+  - `--auto-agent`: 에이전트 자동 제안 활성화
+  - `--auto-mcp`: MCP 서버 자동 활성화 제안
+
+### Changed
+- **CLAUDE.md**: Proactive Suggestions 섹션 추가, Agent Auto-Suggestion 테이블 추가
+- **README.md**: Proactive Suggestions 섹션 추가, 플래그 문서화
+
 ## [0.6.1] - 2026-02-04
 
 ### Added
@@ -184,6 +206,7 @@
 
 | 버전 | 날짜 | 주요 변경 |
 |------|------|----------|
+| 0.7.0 | 2026-02-06 | Proactive Suggestion Rule (스킬/에이전트/MCP 적극 제안) |
 | 0.6.1 | 2026-02-04 | Progress Communication (자연어 표현, 마일스톤 박스) |
 | 0.6.0 | 2026-02-04 | Agent Error Recovery (실패 복구, 재시도, 에스컬레이션) |
 | 0.5.0 | 2026-02-04 | Orchestrator/Worker 패턴, Orchestration Pipeline 4단계 |
