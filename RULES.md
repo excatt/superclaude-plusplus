@@ -954,6 +954,199 @@ tags: [relevant, tags]
 
 ---
 
+## Session Chaining Rule
+**Priority**: 🔴 **Triggers**: 세션 시작, 세션 종료, 작업 전환 시
+
+세션 간 연속성을 보장하여 이전 작업 컨텍스트를 다음 세션에서 활용.
+
+### Session Memory Architecture
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    SESSION CHAINING FLOW                        │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│  [세션 N]                          [세션 N+1]                   │
+│      │                                  │                       │
+│      ├── 작업 수행                       │                       │
+│      ├── 의사결정 기록                   │                       │
+│      ├── 패턴 발견                       │                       │
+│      │                                  │                       │
+│      ▼                                  ▼                       │
+│  ┌──────────┐    자동 저장        ┌──────────┐                  │
+│  │ Session  │ ──────────────────▶ │ Session  │                  │
+│  │ Summary  │                     │ Restore  │                  │
+│  └──────────┘                     └──────────┘                  │
+│      │                                  │                       │
+│      ▼                                  ▼                       │
+│  ~/.claude/sessions/              자동 로드                      │
+│  └── {date}-{project}.md          ├── Last session context     │
+│                                   ├── Pending TODOs            │
+│                                   └── Learned patterns         │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### 저장 계층 (Storage Layers)
+
+| 계층 | 저장 위치 | 내용 | 수명 |
+|------|----------|------|------|
+| **L1: Session Summary** | `~/.claude/sessions/` | 세션별 요약 | 30일 |
+| **L2: Project Context** | `.claude/context.md` | 프로젝트 상태 | 프로젝트 수명 |
+| **L3: Learned Patterns** | `~/.claude/skills/learned/` | 재사용 패턴 | 영구 |
+| **L4: Global Knowledge** | `KNOWLEDGE.md` | 베스트 프랙티스 | 영구 |
+
+### Session Start Protocol (자동)
+
+세션 시작 시 **자동 실행**:
+
+```
+1. Read ~/.claude/sessions/latest-{project}.md
+   └─ 없으면 스킵
+
+2. Load .claude/context.md
+   └─ 있으면 컨텍스트 복원
+
+3. Check pending TODOs
+   └─ 미완료 작업 있으면 알림
+
+4. Display session restore summary:
+   ┌────────────────────────────────────┐
+   │ 📋 이전 세션 컨텍스트 복원         │
+   │                                    │
+   │ • 마지막 작업: [작업명]            │
+   │ • 미완료 TODO: [N]개               │
+   │ • 주요 결정사항: [요약]            │
+   │                                    │
+   │ 계속하시겠습니까? (Y/n)            │
+   └────────────────────────────────────┘
+```
+
+### Session End Protocol (자동 제안)
+
+세션 종료 감지 시 **자동 제안** (강제 아님):
+
+**트리거 조건**:
+- "끝", "done", "오늘은 여기까지", "다음에 계속"
+- 10분 이상 비활성 후 메시지
+- `/session-end` 명령
+
+**자동 생성 내용**:
+```markdown
+# Session Summary - {날짜} {프로젝트}
+
+## 작업 컨텍스트
+- **수정한 파일**: [파일 목록]
+- **주요 변경**: [변경 요약]
+- **현재 상태**: [진행률]
+
+## 의사결정 기록
+| 결정 | 이유 | 대안 |
+|------|------|------|
+| [선택한 것] | [근거] | [고려했던 대안] |
+
+## 해결한 문제
+- [문제1]: [해결책]
+- [문제2]: [해결책]
+
+## 다음 세션 TODO
+- [ ] [미완료 작업1]
+- [ ] [미완료 작업2]
+
+## 기억할 컨텍스트
+[다음 세션에서 알아야 할 중요 정보]
+```
+
+### Auto-Learning Integration
+
+세션 종료 시 자동 패턴 추출:
+
+```
+세션 분석
+├─ 에러 해결 3회+ → /learn 자동 제안
+├─ 새로운 패턴 발견 → /learn 자동 제안
+├─ 아키텍처 결정 → context.md에 기록
+└─ 트러블슈팅 → KNOWLEDGE.md 업데이트 제안
+```
+
+### Project Context File (.claude/context.md)
+
+프로젝트별 지속 컨텍스트 파일:
+
+```markdown
+# Project Context - {프로젝트명}
+
+## 핵심 정보 (항상 로드)
+- **기술 스택**: [스택]
+- **아키텍처**: [구조]
+- **컨벤션**: [주요 규칙]
+
+## 진행 중인 작업
+- [작업1] - 상태: [진행률]
+- [작업2] - 상태: [진행률]
+
+## 의사결정 히스토리
+| 날짜 | 결정 | 이유 |
+|------|------|------|
+| YYYY-MM-DD | [결정] | [근거] |
+
+## 알려진 이슈
+- [이슈1]: [상태]
+- [이슈2]: [상태]
+
+## 세션 히스토리
+- {날짜}: [요약]
+- {날짜}: [요약]
+
+---
+Last updated: {timestamp}
+```
+
+### Commands
+
+```
+/session-save              → 현재 세션 수동 저장
+/session-load              → 이전 세션 수동 로드
+/session-end               → 세션 종료 프로토콜 실행
+/context-show              → 프로젝트 컨텍스트 표시
+/context-update <내용>     → 프로젝트 컨텍스트 업데이트
+```
+
+### Chaining Intensity Flags
+
+```
+--chain-full      : 전체 체이닝 (세션 요약 + 패턴 + 의사결정)
+--chain-minimal   : 최소 체이닝 (TODO만)
+--chain-off       : 체이닝 비활성화
+--auto-restore    : 세션 시작 시 자동 복원 (기본값)
+--no-restore      : 자동 복원 비활성화
+```
+
+### Integration with Existing Features
+
+| 기존 기능 | 통합 방식 |
+|----------|----------|
+| `/note` | Session Summary 생성 시 Working Memory 포함 |
+| `/learn` | 세션 종료 시 자동 패턴 추출 제안 |
+| PM Agent | Session Summary를 PM Agent 입력으로 활용 |
+| KNOWLEDGE.md | 반복되는 패턴을 KNOWLEDGE로 승격 |
+
+### Auto-Trigger Conditions
+
+| 상황 | 자동 행동 |
+|------|----------|
+| 세션 시작 | context.md 로드, 이전 세션 요약 표시 |
+| 10+ 메시지 | "세션 저장하시겠습니까?" 제안 |
+| 에러 해결 | 패턴 추출 + 세션 기록 |
+| 아키텍처 결정 | 의사결정 히스토리 자동 추가 |
+| 종료 키워드 | Session End Protocol 제안 |
+
+✅ **Right**: 세션 종료 → 자동 요약 생성 → 다음 세션 시작 → 컨텍스트 복원
+✅ **Right**: 복잡한 결정 → context.md에 기록 → 나중에 이유 확인 가능
+❌ **Wrong**: 긴 세션 후 저장 없이 종료 → 다음 세션에서 컨텍스트 손실
+❌ **Wrong**: 의사결정 이유 기록 안 함 → 나중에 "왜 이렇게 했지?" 반복
+
+---
+
 ## Quick Reference & Decision Trees
 
 ### Critical Decision Flows

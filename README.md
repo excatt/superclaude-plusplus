@@ -287,6 +287,29 @@ Step 4: SYNTHESIZE (결과 합성)
 - **에스컬레이션**: 2회 실패 시 AskUserQuestion으로 사용자에게 선택권 부여
 - **부분 성공 활용**: 50-99% 완료 시 완료된 부분 사용 + 나머지 재처리
 
+### Session Chaining (NEW)
+세션 간 연속성을 보장하여 이전 작업 컨텍스트를 다음 세션에서 활용:
+
+```
+[세션 N] → 작업 수행 → Session Summary 자동 생성
+                              ↓
+[세션 N+1] ← 자동 복원 ← ~/.claude/sessions/
+```
+
+**저장 계층**:
+| 계층 | 저장 위치 | 내용 | 수명 |
+|------|----------|------|------|
+| L1 | `~/.claude/sessions/` | 세션별 요약 | 30일 |
+| L2 | `.claude/context.md` | 프로젝트 상태 | 영구 |
+| L3 | `~/.claude/skills/learned/` | 학습 패턴 | 영구 |
+
+**자동 기능**:
+- 세션 시작: 이전 컨텍스트 자동 로드
+- 세션 중: 의사결정/에러 해결 자동 기록
+- 세션 종료: Summary 생성 + 패턴 추출 제안
+
+**Commands**: `/session-save`, `/session-load`, `/session-end`, `/context-show`
+
 ### Package Management Rules
 프로젝트별 패키지 매니저 강제:
 
@@ -366,6 +389,7 @@ SuperClaude++ = SuperClaude + 다음 요소들의 통합:
 - 🔄 PDCA 워크플로우 및 Gap Analysis
 - 🤖 Orchestrator/Worker 패턴 및 에이전트 에러 복구
 - 💡 Proactive Suggestion (스킬/에이전트/MCP 적극 제안)
+- 🔗 Session Chaining (세션 간 연속성 및 자동 학습)
 - 📝 Note 시스템 (컴팩션 대응)
 - 🎯 40+ 도메인별 Skills
 - 🔧 자동 스킬 호출 시스템

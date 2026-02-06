@@ -69,10 +69,31 @@
 | 문제 분석 | `root-cause-analyst` |
 | 리팩토링 | `refactoring-expert` |
 
+## Session Chaining (NEW)
+
+**세션 간 연속성 보장** - 이전 작업 컨텍스트를 다음 세션에서 자동 활용
+
+| 시점 | 자동 행동 |
+|------|----------|
+| 세션 시작 | `.claude/context.md` 로드, 이전 세션 요약 표시 |
+| 작업 중 | 의사결정 자동 기록, 에러 해결 패턴 추출 |
+| 세션 종료 | Session Summary 생성, TODO 이관 |
+
+**저장 계층**:
+- `~/.claude/sessions/` - 세션별 요약 (30일)
+- `.claude/context.md` - 프로젝트 상태 (영구)
+- `~/.claude/skills/learned/` - 학습 패턴 (영구)
+
+**Commands**: `/session-save`, `/session-load`, `/session-end`, `/context-show`
+
+**Flags**: `--chain-full` (기본) | `--chain-minimal` | `--chain-off`
+
 ## Workflow Integration
+- **Session Start**: Auto-restore context → `/context-show`
 - **Pre-Implementation**: `/confidence-check` → ≥90% proceed
 - **Planning**: `/feature-planner` → `/architecture`
 - **Implementation**: Domain-specific skills
 - **Review**: `/code-review`, `/security-audit`, `/web-design-guidelines`
 - **Deployment**: `/docker`, `/cicd`, `/monitoring`
 - **Post-Implementation**: `/verify`, `/learn`
+- **Session End**: `/session-end` → Auto-summary → Pattern extraction

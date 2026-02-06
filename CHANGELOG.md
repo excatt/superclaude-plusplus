@@ -16,16 +16,30 @@
   - MCP 서버 자동 제안 (Context7, Sequential, Magic, Morphllm, Tavily, Playwright)
   - 에이전트 자동 제안 (10개 전문가 에이전트)
   - 제안 강도 조절 (`--suggest-all`, `--suggest-minimal`, `--suggest-off`)
+- **Session Chaining Rule** (RULES.md):
+  - 세션 간 연속성 보장 (이전 작업 컨텍스트 → 다음 세션 자동 복원)
+  - 4계층 저장 구조 (Session Summary → Project Context → Learned Patterns → Knowledge)
+  - Session Start Protocol (자동 컨텍스트 복원)
+  - Session End Protocol (자동 요약 생성, 패턴 추출 제안)
+  - Project Context File (`.claude/context.md`) 스펙
+  - 의사결정 히스토리 자동 기록
+  - 체이닝 강도 조절 (`--chain-full`, `--chain-minimal`, `--chain-off`)
 - **Proactive Suggestion Flags** (FLAGS.md):
   - `--suggest-all`: 모든 관련 도구 적극 제안 (기본값)
   - `--suggest-minimal`: 핵심 도구만 제안
   - `--suggest-off`, `--no-suggest`: 자동 제안 비활성화
   - `--auto-agent`: 에이전트 자동 제안 활성화
   - `--auto-mcp`: MCP 서버 자동 활성화 제안
+- **Session Chaining Flags** (FLAGS.md):
+  - `--chain-full`: 전체 체이닝 (세션 요약 + 패턴 + 의사결정)
+  - `--chain-minimal`: 최소 체이닝 (TODO만)
+  - `--chain-off`: 체이닝 비활성화
+  - `--auto-restore`: 세션 시작 시 자동 복원 (기본값)
+  - `--no-restore`: 자동 복원 비활성화
 
 ### Changed
-- **CLAUDE.md**: Proactive Suggestions 섹션 추가, Agent Auto-Suggestion 테이블 추가
-- **README.md**: Proactive Suggestions 섹션 추가, 플래그 문서화
+- **CLAUDE.md**: Proactive Suggestions 섹션, Session Chaining 섹션, Workflow Integration 업데이트
+- **README.md**: Proactive Suggestions, Session Chaining 섹션 추가, 플래그 문서화
 
 ## [0.6.1] - 2026-02-04
 
@@ -206,7 +220,7 @@
 
 | 버전 | 날짜 | 주요 변경 |
 |------|------|----------|
-| 0.7.0 | 2026-02-06 | Proactive Suggestion Rule (스킬/에이전트/MCP 적극 제안) |
+| 0.7.0 | 2026-02-06 | Proactive Suggestion + Session Chaining (세션 간 연속성) |
 | 0.6.1 | 2026-02-04 | Progress Communication (자연어 표현, 마일스톤 박스) |
 | 0.6.0 | 2026-02-04 | Agent Error Recovery (실패 복구, 재시도, 에스컬레이션) |
 | 0.5.0 | 2026-02-04 | Orchestrator/Worker 패턴, Orchestration Pipeline 4단계 |

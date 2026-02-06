@@ -79,6 +79,18 @@
 
 ---
 
+## Session Chaining
+
+| Flag | Description |
+|------|-------------|
+| `--chain-full` | 전체 체이닝 (세션 요약 + 패턴 + 의사결정) |
+| `--chain-minimal` | 최소 체이닝 (TODO만) |
+| `--chain-off` | 체이닝 비활성화 |
+| `--auto-restore` | 세션 시작 시 자동 복원 (기본값) |
+| `--no-restore` | 자동 복원 비활성화 |
+
+---
+
 ## Model Selection
 
 | Flag | 강점 | Use Case |
