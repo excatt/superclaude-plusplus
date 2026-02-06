@@ -15,7 +15,7 @@ SuperClaude++는 [SuperClaude Framework](https://github.com/SuperClaude-Org/Supe
 |------|------|
 | **CLAUDE.md** | 엔트리 포인트 및 언어 설정 (한국어) |
 | **FLAGS.md** | 행동 플래그 시스템 (`--think`, `--ultrathink`, `--uc` 등) |
-| **RULES.md** | 개발 규칙 및 자동화 트리거 |
+| **RULES.md** | 개발 규칙 및 자동화 트리거 (17k, 최적화됨) |
 | **PRINCIPLES.md** | SOLID, DRY, KISS 등 소프트웨어 엔지니어링 원칙 |
 | **MODES.md** | 상황별 행동 모드 (Brainstorming, Orchestration, Token Efficiency 등) |
 | **MCP_SERVERS.md** | MCP 서버 통합 가이드 (Context7, Magic, Serena 등) |

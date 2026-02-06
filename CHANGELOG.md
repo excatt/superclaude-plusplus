@@ -5,6 +5,17 @@
 형식은 [Keep a Changelog](https://keepachangelog.com/ko/1.0.0/)를 따르며,
 [Semantic Versioning](https://semver.org/lang/ko/)을 준수합니다.
 
+## [0.7.1] - 2026-02-06
+
+### Changed
+- **RULES.md 최적화**: 42.3k → 17k (60% 압축)
+  - ASCII 다이어그램 → 테이블 변환
+  - 중복 예시 제거, 핵심 템플릿 유지
+  - 모든 Auto-Skill 트리거 키워드 보존
+  - Python/Node.js 코드 템플릿 보존 (pyproject.toml, Dockerfile)
+  - Security Checklist 및 프롬프트 조정 전략 보존
+  - 글로벌(`~/.claude/RULES.md`)과 프로젝트 레벨 동기화
+
 ## [0.7.0] - 2026-02-06
 
 ### Added
@@ -220,6 +231,7 @@
 
 | 버전 | 날짜 | 주요 변경 |
 |------|------|----------|
+| 0.7.1 | 2026-02-06 | RULES.md 최적화 (42.3k → 17k, 60% 압축) |
 | 0.7.0 | 2026-02-06 | Proactive Suggestion + Session Chaining (세션 간 연속성) |
 | 0.6.1 | 2026-02-04 | Progress Communication (자연어 표현, 마일스톤 박스) |
 | 0.6.0 | 2026-02-04 | Agent Error Recovery (실패 복구, 재시도, 에스컬레이션) |
