@@ -75,7 +75,7 @@ SuperClaude++는 [SuperClaude Framework](https://github.com/SuperClaude-Org/Supe
 
 ### 🔧 Automation
 
-#### Auto-Invoked Skills
+#### Auto-Invoked Skills (26개)
 | 트리거 | 스킬 | 키워드 |
 |--------|------|--------|
 | 구현 시작 전 | `/confidence-check` | 구현, 만들어, implement |
@@ -84,8 +84,18 @@ SuperClaude++는 [SuperClaude Framework](https://github.com/SuperClaude-Org/Supe
 | React 파일 리뷰 | `/react-best-practices` | .tsx + 리뷰 |
 | UI 리뷰 | `/web-design-guidelines` | UI 리뷰, 접근성, a11y |
 | Python 파일 리뷰 | `/python-best-practices` | .py + 리뷰 |
-| 위험 작업 전 | `/checkpoint` | 리팩토링, 삭제 |
+| 위험 작업 전 | `/checkpoint` | 리팩토링, 삭제, 10+ 파일 |
 | PDCA Check | `/gap-analysis` | 맞아?, 확인해, 설계대로야? |
+| 커밋/PR | Two-Stage Review | commit, PR, 머지 |
+| 완료 주장 | Verification Gate | 됐어, 작동해, fixed |
+| 수정 3회 실패 | Architecture Alert | (자동 감지) |
+| 테스트 실패 | `/debug` | pytest FAILED, test failed |
+| 복잡한 함수 | `/code-smell` | 50줄+ 함수 생성 |
+| 에러 핸들링 누락 | `/error-handling` | async/await + no try-catch |
+| Next.js 작업 | `/nextjs` | page.tsx, layout.tsx |
+| FastAPI 작업 | `/fastapi` | @router, APIRouter |
+| 세션 시작 | Context Restore | 새 세션 시작 |
+| 세션 종료 | Session Summary | 끝, 오늘은 여기까지 |
 
 #### Proactive Suggestions (NEW)
 작업 컨텍스트에 맞는 스킬/에이전트/MCP 서버를 **적극 제안** (확인 후 실행):
@@ -310,6 +320,36 @@ Step 4: SYNTHESIZE (결과 합성)
 
 **Commands**: `/session-save`, `/session-load`, `/session-end`, `/context-show`
 
+### Two-Stage Review System (NEW)
+작업 완료 시 2단계 리뷰 자동 실행:
+
+| Stage | 목적 | 검증 항목 |
+|-------|------|----------|
+| **Stage 1: Spec Compliance** | 요구사항 준수 | 누락 기능, 과잉 구현, 스펙 일치 |
+| **Stage 2: Code Quality** | 코드 품질 | Critical/Important/Minor 이슈 |
+
+- **Reviewer 원칙**: "DO NOT trust the implementer's report" - 실제 코드 직접 확인
+- **Review Loop**: Implement → Spec Review → Quality Review → Complete
+
+### Verification Iron Law (NEW)
+완료 주장 시 자동 검증 게이트:
+```
+"NO COMPLETION CLAIMS WITHOUT FRESH VERIFICATION EVIDENCE"
+```
+
+| 검증 타입 | 필수 증거 |
+|----------|----------|
+| 테스트 통과 | 실제 출력 로그 |
+| 기능 완료 | 각 요구사항 체크리스트 |
+| 버그 수정 | 재현 테스트 결과 |
+
+### 3+ Fixes Architecture Rule (NEW)
+동일 버그 3회 수정 실패 시:
+1. 즉시 코딩 중단
+2. 아키텍처/설계 재검토
+3. 근본 원인 재분석
+4. 사용자에게 방향 확인 (AskUserQuestion)
+
 ### Package Management Rules
 프로젝트별 패키지 매니저 강제:
 
@@ -390,9 +430,10 @@ SuperClaude++ = SuperClaude + 다음 요소들의 통합:
 - 🤖 Orchestrator/Worker 패턴 및 에이전트 에러 복구
 - 💡 Proactive Suggestion (스킬/에이전트/MCP 적극 제안)
 - 🔗 Session Chaining (세션 간 연속성 및 자동 학습)
+- ⚡ Superpowers 통합 (Two-Stage Review, Verification Iron Law, 3+ Fixes Rule)
 - 📝 Note 시스템 (컴팩션 대응)
 - 🎯 40+ 도메인별 Skills
-- 🔧 자동 스킬 호출 시스템
+- 🔧 자동 스킬 호출 시스템 (26개 Auto-Invoke 트리거)
 - 📦 패키지 관리 규칙 강제 (Poetry/pnpm)
 - 🌐 한국어 우선 지원
 

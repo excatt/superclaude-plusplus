@@ -5,6 +5,29 @@
 형식은 [Keep a Changelog](https://keepachangelog.com/ko/1.0.0/)를 따르며,
 [Semantic Versioning](https://semver.org/lang/ko/)을 준수합니다.
 
+## [0.8.0] - 2026-02-09
+
+### Added
+- **Superpowers 통합** (RULES.md):
+  - Two-Stage Review System (Spec Compliance → Code Quality)
+  - Verification Iron Law ("NO COMPLETION CLAIMS WITHOUT FRESH EVIDENCE")
+  - 3+ Fixes Architecture Rule (동일 버그 3회 실패 시 아키텍처 재검토)
+  - Worker Templates (Implementer, Spec Reviewer, Quality Reviewer)
+- **Auto-Invoke 확장** (17개 → 26개):
+  - 테스트 실패 시 `/debug` 자동 실행
+  - 복잡한 함수(50줄+) 생성 시 `/code-smell` 자동 실행
+  - 에러 핸들링 누락 시 `/error-handling` 자동 실행
+  - Next.js 작업 시 `/nextjs` 자동 실행
+  - FastAPI 작업 시 `/fastapi` 자동 실행
+  - 세션 시작 시 Context Restore 자동 실행
+  - 세션 종료 감지 시 Session Summary 자동 생성
+  - 대규모 변경(10+ 파일) 시 `/checkpoint` 자동 실행
+  - 테스트 없는 함수 생성 시 `/testing` 제안
+
+### Changed
+- **CLAUDE.md**: Auto-Invoke 테이블 확장 (19개 항목)
+- **README.md**: Auto-Invoke 섹션 업데이트, Superpowers 통합 내용 추가
+
 ## [0.7.1] - 2026-02-06
 
 ### Changed
@@ -231,6 +254,7 @@
 
 | 버전 | 날짜 | 주요 변경 |
 |------|------|----------|
+| 0.8.0 | 2026-02-09 | Superpowers 통합 + Auto-Invoke 확장 (17→26개) |
 | 0.7.1 | 2026-02-06 | RULES.md 최적화 (42.3k → 17k, 60% 압축) |
 | 0.7.0 | 2026-02-06 | Proactive Suggestion + Session Chaining (세션 간 연속성) |
 | 0.6.1 | 2026-02-04 | Progress Communication (자연어 표현, 마일스톤 박스) |

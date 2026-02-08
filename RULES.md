@@ -34,16 +34,69 @@
 **Orchestrator Tools**: `Read`(1-2개), `TaskCreate/Update/Get/List`, `AskUserQuestion`, `Task`
 **Worker Tools**: `Write`, `Edit`, `Glob`, `Grep`, `Bash`, `WebFetch`, `WebSearch`
 
-**Worker Prompt Template** (MANDATORY):
+**Worker Prompt Templates** (역할별 세분화):
+
+### Implementer Template
 ```
-CONTEXT: You are a WORKER agent, not an orchestrator.
-RULES:
-- Complete ONLY the task described below
-- Use tools directly (Read, Write, Edit, Bash, etc.)
-- Do NOT spawn sub-agents
-- Do NOT call TaskCreate or TaskUpdate
-- Report results with absolute file paths
-TASK: [구체적 작업 내용]
+You are implementing Task N: [task name]
+
+## Task Description
+[FULL TEXT - 파일 읽기 시키지 말고 여기에 전체 제공]
+
+## Context
+[Scene-setting: 위치, 의존성, 아키텍처 컨텍스트]
+
+## Before You Begin
+요구사항, 접근 방식, 의존성에 대한 질문이 있다면 **지금 물어봐라**.
+
+## Your Job
+1. 정확히 명세된 것만 구현 (YAGNI)
+2. 테스트 작성 (TDD 권장)
+3. 구현 검증
+4. 커밋
+5. Self-review 후 보고
+
+## Report Format
+- What: 구현한 것
+- Test: 테스트 결과
+- Files: 변경된 파일 (절대 경로)
+- Issues: 발견한 문제점
+```
+
+### Spec Reviewer Template
+```
+You are reviewing spec compliance for Task N.
+
+## What Was Requested
+[요구사항 전체 텍스트]
+
+## CRITICAL: Do Not Trust the Report
+구현자 보고서를 신뢰하지 마라. 코드를 직접 읽고 검증.
+
+## Your Job
+- **누락**: 요청한 것 중 구현 안 된 것?
+- **과잉**: 요청 안 한 것 중 추가된 것?
+- **오해**: 요구사항을 다르게 해석한 것?
+
+## Output
+✅ Spec compliant | ❌ Issues: [file:line 참조와 함께 구체적 나열]
+```
+
+### Quality Reviewer Template
+```
+You are reviewing code quality (spec compliance 통과 후에만).
+
+## Changes
+BASE_SHA: [task 시작 전]
+HEAD_SHA: [현재]
+
+## Review Focus
+SOLID 원칙, 에러 핸들링, 테스트 품질, 보안, 성능
+
+## Output
+**Strengths**: [잘한 점]
+**Issues**: Critical / Important / Minor
+**Assessment**: Ready / Needs work
 ```
 
 **필수**: `run_in_background=True` 항상 포함
@@ -85,6 +138,9 @@ TASK: [구체적 작업 내용]
 
 **Protocol**: 실패 → 프롬프트 조정 → 재시도 (max 2) → 에스컬레이션 (AskUserQuestion)
 
+**Note**: 이 규칙은 에이전트 스폰/실행 레벨의 재시도.
+버그 수정 레벨의 재시도 한계는 `3+ Fixes Architecture Rule` 참조.
+
 ---
 
 ## Workflow Rules
@@ -115,8 +171,21 @@ TASK: [구체적 작업 내용]
 | 문제 해결 후 | `/learn` (제안) | 해결, 찾았다, solved, root cause |
 | 긴 세션 | `/note` (제안) | 메시지 50+, 컨텍스트 70%+, 기억해 |
 | PDCA Check | Gap Analysis | 맞아?, 확인해, verify, 설계대로야? |
+| **작업/커밋 완료** | **Two-Stage Review** | 커밋, commit, PR, 머지, merge, 리뷰해줘 |
+| **완료 주장 시** | **Verification Gate** | 됐어, 작동해, 고쳤어, fixed, 통과, passes |
+| **수정 3회 실패** | **Architecture Alert** | (동일 버그 3회 수정 시도 자동 감지) |
+| **에이전트 스폰** | **Worker Template** | Task tool 사용 시 역할별 템플릿 자동 적용 |
+| **테스트 실패** | `/debug` | pytest FAILED, test failed, FAIL:, ❌ |
+| **복잡한 함수 생성** | `/code-smell` | 50줄+ 함수 작성 감지 |
+| **에러 핸들링 누락** | `/error-handling` | async/await + try-catch 없음 감지 |
+| **Next.js 작업** | `/nextjs` | app/page.tsx, layout.tsx, route.ts 생성 |
+| **FastAPI 작업** | `/fastapi` | @router, APIRouter, FastAPI() 사용 |
+| **세션 시작** | **Context Restore** | 새 세션 시작 시 이전 컨텍스트 자동 복원 |
+| **세션 종료 감지** | **Session Summary** | 끝, 오늘은 여기까지, 내일, bye, 마무리 |
+| **대규모 변경 예정** | `/checkpoint` | 10+ 파일 수정 계획 감지 |
+| **테스트 없는 함수** | `/testing` (제안) | 새 함수/클래스 + tests/ 디렉토리 없음 |
 
-**실행 우선순위**: `/confidence-check` → `/checkpoint` → `/verify` → `/learn`
+**실행 우선순위**: `/confidence-check` → `/checkpoint` → Two-Stage Review → Verification Gate → `/debug` → `/learn`
 **예외**: 오타/주석 수정, `--no-check` 요청 시 스킵
 
 ---
@@ -162,6 +231,44 @@ TASK: [구체적 작업 내용]
 
 **Format**: `💡 제안: [도구] - 이유: [근거] → 실행? (Y/n)`
 **빈도 조절**: 세션당 같은 스킬 1회, 거절 시 재제안 안 함
+
+---
+
+## Two-Stage Review System
+**Priority**: 🔴 **Triggers**: 작업 완료, 커밋 전, PR 생성 전
+
+### Stage 1: Spec Compliance Review
+**Purpose**: 요구사항 준수 확인 (과잉/누락 모두 검출)
+
+**Reviewer 원칙**: "DO NOT trust the implementer's report"
+- 실제 코드 읽기 (보고서 신뢰 금지)
+- 요구사항과 라인별 비교
+- 누락된 기능 식별
+- 요청하지 않은 추가 기능 식별
+
+**Output**: ✅ Spec compliant | ❌ Issues: [누락/과잉 리스트]
+
+### Stage 2: Code Quality Review
+**Purpose**: 구현 품질 확인 (Stage 1 통과 후에만)
+
+| 등급 | 조치 |
+|------|------|
+| Critical | 즉시 수정 필수 |
+| Important | 진행 전 수정 |
+| Minor | 나중에 처리 가능 |
+
+**Output**: Strengths + Issues (등급별) + Assessment
+
+### Review Loop
+```
+Implement → Spec Review → [Fail: Fix → Re-review] →
+Quality Review → [Fail: Fix → Re-review] → Complete
+```
+
+**Red Flags**:
+- Stage 1 스킵하고 Quality Review 진행
+- 리뷰 이슈 있는데 다음 작업 진행
+- Re-review 없이 수정 완료 주장
 
 ---
 
@@ -258,10 +365,41 @@ TASK: [구체적 작업 내용]
 ## Failure Investigation
 **Priority**: 🔴 **Triggers**: 에러, 테스트 실패
 
+### The Four Phases
+| Phase | 활동 | 완료 기준 |
+|-------|------|----------|
+| **1. Root Cause** | 에러 읽기, 재현, 변경사항 확인, 증거 수집 | WHAT/WHY 이해 |
+| **2. Pattern** | 동작 예시 찾기, 차이점 비교 | 차이 식별 |
+| **3. Hypothesis** | 단일 가설 → 최소 테스트 | 확인 또는 새 가설 |
+| **4. Implementation** | 실패 테스트 작성 → 단일 수정 → 검증 | 버그 해결, 테스트 통과 |
+
+### 3+ Fixes Architecture Rule
+**🔴 CRITICAL**: 3회 수정 시도 후에도 실패 시:
+1. **즉시 중단** - 추가 수정 시도 금지
+2. **아키텍처 검토** - "이 패턴이 근본적으로 맞는가?"
+3. **사용자 에스컬레이션** - 계속 진행 전 논의 필수
+
+**Pattern Indicators** (아키텍처 문제 신호):
+- 각 수정이 다른 곳에서 새 문제 발생
+- "대규모 리팩토링" 필요 주장
+- 수정마다 elsewhere에서 증상 생성
+
+**Red Flag**: "한 번만 더 시도" (이미 2회+ 실패 시)
+
+### Defense-in-Depth
+버그 수정 시 단일 검증점으로 부족. 4계층 검증 적용:
+
+| Layer | Purpose | Example |
+|-------|---------|---------|
+| **1. Entry Point** | API 경계에서 invalid 입력 거부 | `if (!dir) throw Error` |
+| **2. Business Logic** | 이 작업에 데이터가 유효한가 | `if (!projectDir) throw` |
+| **3. Environment Guard** | 특정 환경에서 위험 작업 방지 | `if (NODE_ENV==='test')` |
+| **4. Debug Instrumentation** | 포렌식을 위한 컨텍스트 캡처 | `logger.debug({dir, stack})` |
+
+### Core Principles
 - **Root Cause**: 왜 실패했는지 조사 (단순 재시도 금지)
 - **Never Skip**: 테스트/검증 스킵 금지
 - **Fix > Workaround**: 근본 원인 해결
-- **Systematic**: Understand → Diagnose → Fix → Verify
 
 ---
 
@@ -422,16 +560,44 @@ if (!apiKey) throw new Error("API_KEY required");
 
 ---
 
-## Hallucination Detection
-**Priority**: 🔴 **Triggers**: 완료 주장, 테스트 결과
+## Verification Iron Law
+**Priority**: 🔴 **Triggers**: 완료 주장, 테스트 결과, 성공 표현
 
-**4 Questions**:
-1. 테스트 통과? → 실제 출력 요구
-2. 요구사항 충족? → 각 항목 나열
-3. 가정 없음? → 문서 제시
-4. 증거 있음? → 테스트 결과 제공
+### The Iron Law
+```
+NO COMPLETION CLAIMS WITHOUT FRESH VERIFICATION EVIDENCE
+```
 
-**Red Flags**: "테스트 통과" (출력 없이), "모든 것 작동" (증거 없이), "아마 작동할 것"
+### Gate Function (모든 완료 주장 전 필수)
+1. **IDENTIFY**: 이 주장을 증명하는 명령어는?
+2. **RUN**: 전체 명령어 실행 (fresh, complete)
+3. **READ**: 전체 출력 읽기, exit code 확인, 실패 수 카운트
+4. **VERIFY**: 출력이 주장을 확인하는가?
+   - NO → 실제 상태를 증거와 함께 보고
+   - YES → 증거와 함께 주장
+5. **ONLY THEN**: 주장 가능
+
+### Verification Matrix
+| 주장 | 필요 증거 | 불충분 |
+|------|----------|--------|
+| 테스트 통과 | 테스트 출력: 0 failures | 이전 실행, "통과할 것" |
+| 빌드 성공 | 빌드 명령: exit 0 | 린터 통과 |
+| 버그 수정 | 재현 테스트 통과 | 코드 변경됨 |
+| 요구사항 충족 | 항목별 체크리스트 | 테스트 통과 |
+
+### Red Flags - STOP
+- "should", "probably", "seems to" 사용
+- 검증 전 만족 표현 ("Great!", "Done!")
+- 검증 없이 커밋/PR 시도
+- 부분 검증으로 전체 판단
+
+### Rationalization Prevention
+| 변명 | 현실 |
+|------|------|
+| "이제 작동할 것" | 검증 실행해라 |
+| "확신한다" | 확신 ≠ 증거 |
+| "린터 통과했다" | 린터 ≠ 테스트 |
+| "피곤하다" | 피로 ≠ 변명 |
 
 ---
 
@@ -511,6 +677,9 @@ if (!apiKey) throw new Error("API_KEY required");
 - Feature 브랜치만
 - React 리뷰 → `/react-best-practices`
 - Root cause 분석, 검증 스킵 금지
+- **3+ 수정 실패 → 아키텍처 의심 (즉시 중단)**
+- **완료 주장 전 Verification Gate 통과**
+- **2단계 리뷰: Spec → Quality (순서 필수)**
 
 ### 🟡 IMPORTANT
 - >3단계 → TodoWrite
@@ -518,9 +687,11 @@ if (!apiKey) throw new Error("API_KEY required");
 - MVP 먼저
 - PDCA: Plan/Design → 구현
 - matchRate <90% → Act 반복 (max 5)
+- Worker 템플릿 역할별 사용 (Implementer/Spec/Quality)
 
 ### 🟢 RECOMMENDED
 - 병렬 > 순차
 - MCP > Native
 - 배치 작업 활용
 - 설명적 네이밍
+- Defense-in-Depth 4계층 검증

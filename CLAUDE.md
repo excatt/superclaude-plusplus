@@ -27,6 +27,18 @@
 | Python 리뷰 | `/python-best-practices` | .py + 리뷰 |
 | UI 리뷰 | `/web-design-guidelines` | UI 리뷰, 접근성, a11y |
 | 위험 작업 | `/checkpoint` | 리팩토링, 삭제 |
+| **커밋/PR** | **Two-Stage Review** | commit, PR, 머지, 리뷰해줘 |
+| **완료 주장** | **Verification Gate** | 됐어, 작동해, fixed, 통과 |
+| **수정 3회 실패** | **Architecture Alert** | (자동 감지) |
+| **에이전트 스폰** | **Worker Template** | Task tool 사용 시 |
+| 테스트 실패 | `/debug` | pytest FAILED, test failed |
+| 복잡한 함수 | `/code-smell` | 50줄+ 함수 생성 |
+| 에러 핸들링 누락 | `/error-handling` | async/await + no try-catch |
+| Next.js 작업 | `/nextjs` | page.tsx, layout.tsx, route.ts |
+| FastAPI 작업 | `/fastapi` | @router, APIRouter |
+| 세션 시작 | **Context Restore** | 새 세션 시작 |
+| 세션 종료 | **Session Summary** | 끝, 오늘은 여기까지 |
+| 대규모 변경 | `/checkpoint` | 10+ 파일 수정 예정 |
 
 ### Proactive Suggestions (Confirm before run)
 **💡 적극 제안 모드**: 관련 도구를 자동 감지하여 제안 (실행 전 확인)
