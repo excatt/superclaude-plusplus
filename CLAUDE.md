@@ -36,8 +36,6 @@
 | 에러 핸들링 누락 | `/error-handling` | async/await + no try-catch |
 | Next.js 작업 | `/nextjs` | page.tsx, layout.tsx, route.ts |
 | FastAPI 작업 | `/fastapi` | @router, APIRouter |
-| 세션 시작 | **Context Restore** | 새 세션 시작 |
-| 세션 종료 | **Session Summary** | 끝, 오늘은 여기까지 |
 | 대규모 변경 | `/checkpoint` | 10+ 파일 수정 예정 |
 
 ### Proactive Suggestions (Confirm before run)
@@ -81,31 +79,33 @@
 | 문제 분석 | `root-cause-analyst` |
 | 리팩토링 | `refactoring-expert` |
 
-## Session Chaining (NEW)
+## Memory Management
 
-**세션 간 연속성 보장** - 이전 작업 컨텍스트를 다음 세션에서 자동 활용
+### Auto Memory (내장)
+Claude가 `~/.claude/projects/<project>/memory/`에 자동으로 학습 내용을 기록합니다.
 
-| 시점 | 자동 행동 |
+**저장 내용**: 프로젝트 패턴, 디버깅 인사이트, 아키텍처 노트, 사용자 선호도
+
+**명시적 저장 요청**:
+- "이 프로젝트는 pnpm 사용한다고 기억해"
+- "API 테스트는 로컬 Redis 필요하다고 저장해"
+- "이 버그 해결 패턴 기억해둬"
+
+**메모리 확인/편집**: `/memory` 명령어
+
+### CLAUDE.md vs Auto Memory
+
+| 용도 | 사용할 곳 |
 |------|----------|
-| 세션 시작 | `.claude/context.md` 로드, 이전 세션 요약 표시 |
-| 작업 중 | 의사결정 자동 기록, 에러 해결 패턴 추출 |
-| 세션 종료 | Session Summary 생성, TODO 이관 |
-
-**저장 계층**:
-- `~/.claude/sessions/` - 세션별 요약 (30일)
-- `.claude/context.md` - 프로젝트 상태 (영구)
-- `~/.claude/skills/learned/` - 학습 패턴 (영구)
-
-**Commands**: `/session-save`, `/session-load`, `/session-end`, `/context-show`
-
-**Flags**: `--chain-full` (기본) | `--chain-minimal` | `--chain-off`
+| 팀 공유 규칙 | `./CLAUDE.md` 또는 `.claude/rules/` |
+| 개인 선호도 (전역) | `~/.claude/CLAUDE.md` |
+| 개인 선호도 (프로젝트) | `./CLAUDE.local.md` |
+| Claude가 학습한 것 | Auto Memory (자동) |
 
 ## Workflow Integration
-- **Session Start**: Auto-restore context → `/context-show`
 - **Pre-Implementation**: `/confidence-check` → ≥90% proceed
 - **Planning**: `/feature-planner` → `/architecture`
 - **Implementation**: Domain-specific skills
 - **Review**: `/code-review`, `/security-audit`, `/web-design-guidelines`
 - **Deployment**: `/docker`, `/cicd`, `/monitoring`
 - **Post-Implementation**: `/verify`, `/learn`
-- **Session End**: `/session-end` → Auto-summary → Pattern extraction

@@ -150,7 +150,6 @@ SOLID 원칙, 에러 핸들링, 테스트 품질, 보안, 성능
 - **Batch**: 병렬 기본, 의존성 있을 때만 순차
 - **Validation**: 실행 전 검증, 완료 후 확인
 - **Quality**: lint/typecheck 후 작업 완료 처리
-- **Session**: /sc:load → Work → Checkpoint(30min) → /sc:save
 
 ---
 
@@ -180,8 +179,6 @@ SOLID 원칙, 에러 핸들링, 테스트 품질, 보안, 성능
 | **에러 핸들링 누락** | `/error-handling` | async/await + try-catch 없음 감지 |
 | **Next.js 작업** | `/nextjs` | app/page.tsx, layout.tsx, route.ts 생성 |
 | **FastAPI 작업** | `/fastapi` | @router, APIRouter, FastAPI() 사용 |
-| **세션 시작** | **Context Restore** | 새 세션 시작 시 이전 컨텍스트 자동 복원 |
-| **세션 종료 감지** | **Session Summary** | 끝, 오늘은 여기까지, 내일, bye, 마무리 |
 | **대규모 변경 예정** | `/checkpoint` | 10+ 파일 수정 계획 감지 |
 | **테스트 없는 함수** | `/testing` (제안) | 새 함수/클래스 + tests/ 디렉토리 없음 |
 
@@ -639,33 +636,23 @@ NO COMPLETION CLAIMS WITHOUT FRESH VERIFICATION EVIDENCE
 
 ---
 
-## Session Chaining
-**Priority**: 🔴 **Triggers**: 세션 시작/종료
+## Memory Management
+**Priority**: 🟢 **Triggers**: 중요 정보 발견, 패턴 학습
 
-### Storage Layers
-| 계층 | 위치 | 수명 |
-|------|------|------|
-| L1: Session Summary | `~/.claude/sessions/` | 30일 |
-| L2: Project Context | `.claude/context.md` | 프로젝트 |
-| L3: Learned Patterns | `~/.claude/skills/learned/` | 영구 |
+### Auto Memory (내장)
+Claude가 `~/.claude/projects/<project>/memory/`에 자동 기록:
+- 프로젝트 패턴, 디버깅 인사이트, 아키텍처 노트, 선호도
 
-### Session Start
-1. `~/.claude/sessions/latest-{project}.md` 로드
-2. `.claude/context.md` 복원
-3. 미완료 TODO 알림
+### 명시적 저장
+- "... 기억해", "... 저장해" 요청 시 Auto Memory에 기록
+- `/memory` 명령어로 확인/편집
 
-### Session End (자동 제안)
-**트리거**: "끝", "done", "오늘은 여기까지", `/session-end`
-**생성**: 수정 파일, 의사결정, 해결한 문제, 다음 TODO
-
-### Commands
-```
-/session-save    /session-load    /session-end
-/context-show    /context-update <내용>
-```
-
-### Flags
-`--chain-full` (기본) | `--chain-minimal` | `--chain-off`
+### CLAUDE.md 계층
+| 용도 | 위치 |
+|------|------|
+| 팀 규칙 | `./CLAUDE.md`, `.claude/rules/` |
+| 개인 전역 | `~/.claude/CLAUDE.md` |
+| 개인 프로젝트 | `./CLAUDE.local.md` |
 
 ---
 

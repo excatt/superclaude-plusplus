@@ -5,6 +5,29 @@
 형식은 [Keep a Changelog](https://keepachangelog.com/ko/1.0.0/)를 따르며,
 [Semantic Versioning](https://semver.org/lang/ko/)을 준수합니다.
 
+## [0.8.1] - 2026-02-09
+
+### Changed
+- **Session Chaining → Auto Memory**: Claude Code 내장 Auto Memory 기능 활용으로 전환
+  - 커스텀 Session Chaining 기능 제거 (중복 기능)
+  - Auto Memory 활용 가이드로 대체
+  - `/memory` 명령어로 메모리 확인/편집 안내
+
+### Removed
+- **Session Chaining 섹션** (CLAUDE.md, RULES.md)
+- **Session Chaining 플래그** (FLAGS.md):
+  - `--chain-full`, `--chain-minimal`, `--chain-off`
+  - `--auto-restore`, `--no-restore`
+- **자동 트리거**: Context Restore, Session Summary
+- **커맨드**: `/session-save`, `/session-load`, `/session-end`, `/context-show`, `/context-update`
+- **Auto-Invoke 항목**: 세션 시작/종료 관련 2개 항목
+
+### Added
+- **Memory Management 섹션** (CLAUDE.md, RULES.md):
+  - Auto Memory 내장 기능 설명
+  - CLAUDE.md 계층 구조 가이드
+  - 명시적 저장 요청 예시
+
 ## [0.8.0] - 2026-02-09
 
 ### Added
@@ -13,19 +36,17 @@
   - Verification Iron Law ("NO COMPLETION CLAIMS WITHOUT FRESH EVIDENCE")
   - 3+ Fixes Architecture Rule (동일 버그 3회 실패 시 아키텍처 재검토)
   - Worker Templates (Implementer, Spec Reviewer, Quality Reviewer)
-- **Auto-Invoke 확장** (17개 → 26개):
+- **Auto-Invoke 확장** (17개 → 24개):
   - 테스트 실패 시 `/debug` 자동 실행
   - 복잡한 함수(50줄+) 생성 시 `/code-smell` 자동 실행
   - 에러 핸들링 누락 시 `/error-handling` 자동 실행
   - Next.js 작업 시 `/nextjs` 자동 실행
   - FastAPI 작업 시 `/fastapi` 자동 실행
-  - 세션 시작 시 Context Restore 자동 실행
-  - 세션 종료 감지 시 Session Summary 자동 생성
   - 대규모 변경(10+ 파일) 시 `/checkpoint` 자동 실행
   - 테스트 없는 함수 생성 시 `/testing` 제안
 
 ### Changed
-- **CLAUDE.md**: Auto-Invoke 테이블 확장 (19개 항목)
+- **CLAUDE.md**: Auto-Invoke 테이블 확장
 - **README.md**: Auto-Invoke 섹션 업데이트, Superpowers 통합 내용 추가
 
 ## [0.7.1] - 2026-02-06
@@ -50,30 +71,15 @@
   - MCP 서버 자동 제안 (Context7, Sequential, Magic, Morphllm, Tavily, Playwright)
   - 에이전트 자동 제안 (10개 전문가 에이전트)
   - 제안 강도 조절 (`--suggest-all`, `--suggest-minimal`, `--suggest-off`)
-- **Session Chaining Rule** (RULES.md):
-  - 세션 간 연속성 보장 (이전 작업 컨텍스트 → 다음 세션 자동 복원)
-  - 4계층 저장 구조 (Session Summary → Project Context → Learned Patterns → Knowledge)
-  - Session Start Protocol (자동 컨텍스트 복원)
-  - Session End Protocol (자동 요약 생성, 패턴 추출 제안)
-  - Project Context File (`.claude/context.md`) 스펙
-  - 의사결정 히스토리 자동 기록
-  - 체이닝 강도 조절 (`--chain-full`, `--chain-minimal`, `--chain-off`)
 - **Proactive Suggestion Flags** (FLAGS.md):
   - `--suggest-all`: 모든 관련 도구 적극 제안 (기본값)
   - `--suggest-minimal`: 핵심 도구만 제안
   - `--suggest-off`, `--no-suggest`: 자동 제안 비활성화
   - `--auto-agent`: 에이전트 자동 제안 활성화
   - `--auto-mcp`: MCP 서버 자동 활성화 제안
-- **Session Chaining Flags** (FLAGS.md):
-  - `--chain-full`: 전체 체이닝 (세션 요약 + 패턴 + 의사결정)
-  - `--chain-minimal`: 최소 체이닝 (TODO만)
-  - `--chain-off`: 체이닝 비활성화
-  - `--auto-restore`: 세션 시작 시 자동 복원 (기본값)
-  - `--no-restore`: 자동 복원 비활성화
-
 ### Changed
-- **CLAUDE.md**: Proactive Suggestions 섹션, Session Chaining 섹션, Workflow Integration 업데이트
-- **README.md**: Proactive Suggestions, Session Chaining 섹션 추가, 플래그 문서화
+- **CLAUDE.md**: Proactive Suggestions 섹션, Workflow Integration 업데이트
+- **README.md**: Proactive Suggestions 섹션 추가, 플래그 문서화
 
 ## [0.6.1] - 2026-02-04
 
@@ -254,9 +260,10 @@
 
 | 버전 | 날짜 | 주요 변경 |
 |------|------|----------|
-| 0.8.0 | 2026-02-09 | Superpowers 통합 + Auto-Invoke 확장 (17→26개) |
+| 0.8.1 | 2026-02-09 | Session Chaining → Auto Memory 전환 (내장 기능 활용) |
+| 0.8.0 | 2026-02-09 | Superpowers 통합 + Auto-Invoke 확장 (17→24개) |
 | 0.7.1 | 2026-02-06 | RULES.md 최적화 (42.3k → 17k, 60% 압축) |
-| 0.7.0 | 2026-02-06 | Proactive Suggestion + Session Chaining (세션 간 연속성) |
+| 0.7.0 | 2026-02-06 | Proactive Suggestion 추가 |
 | 0.6.1 | 2026-02-04 | Progress Communication (자연어 표현, 마일스톤 박스) |
 | 0.6.0 | 2026-02-04 | Agent Error Recovery (실패 복구, 재시도, 에스컬레이션) |
 | 0.5.0 | 2026-02-04 | Orchestrator/Worker 패턴, Orchestration Pipeline 4단계 |
