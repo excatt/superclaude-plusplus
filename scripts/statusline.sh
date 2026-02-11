@@ -118,6 +118,7 @@ extract_json_string() {
 # ---- basics ----
 if [ "$HAS_JQ" -eq 1 ]; then
   current_dir=$(echo "$input" | jq -r '.workspace.current_dir // .cwd // "unknown"' 2>/dev/null | sed "s|^$HOME|~|g")
+  project_dir_raw=$(echo "$input" | jq -r '.workspace.project_dir // .workspace.current_dir // .cwd // "unknown"' 2>/dev/null)
   model_name=$(echo "$input" | jq -r '.model.display_name // "Claude"' 2>/dev/null)
   model_version=$(echo "$input" | jq -r '.model.version // ""' 2>/dev/null)
   session_id=$(echo "$input" | jq -r '.session_id // ""' 2>/dev/null)
@@ -151,6 +152,7 @@ else
   # Fallback to unknown if all extraction failed
   [ -z "$current_dir" ] && current_dir="unknown"
   current_dir=$(echo "$current_dir" | sed "s|^$HOME|~|g")
+  project_dir_raw="$current_dir"
   
   # Extract model name from nested model object
   model_name=$(echo "$input" | grep -o '"model"[[:space:]]*:[[:space:]]*{[^}]*"display_name"[[:space:]]*:[[:space:]]*"[^"]*"' | sed 's/.*"display_name"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/')
@@ -262,8 +264,8 @@ elif [ -n "$session_id" ] && [ "$HAS_JQ" -eq 1 ]; then
   # --- Fallback: parse session file ---
   MAX_CONTEXT=$(get_max_context "$model_name")
 
-  project_dir=$(echo "$current_dir" | sed "s|~|$HOME|g" | sed 's|/|-|g' | sed 's|^-||')
-  session_file="$HOME/.claude/projects/-${project_dir}/${session_id}.jsonl"
+  session_proj_dir=$(echo "$project_dir_raw" | sed 's|/|-|g' | sed 's|^-||')
+  session_file="$HOME/.claude/projects/-${session_proj_dir}/${session_id}.jsonl"
 
   if [ -f "$session_file" ]; then
     latest_tokens=$(tail -20 "$session_file" | jq -r 'select(.message.usage) | .message.usage | ((.input_tokens // 0) + (.cache_creation_input_tokens // 0) + (.cache_read_input_tokens // 0))' 2>/dev/null | tail -1)
@@ -588,9 +590,8 @@ if [ -n "$api_duration_ms" ] && [ "$api_duration_ms" != "null" ] && [ "$api_dura
   # Count API calls from session file for average calculation
   api_avg_fmt=""
   if [ -n "$session_id" ] && [ "$HAS_JQ" -eq 1 ]; then
-    real_dir_for_session=$(echo "$current_dir" | sed "s|~|$HOME|g")
-    proj_dir_key=$(echo "$real_dir_for_session" | sed 's|/|-|g' | sed 's|^-||')
-    sf="$HOME/.claude/projects/-${proj_dir_key}/${session_id}.jsonl"
+    session_proj_key=$(echo "$project_dir_raw" | sed 's|/|-|g' | sed 's|^-||')
+    sf="$HOME/.claude/projects/-${session_proj_key}/${session_id}.jsonl"
     if [ -f "$sf" ]; then
       api_calls=$(grep -c '"role":"assistant"' "$sf" 2>/dev/null || echo 0)
       if [ "$api_calls" -gt 0 ]; then
