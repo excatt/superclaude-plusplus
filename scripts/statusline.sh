@@ -47,6 +47,12 @@ style_color() { if [ "$use_color" -eq 1 ]; then printf '\033[38;5;245m'; fi; } #
 lines_add_color() { if [ "$use_color" -eq 1 ]; then printf '\033[38;5;114m'; fi; } # green for additions
 lines_del_color() { if [ "$use_color" -eq 1 ]; then printf '\033[38;5;210m'; fi; } # red for deletions
 warning_color() { if [ "$use_color" -eq 1 ]; then printf '\033[38;5;196m'; fi; } # bright red for warning
+vim_color() { if [ "$use_color" -eq 1 ]; then printf '\033[38;5;81m'; fi; }     # bright cyan for vim
+agent_color() { if [ "$use_color" -eq 1 ]; then printf '\033[38;5;213m'; fi; }  # pink for agent
+api_color() { if [ "$use_color" -eq 1 ]; then printf '\033[38;5;183m'; fi; }    # light violet for API
+cache_color() { if [ "$use_color" -eq 1 ]; then printf '\033[38;5;116m'; fi; }  # teal for cache
+link_color() { if [ "$use_color" -eq 1 ]; then printf '\033[38;5;243m'; fi; }   # dim gray for transcript
+model_id_color() { if [ "$use_color" -eq 1 ]; then printf '\033[38;5;103m'; fi; } # muted purple for model id
 rst() { if [ "$use_color" -eq 1 ]; then printf '\033[0m'; fi; }
 
 # ---- time helpers ----
@@ -120,6 +126,18 @@ if [ "$HAS_JQ" -eq 1 ]; then
   lines_added=$(echo "$input" | jq -r '.cost.total_lines_added // 0' 2>/dev/null)
   lines_removed=$(echo "$input" | jq -r '.cost.total_lines_removed // 0' 2>/dev/null)
   exceeds_200k=$(echo "$input" | jq -r '.exceeds_200k_tokens // false' 2>/dev/null)
+  model_id=$(echo "$input" | jq -r '.model.id // ""' 2>/dev/null)
+  vim_mode=$(echo "$input" | jq -r '.vim.mode // ""' 2>/dev/null)
+  agent_name=$(echo "$input" | jq -r '.agent.name // ""' 2>/dev/null)
+  transcript_path=$(echo "$input" | jq -r '.transcript_path // ""' 2>/dev/null)
+  api_duration_ms=$(echo "$input" | jq -r '.cost.total_api_duration_ms // ""' 2>/dev/null)
+  ctx_used_pct=$(echo "$input" | jq -r '.context_window.used_percentage // ""' 2>/dev/null)
+  ctx_remaining_pct=$(echo "$input" | jq -r '.context_window.remaining_percentage // ""' 2>/dev/null)
+  ctx_window_size=$(echo "$input" | jq -r '.context_window.context_window_size // ""' 2>/dev/null)
+  ctx_input_tokens=$(echo "$input" | jq -r '.context_window.current_usage.input_tokens // ""' 2>/dev/null)
+  ctx_output_tokens=$(echo "$input" | jq -r '.context_window.current_usage.output_tokens // ""' 2>/dev/null)
+  ctx_cache_creation=$(echo "$input" | jq -r '.context_window.current_usage.cache_creation_input_tokens // ""' 2>/dev/null)
+  ctx_cache_read=$(echo "$input" | jq -r '.context_window.current_usage.cache_read_input_tokens // ""' 2>/dev/null)
 else
   # Bash fallback for JSON extraction
   # Extract current_dir from workspace object - look for the pattern workspace":{"current_dir":"..."}
@@ -152,6 +170,18 @@ else
   # 200K warning
   exceeds_200k=$(echo "$input" | grep -o '"exceeds_200k_tokens"[[:space:]]*:[[:space:]]*[a-z]*' | sed 's/.*:[[:space:]]*\([a-z]*\).*/\1/')
   [ -z "$exceeds_200k" ] && exceeds_200k="false"
+  model_id=""
+  vim_mode=""
+  agent_name=""
+  transcript_path=""
+  api_duration_ms=""
+  ctx_used_pct=""
+  ctx_remaining_pct=""
+  ctx_window_size=""
+  ctx_input_tokens=""
+  ctx_output_tokens=""
+  ctx_cache_creation=""
+  ctx_cache_read=""
 fi
 
 # ---- git colors ----
@@ -166,6 +196,7 @@ fi
 
 # ---- context window calculation ----
 context_pct=""
+context_remaining_pct=""
 context_color() { if [ "$use_color" -eq 1 ]; then printf '\033[1;37m'; fi; }  # default white
 
 # Determine max context based on model
@@ -190,36 +221,60 @@ get_max_context() {
   esac
 }
 
-if [ -n "$session_id" ] && [ "$HAS_JQ" -eq 1 ]; then
+fmt_tokens() {
+  local t="$1"
+  if [ "$t" -ge 1000000 ] 2>/dev/null; then
+    printf '%.1fM' "$(echo "$t" | awk '{printf "%.1f", $1/1000000}')"
+  elif [ "$t" -ge 1000 ] 2>/dev/null; then
+    echo "$(( t / 1000 ))K"
+  else
+    echo "$t"
+  fi
+}
+
+# Prefer API-provided context_window data, fall back to session file parsing
+if [ -n "$ctx_used_pct" ] && [ "$ctx_used_pct" != "null" ] && [ "$ctx_used_pct" != "" ]; then
+  # --- Use API direct data ---
+  ctx_used_int=$(printf '%.0f' "$ctx_used_pct" 2>/dev/null || echo 0)
+  ctx_rem_int=$(printf '%.0f' "$ctx_remaining_pct" 2>/dev/null || echo 100)
+  context_remaining_pct="$ctx_rem_int"
+
+  MAX_CONTEXT="${ctx_window_size:-200000}"
+  max_context_fmt=$(fmt_tokens "$MAX_CONTEXT")
+
+  # Calculate used tokens from percentage
+  latest_tokens=$(echo "$ctx_used_int $MAX_CONTEXT" | awk '{printf "%.0f", $1 * $2 / 100}')
+  latest_tokens_fmt=$(fmt_tokens "$latest_tokens")
+
+  # Set color based on remaining percentage
+  if [ "$ctx_rem_int" -le 20 ]; then
+    context_color() { if [ "$use_color" -eq 1 ]; then printf '\033[38;5;203m'; fi; }  # coral red
+  elif [ "$ctx_rem_int" -le 40 ]; then
+    context_color() { if [ "$use_color" -eq 1 ]; then printf '\033[38;5;215m'; fi; }  # peach
+  else
+    context_color() { if [ "$use_color" -eq 1 ]; then printf '\033[38;5;158m'; fi; }  # mint green
+  fi
+
+  context_pct="${ctx_rem_int}%"
+  context_detail="${latest_tokens_fmt}/${max_context_fmt}"
+
+elif [ -n "$session_id" ] && [ "$HAS_JQ" -eq 1 ]; then
+  # --- Fallback: parse session file ---
   MAX_CONTEXT=$(get_max_context "$model_name")
-  
-  # Convert current dir to session file path
+
   project_dir=$(echo "$current_dir" | sed "s|~|$HOME|g" | sed 's|/|-|g' | sed 's|^-||')
   session_file="$HOME/.claude/projects/-${project_dir}/${session_id}.jsonl"
-  
+
   if [ -f "$session_file" ]; then
-    # Get the latest input token count from the session file
-    # Include: input_tokens + cache_creation_input_tokens + cache_read_input_tokens
     latest_tokens=$(tail -20 "$session_file" | jq -r 'select(.message.usage) | .message.usage | ((.input_tokens // 0) + (.cache_creation_input_tokens // 0) + (.cache_read_input_tokens // 0))' 2>/dev/null | tail -1)
 
     if [ -n "$latest_tokens" ] && [ "$latest_tokens" -gt 0 ]; then
       context_used_pct=$(( latest_tokens * 100 / MAX_CONTEXT ))
       context_remaining_pct=$(( 100 - context_used_pct ))
-      context_remaining_tokens=$(( MAX_CONTEXT - latest_tokens ))
 
-      # Format token counts for display (K format)
-      if [ "$latest_tokens" -ge 1000 ]; then
-        latest_tokens_fmt="$(( latest_tokens / 1000 ))K"
-      else
-        latest_tokens_fmt="$latest_tokens"
-      fi
-      if [ "$MAX_CONTEXT" -ge 1000 ]; then
-        max_context_fmt="$(( MAX_CONTEXT / 1000 ))K"
-      else
-        max_context_fmt="$MAX_CONTEXT"
-      fi
+      latest_tokens_fmt=$(fmt_tokens "$latest_tokens")
+      max_context_fmt=$(fmt_tokens "$MAX_CONTEXT")
 
-      # Set color based on remaining percentage
       if [ "$context_remaining_pct" -le 20 ]; then
         context_color() { if [ "$use_color" -eq 1 ]; then printf '\033[38;5;203m'; fi; }  # coral red
       elif [ "$context_remaining_pct" -le 40 ]; then
@@ -340,17 +395,54 @@ fi
 
 # ---- log extracted data ----
 {
-  echo "[$TIMESTAMP] Extracted: dir=${current_dir:-}, model=${model_name:-}, version=${model_version:-}, git=${git_branch:-}, context=${context_pct:-}, cost=${cost_usd:-}, cost_ph=${cost_per_hour:-}, tokens=${tot_tokens:-}, tpm=${tpm:-}, session_pct=${session_pct:-}"
+  echo "[$TIMESTAMP] Extracted: dir=${current_dir:-}, model=${model_name:-}(${model_id:-}), version=${model_version:-}, git=${git_branch:-}, context=${context_pct:-}, cost=${cost_usd:-}, cost_ph=${cost_per_hour:-}, tokens=${tot_tokens:-}, tpm=${tpm:-}, session_pct=${session_pct:-}, vim=${vim_mode:-}, agent=${agent_name:-}, api_ms=${api_duration_ms:-}, ctx_in=${ctx_input_tokens:-}, ctx_out=${ctx_output_tokens:-}, cache_r=${ctx_cache_read:-}, cache_c=${ctx_cache_creation:-}"
   if [ "$HAS_JQ" -eq 0 ]; then
     echo "[$TIMESTAMP] Note: Context, tokens, and session info require jq for full functionality"
   fi
 } >> "$LOG_FILE" 2>/dev/null
+
+# ---- language version detection ----
+lang_version=""
+lang_icon=""
+
+# Get actual directory path (resolve ~)
+real_dir=$(echo "$current_dir" | sed "s|~|$HOME|g")
+
+# Check for Node.js project
+if [ -f "${real_dir}/package.json" ]; then
+  if command -v node >/dev/null 2>&1; then
+    node_version=$(node --version 2>/dev/null | sed 's/v//')
+    if [ -n "$node_version" ]; then
+      lang_version="$node_version"
+      lang_icon="⬢"  # Node.js hexagon
+    fi
+  fi
+# Check for Python project
+elif [ -f "${real_dir}/pyproject.toml" ] || [ -f "${real_dir}/requirements.txt" ]; then
+  if command -v python3 >/dev/null 2>&1; then
+    python_version=$(python3 --version 2>/dev/null | awk '{print $2}')
+    if [ -n "$python_version" ]; then
+      lang_version="$python_version"
+      lang_icon="🐍"  # Python snake
+    fi
+  elif command -v python >/dev/null 2>&1; then
+    python_version=$(python --version 2>/dev/null | awk '{print $2}')
+    if [ -n "$python_version" ]; then
+      lang_version="$python_version"
+      lang_icon="🐍"  # Python snake
+    fi
+  fi
+fi
 
 # ---- render statusline ----
 # Line 1: Core info (directory, git, model, claude code version, output style)
 printf '📁 %s%s%s' "$(dir_color)" "$current_dir" "$(rst)"
 if [ -n "$git_branch" ]; then
   printf '  🌿 %s%s%s' "$(git_color)" "$git_branch" "$(rst)"
+fi
+# Add language version after git branch
+if [ -n "$lang_version" ]; then
+  printf '  %s %s%s%s' "$lang_icon" "$(version_color)" "$lang_version" "$(rst)"
 fi
 printf '  🤖 %s%s%s' "$(model_color)" "$model_name" "$(rst)"
 if [ -n "$model_version" ] && [ "$model_version" != "null" ]; then
@@ -361,6 +453,20 @@ if [ -n "$cc_version" ] && [ "$cc_version" != "null" ]; then
 fi
 if [ -n "$output_style" ] && [ "$output_style" != "null" ]; then
   printf '  🎨 %s%s%s' "$(style_color)" "$output_style" "$(rst)"
+fi
+# Vim mode
+if [ -n "$vim_mode" ] && [ "$vim_mode" != "null" ]; then
+  if [ "$vim_mode" = "NORMAL" ]; then
+    printf '  %s[N]%s' "$(vim_color)" "$(rst)"
+  elif [ "$vim_mode" = "INSERT" ]; then
+    printf '  %s[I]%s' "$(vim_color)" "$(rst)"
+  else
+    printf '  %s[%s]%s' "$(vim_color)" "$vim_mode" "$(rst)"
+  fi
+fi
+# Agent name
+if [ -n "$agent_name" ] && [ "$agent_name" != "null" ]; then
+  printf '  🕵️ %s%s%s' "$(agent_color)" "$agent_name" "$(rst)"
 fi
 # Lines changed (additions/deletions)
 if [ -n "$lines_added" ] || [ -n "$lines_removed" ]; then
@@ -383,6 +489,26 @@ if [ -n "$context_pct" ]; then
     line2="${temp_emoji} 🧠 $(context_color)Context: ${context_detail} (${context_pct} remaining) [${context_bar}]$(rst)"
   else
     line2="${temp_emoji} 🧠 $(context_color)Context Remaining: ${context_pct} [${context_bar}]$(rst)"
+  fi
+fi
+# Add current usage breakdown (input/output/cache)
+if [ -n "$ctx_input_tokens" ] && [ "$ctx_input_tokens" != "null" ] && [ "$ctx_input_tokens" != "" ] && [ "$ctx_input_tokens" != "0" ]; then
+  in_fmt=$(fmt_tokens "$ctx_input_tokens")
+  out_fmt=$(fmt_tokens "${ctx_output_tokens:-0}")
+  cache_info=""
+  if [ -n "$ctx_cache_read" ] && [ "$ctx_cache_read" != "null" ] && [ "$ctx_cache_read" != "" ] && [ "$ctx_cache_read" != "0" ]; then
+    cr_fmt=$(fmt_tokens "$ctx_cache_read")
+    cache_info=" $(cache_color)cache:${cr_fmt}$(rst)"
+  fi
+  if [ -n "$ctx_cache_creation" ] && [ "$ctx_cache_creation" != "null" ] && [ "$ctx_cache_creation" != "" ] && [ "$ctx_cache_creation" != "0" ]; then
+    cc_fmt=$(fmt_tokens "$ctx_cache_creation")
+    cache_info="${cache_info} $(cache_color)+${cc_fmt}$(rst)"
+  fi
+  usage_detail="$(usage_color)in:${in_fmt} out:${out_fmt}$(rst)${cache_info}"
+  if [ -n "$line2" ]; then
+    line2="$line2  📦 $usage_detail"
+  else
+    line2="📦 $usage_detail"
   fi
 fi
 # Add session ID next to context
@@ -413,7 +539,7 @@ if [ -z "$line2" ] && [ -z "$context_pct" ]; then
   line2="🧠 $(context_color)Context Remaining: TBD$(rst)"
 fi
 
-# Line 3: Token usage and TODO tracking
+# Line 3: Token usage, cost, and TODO tracking
 line3=""
 if [ -n "$tot_tokens" ] && [[ "$tot_tokens" =~ ^[0-9]+$ ]]; then
   if [ -n "$tpm" ] && [[ "$tpm" =~ ^[0-9.]+$ ]]; then
@@ -421,6 +547,58 @@ if [ -n "$tot_tokens" ] && [[ "$tot_tokens" =~ ^[0-9]+$ ]]; then
     line3="📊 $(usage_color)${tot_tokens} tok (${tpm_formatted} tpm)$(rst)"
   else
     line3="📊 $(usage_color)${tot_tokens} tok$(rst)"
+  fi
+fi
+
+# Add cost info
+if [ -n "$cost_usd" ] && [ "$cost_usd" != "0" ] && [ "$cost_usd" != "null" ]; then
+  cost_formatted=$(printf '$%.2f' "$cost_usd")
+  cost_info="💰 $(cost_color)${cost_formatted}$(rst)"
+  if [ -n "$cost_per_hour" ] && [ "$cost_per_hour" != "0.00" ]; then
+    cost_info="$cost_info $(burn_color)(\$${cost_per_hour}/hr)$(rst)"
+  fi
+  if [ -n "$total_duration_ms" ] && [ "$total_duration_ms" -gt 0 ] 2>/dev/null; then
+    total_sec=$((total_duration_ms / 1000))
+    dur_min=$((total_sec / 60))
+    dur_sec=$((total_sec % 60))
+    if [ "$dur_min" -gt 0 ]; then
+      cost_info="$cost_info  ⏱️ $(usage_color)${dur_min}m ${dur_sec}s$(rst)"
+    else
+      cost_info="$cost_info  ⏱️ $(usage_color)${dur_sec}s$(rst)"
+    fi
+  fi
+  if [ -n "$line3" ]; then
+    line3="$line3  $cost_info"
+  else
+    line3="$cost_info"
+  fi
+fi
+
+# Add API response time
+if [ -n "$api_duration_ms" ] && [ "$api_duration_ms" != "null" ] && [ "$api_duration_ms" != "" ] && [ "$api_duration_ms" -gt 0 ] 2>/dev/null; then
+  api_sec=$((api_duration_ms / 1000))
+  api_min=$((api_sec / 60))
+  api_remaining_sec=$((api_sec % 60))
+  if [ "$api_min" -gt 0 ]; then
+    api_time_fmt="${api_min}m ${api_remaining_sec}s"
+  else
+    api_time_fmt="${api_remaining_sec}s"
+  fi
+  api_info="🔌 $(api_color)API: ${api_time_fmt}$(rst)"
+  if [ -n "$line3" ]; then
+    line3="$line3  $api_info"
+  else
+    line3="$api_info"
+  fi
+fi
+
+# Add model ID
+if [ -n "$model_id" ] && [ "$model_id" != "null" ] && [ "$model_id" != "" ]; then
+  mid_info="🏷️ $(model_id_color)${model_id}$(rst)"
+  if [ -n "$line3" ]; then
+    line3="$line3  $mid_info"
+  else
+    line3="$mid_info"
   fi
 fi
 
@@ -446,11 +624,23 @@ if [ "$todo_total" -gt 0 ]; then
   fi
 fi
 
+# Line 4: Transcript path (OSC 8 clickable link)
+line4=""
+if [ -n "$transcript_path" ] && [ "$transcript_path" != "null" ] && [ "$transcript_path" != "" ]; then
+  # Shorten path for display
+  short_transcript=$(echo "$transcript_path" | sed "s|^$HOME|~|g")
+  # OSC 8 hyperlink: \e]8;;URL\aTEXT\e]8;;\a
+  line4="📜 $(link_color)\033]8;;file://${transcript_path}\a${short_transcript}\033]8;;\a$(rst)"
+fi
+
 # Print lines
 if [ -n "$line2" ]; then
   printf '\n%s' "$line2"
 fi
 if [ -n "$line3" ]; then
   printf '\n%s' "$line3"
+fi
+if [ -n "$line4" ]; then
+  printf '\n'"$line4"
 fi
 printf '\n'
