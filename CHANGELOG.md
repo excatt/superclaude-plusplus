@@ -5,28 +5,29 @@
 형식은 [Keep a Changelog](https://keepachangelog.com/ko/1.0.0/)를 따르며,
 [Semantic Versioning](https://semver.org/lang/ko/)을 준수합니다.
 
+## [0.8.3] - 2026-02-11
+
+### Added
+- **Session Summary Hook** (`scripts/session-summary.py`):
+  - Stop hook에서 매 응답 완료 시 세션 요약 자동 생성
+  - `<project>/memory/last-session.md`에 저장 (덮어쓰기 방식)
+  - 다음 세션에서 이전 컨텍스트 빠르게 파악 가능
+  - 크기 제한: 처음 3개 + 마지막 5개 메시지, 파일 최대 15개
+  - JSONL 트랜스크립트에서 `entry.message.role` 구조 파싱
+- **convention-check.sh** PostToolUse hook 추가 (templates/settings.json)
+
 ## [0.8.2] - 2026-02-11
 
 ### Changed
-- **statusline.sh**: 3-Line 간소화 레이아웃으로 리팩토링
-  - Line 1: 핵심 정보 (디렉토리, Git, 모델, CC 버전 + 업데이트 체크)
-  - Line 2: Transcript 경로 (클릭 가능 링크)
-  - Line 3: Context 사용량 + compact 경고 (80%+ 시 표시)
-- **Context 계산**: fallback에서 `cache_read_input_tokens` 제외 (내장 카운터와 일치)
-
-### Added
-- **CC 버전 업데이트 체크**: 첫 실행 시 npm 1회 체크, 캐시 영구 유지
-- **Compact 경고**: context 80%+ 사용 시 `⚠️ COMPACT SOON` 표시
+- **statusline.sh 3-Line 간소화 레이아웃 리팩토링**:
+  - Line 1: 핵심 정보 (모델, 프로젝트, Git, 언어, Vim, Agent)
+  - Line 2: Transcript 경로 (OSC 8 하이퍼링크)
+  - Line 3: Context 사용량 + compact 경고
+- CC 버전 업데이트 체크 추가 (`~/.claude/.cc_version_cache` 캐시)
+- Compact 경고 기능 (context 80%+ 사용 시)
 
 ### Removed
-- Output style (🎨) 표시
-- 토큰 상세 (📦 in/out/cache)
-- Session ID (🔑)
-- Session 시간 (⌛)
-- 비용/시간당 비용 (💰)
-- API 응답 시간 (🔌)
-- TODO 진행상황 (📋)
-- Progress bar ([=======---])
+- Output style 표시, 토큰 상세, Session ID/시간, TODO 진행상황, Progress bar
 
 ## [0.8.1] - 2026-02-09
 

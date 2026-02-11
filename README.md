@@ -119,6 +119,8 @@ SuperClaude++는 [SuperClaude Framework](https://github.com/SuperClaude-Org/Supe
 | `post-write-check` | 파일 작성 후 Convention 체크 |
 | `suggest-compact` | 컨텍스트 임계치 도달 시 컴팩션 제안 |
 | `evaluate-session` | 세션 종료 시 패턴 추출 제안 |
+| `session-summary` | 매 응답 시 세션 요약 자동 생성 (`memory/last-session.md`) |
+| `convention-check` | 파일 작성 후 네이밍 컨벤션 체크 |
 
 ### 🎛️ Flags & Modes
 
@@ -192,8 +194,9 @@ cd superclaude-plusplus
 ├── scripts/
 │   ├── statusline.sh       # 상태바 스크립트
 │   ├── convention-check.sh # 네이밍 컨벤션 자동 체크
-│   ├── post-write-check.sh # Convention 체크
-│   └── pre-compact-save.sh # 컴팩션 전 저장
+│   ├── post-write-check.sh  # Convention 체크
+│   ├── pre-compact-save.sh  # 컴팩션 전 저장
+│   └── session-summary.py   # 세션 요약 자동 생성
 ├── optional/               # 선택적 로딩 문서
 │   ├── MCP_*.md            # MCP 서버별 상세 가이드 (7개)
 │   ├── MODE_*.md           # MODE별 상세 가이드 (7개)
@@ -374,22 +377,6 @@ CLAUDE.md에서 변경:
 
 ### StatusLine
 `scripts/statusline.sh`를 수정하여 표시 항목 커스터마이즈.
-
-**기본 3-Line 레이아웃**:
-
-| Line | 내용 | 예시 |
-|------|------|------|
-| **1** | 디렉토리, Git, 언어, 모델, CC 버전(업데이트 체크), Vim, Agent, 변경 라인 | `📁 ~/proj  🌿 main  🤖 Opus 4.6  📟 v2.1.39 ⬆️2.2.0  📝 +56/-165` |
-| **2** | Transcript 경로 (클릭 가능 링크) | `📜 ~/.claude/projects/.../session.jsonl` |
-| **3** | Context 사용량 + compact 경고 | `🟢 🧠 Context: 64K/200K (68% remaining)` |
-
-**Context 경고 단계**:
-- 🟢 < 60% 사용 (정상)
-- 🟡 60~80% 사용 (주의)
-- 🔴 80%+ 사용 + `⚠️ COMPACT SOON`
-- 🚨 200K 초과 시 `EXCEEDS 200K TOKENS`
-
-**CC 버전 업데이트 체크**: 첫 실행 시 1회 npm 체크, `~/.claude/.cc_version_cache`에 캐시.
 
 ## Updating
 

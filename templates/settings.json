@@ -36,6 +36,11 @@
             "type": "command",
             "command": "CLAUDE_FILE_PATH=\"$CLAUDE_FILE_PATH\" ~/.claude/scripts/auto-format.sh",
             "timeout": 10000
+          },
+          {
+            "type": "command",
+            "command": "CLAUDE_FILE_PATH=\"$CLAUDE_FILE_PATH\" ~/.claude/scripts/convention-check.sh",
+            "timeout": 5000
           }
         ]
       }
@@ -52,6 +57,11 @@
           {
             "type": "command",
             "command": "~/.claude/scripts/evaluate-session.sh",
+            "timeout": 5000
+          },
+          {
+            "type": "command",
+            "command": "python3 ~/.claude/scripts/session-summary.py",
             "timeout": 5000
           }
         ]
