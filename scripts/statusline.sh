@@ -268,7 +268,7 @@ elif [ -n "$session_id" ] && [ "$HAS_JQ" -eq 1 ]; then
   session_file="$HOME/.claude/projects/-${session_proj_dir}/${session_id}.jsonl"
 
   if [ -f "$session_file" ]; then
-    latest_tokens=$(tail -20 "$session_file" | jq -r 'select(.message.usage) | .message.usage | ((.input_tokens // 0) + (.cache_creation_input_tokens // 0) + (.cache_read_input_tokens // 0))' 2>/dev/null | tail -1)
+    latest_tokens=$(tail -20 "$session_file" | jq -r 'select(.message.usage) | .message.usage | ((.input_tokens // 0) + (.cache_creation_input_tokens // 0))' 2>/dev/null | tail -1)
 
     if [ -n "$latest_tokens" ] && [ "$latest_tokens" -gt 0 ]; then
       context_used_pct=$(( latest_tokens * 100 / MAX_CONTEXT ))
@@ -403,6 +403,35 @@ fi
   fi
 } >> "$LOG_FILE" 2>/dev/null
 
+# ---- Claude Code update check (cache once, use forever) ----
+check_cc_update() {
+  local current_version="$1"
+  local cache_file="$HOME/.claude/.cc_version_cache"
+
+  # Return empty if no current version
+  [ -z "$current_version" ] && return
+
+  # If cache exists, use it
+  if [ -f "$cache_file" ]; then
+    local cached_latest=$(cat "$cache_file" 2>/dev/null)
+    if [ -n "$cached_latest" ] && [ "$cached_latest" != "$current_version" ]; then
+      echo "⬆️ $cached_latest"
+    fi
+    return
+  fi
+
+  # Cache doesn't exist, check npm once (background, non-blocking)
+  if command -v npm >/dev/null 2>&1; then
+    (
+      # Run in subshell to avoid blocking
+      latest_version=$(npm view claude-code version 2>/dev/null | head -1)
+      if [ -n "$latest_version" ]; then
+        echo "$latest_version" > "$cache_file" 2>/dev/null
+      fi
+    ) &
+  fi
+}
+
 # ---- language version detection ----
 lang_version=""
 lang_icon=""
@@ -451,10 +480,12 @@ if [ -n "$model_version" ] && [ "$model_version" != "null" ]; then
   printf '  🏷️ %s%s%s' "$(version_color)" "$model_version" "$(rst)"
 fi
 if [ -n "$cc_version" ] && [ "$cc_version" != "null" ]; then
-  printf '  📟 %sv%s%s' "$(cc_version_color)" "$cc_version" "$(rst)"
-fi
-if [ -n "$output_style" ] && [ "$output_style" != "null" ]; then
-  printf '  🎨 %s%s%s' "$(style_color)" "$output_style" "$(rst)"
+  update_indicator=$(check_cc_update "$cc_version")
+  if [ -n "$update_indicator" ]; then
+    printf '  📟 %sv%s %s%s' "$(cc_version_color)" "$cc_version" "$update_indicator" "$(rst)"
+  else
+    printf '  📟 %sv%s%s' "$(cc_version_color)" "$cc_version" "$(rst)"
+  fi
 fi
 # Vim mode
 if [ -n "$vim_mode" ] && [ "$vim_mode" != "null" ]; then
@@ -475,53 +506,33 @@ if [ -n "$lines_added" ] || [ -n "$lines_removed" ]; then
   printf '  📝 %s+%s%s/%s-%s%s' "$(lines_add_color)" "${lines_added:-0}" "$(rst)" "$(lines_del_color)" "${lines_removed:-0}" "$(rst)"
 fi
 
-# Line 2: Context, session ID, and session time
+# Line 2: Context and 200K warning only
 line2=""
 if [ -n "$context_pct" ]; then
-  context_bar=$(progress_bar "$context_remaining_pct" 10)
   # Context temperature indicator
   if [ "$context_remaining_pct" -le 20 ]; then
     temp_emoji="🔴"
+    compact_warn="  ⚠️ $(warning_color)COMPACT SOON$(rst)"
   elif [ "$context_remaining_pct" -le 40 ]; then
     temp_emoji="🟡"
+    compact_warn=""
   else
     temp_emoji="🟢"
+    compact_warn=""
+  fi
+  # 80%+ used (remaining ≤20%) → compact warning
+  ctx_used_int=$(( 100 - context_remaining_pct ))
+  if [ "$ctx_used_int" -ge 80 ]; then
+    compact_warn="  ⚠️ $(warning_color)COMPACT SOON (${ctx_used_int}% used)$(rst)"
   fi
   if [ -n "$context_detail" ]; then
-    line2="${temp_emoji} 🧠 $(context_color)Context: ${context_detail} (${context_pct} remaining) [${context_bar}]$(rst)"
+    line2="${temp_emoji} 🧠 $(context_color)Context: ${context_detail} (${context_pct} remaining)$(rst)${compact_warn}"
   else
-    line2="${temp_emoji} 🧠 $(context_color)Context Remaining: ${context_pct} [${context_bar}]$(rst)"
+    line2="${temp_emoji} 🧠 $(context_color)Context Remaining: ${context_pct}$(rst)${compact_warn}"
   fi
 fi
-# Add current usage breakdown (input/output/cache)
-if [ -n "$ctx_input_tokens" ] && [ "$ctx_input_tokens" != "null" ] && [ "$ctx_input_tokens" != "" ] && [ "$ctx_input_tokens" != "0" ]; then
-  in_fmt=$(fmt_tokens "$ctx_input_tokens")
-  out_fmt=$(fmt_tokens "${ctx_output_tokens:-0}")
-  cache_info=""
-  if [ -n "$ctx_cache_read" ] && [ "$ctx_cache_read" != "null" ] && [ "$ctx_cache_read" != "" ] && [ "$ctx_cache_read" != "0" ]; then
-    cr_fmt=$(fmt_tokens "$ctx_cache_read")
-    cache_info=" $(cache_color)cache:${cr_fmt}$(rst)"
-  fi
-  if [ -n "$ctx_cache_creation" ] && [ "$ctx_cache_creation" != "null" ] && [ "$ctx_cache_creation" != "" ] && [ "$ctx_cache_creation" != "0" ]; then
-    cc_fmt=$(fmt_tokens "$ctx_cache_creation")
-    cache_info="${cache_info} $(cache_color)+${cc_fmt}$(rst)"
-  fi
-  usage_detail="$(usage_color)in:${in_fmt} out:${out_fmt}$(rst)${cache_info}"
-  if [ -n "$line2" ]; then
-    line2="$line2  📦 $usage_detail"
-  else
-    line2="📦 $usage_detail"
-  fi
-fi
-# Add session ID next to context
-if [ -n "$session_id" ] && [ "$session_id" != "null" ]; then
-  short_session_id="${session_id:0:8}"
-  if [ -n "$line2" ]; then
-    line2="$line2  🔑 $(cc_version_color)${short_session_id}$(rst)"
-  else
-    line2="🔑 $(cc_version_color)${short_session_id}$(rst)"
-  fi
-fi
+# DELETED: Token usage breakdown (input/output/cache) removed per user request
+# DELETED: Session ID removed per user request
 # 200K token warning
 if [ "$exceeds_200k" = "true" ]; then
   if [ -n "$line2" ]; then
@@ -530,125 +541,12 @@ if [ "$exceeds_200k" = "true" ]; then
     line2="🚨 $(warning_color)EXCEEDS 200K TOKENS$(rst)"
   fi
 fi
-if [ -n "$session_txt" ]; then
-  if [ -n "$line2" ]; then
-    line2="$line2  ⌛ $(session_color)${session_txt}$(rst) $(session_color)[${session_bar}]$(rst)"
-  else
-    line2="⌛ $(session_color)${session_txt}$(rst) $(session_color)[${session_bar}]$(rst)"
-  fi
-fi
+# DELETED: Session time removed per user request
 if [ -z "$line2" ] && [ -z "$context_pct" ]; then
   line2="🧠 $(context_color)Context Remaining: TBD$(rst)"
 fi
 
-# Line 3: Token usage, cost, and TODO tracking
-line3=""
-if [ -n "$tot_tokens" ] && [[ "$tot_tokens" =~ ^[0-9]+$ ]]; then
-  if [ -n "$tpm" ] && [[ "$tpm" =~ ^[0-9.]+$ ]]; then
-    tpm_formatted=$(printf '%.0f' "$tpm")
-    line3="📊 $(usage_color)${tot_tokens} tok (${tpm_formatted} tpm)$(rst)"
-  else
-    line3="📊 $(usage_color)${tot_tokens} tok$(rst)"
-  fi
-fi
-
-# Add cost info
-if [ -n "$cost_usd" ] && [ "$cost_usd" != "0" ] && [ "$cost_usd" != "null" ]; then
-  cost_formatted=$(printf '$%.2f' "$cost_usd")
-  cost_info="💰 $(cost_color)${cost_formatted}$(rst)"
-  if [ -n "$cost_per_hour" ] && [ "$cost_per_hour" != "0.00" ]; then
-    cost_info="$cost_info $(burn_color)(\$${cost_per_hour}/hr)$(rst)"
-  fi
-  if [ -n "$total_duration_ms" ] && [ "$total_duration_ms" -gt 0 ] 2>/dev/null; then
-    total_sec=$((total_duration_ms / 1000))
-    dur_min=$((total_sec / 60))
-    dur_sec=$((total_sec % 60))
-    if [ "$dur_min" -gt 0 ]; then
-      cost_info="$cost_info  ⏱️ $(usage_color)${dur_min}m ${dur_sec}s$(rst)"
-    else
-      cost_info="$cost_info  ⏱️ $(usage_color)${dur_sec}s$(rst)"
-    fi
-  fi
-  if [ -n "$line3" ]; then
-    line3="$line3  $cost_info"
-  else
-    line3="$cost_info"
-  fi
-fi
-
-# Add API response time + average
-if [ -n "$api_duration_ms" ] && [ "$api_duration_ms" != "null" ] && [ "$api_duration_ms" != "" ] && [ "$api_duration_ms" -gt 0 ] 2>/dev/null; then
-  api_sec=$((api_duration_ms / 1000))
-  api_min=$((api_sec / 60))
-  api_remaining_sec=$((api_sec % 60))
-  if [ "$api_min" -gt 0 ]; then
-    api_time_fmt="${api_min}m ${api_remaining_sec}s"
-  else
-    api_time_fmt="${api_remaining_sec}s"
-  fi
-
-  # Count API calls from session file for average calculation
-  api_avg_fmt=""
-  if [ -n "$session_id" ] && [ "$HAS_JQ" -eq 1 ]; then
-    session_proj_key=$(echo "$project_dir_raw" | sed 's|/|-|g' | sed 's|^-||')
-    sf="$HOME/.claude/projects/-${session_proj_key}/${session_id}.jsonl"
-    if [ -f "$sf" ]; then
-      api_calls=$(grep -c '"role":"assistant"' "$sf" 2>/dev/null || echo 0)
-      if [ "$api_calls" -gt 0 ]; then
-        avg_ms=$((api_duration_ms / api_calls))
-        avg_sec=$((avg_ms / 1000))
-        if [ "$avg_sec" -ge 60 ]; then
-          api_avg_fmt="avg $(( avg_sec / 60 ))m $(( avg_sec % 60 ))s"
-        else
-          api_avg_fmt="avg ${avg_sec}s"
-        fi
-      fi
-    fi
-  fi
-
-  if [ -n "$api_avg_fmt" ]; then
-    api_info="🔌 $(api_color)API: ${api_time_fmt} (${api_avg_fmt}, ${api_calls} calls)$(rst)"
-  else
-    api_info="🔌 $(api_color)API: ${api_time_fmt}$(rst)"
-  fi
-  if [ -n "$line3" ]; then
-    line3="$line3  $api_info"
-  else
-    line3="$api_info"
-  fi
-fi
-
-# Add model ID
-if [ -n "$model_id" ] && [ "$model_id" != "null" ] && [ "$model_id" != "" ]; then
-  mid_info="🏷️ $(model_id_color)${model_id}$(rst)"
-  if [ -n "$line3" ]; then
-    line3="$line3  $mid_info"
-  else
-    line3="$mid_info"
-  fi
-fi
-
-# Add TODO progress if there are any tasks
-if [ "$todo_total" -gt 0 ]; then
-  todo_remaining=$((todo_pending + todo_inprogress))
-  if [ "$todo_remaining" -gt 0 ]; then
-    # Tasks remaining - show warning color
-    todo_info="📋 $(todo_warning_color)TODOs: ${todo_complete}/${todo_total}"
-    if [ "$todo_inprogress" -gt 0 ]; then
-      todo_info="$todo_info (${todo_inprogress} active)"
-    fi
-    todo_info="$todo_info$(rst)"
-  else
-    # All complete - show green
-    todo_info="📋 $(todo_color)TODOs: ✅ ${todo_complete}/${todo_total}$(rst)"
-  fi
-
-  if [ -n "$line3" ]; then
-    line3="$line3  $todo_info"
-  else
-    line3="$todo_info"
-  fi
-fi
+# Line 3: DELETED - Token usage, cost, and TODO tracking section removed per user request
 
 # Line 4: Transcript path (OSC 8 clickable link)
 line4=""
@@ -660,13 +558,10 @@ if [ -n "$transcript_path" ] && [ "$transcript_path" != "null" ] && [ "$transcri
 fi
 
 # Print lines
-if [ -n "$line2" ]; then
-  printf '\n%s' "$line2"
-fi
-if [ -n "$line3" ]; then
-  printf '\n%s' "$line3"
-fi
 if [ -n "$line4" ]; then
   printf '\n'"$line4"
+fi
+if [ -n "$line2" ]; then
+  printf '\n%s' "$line2"
 fi
 printf '\n'
