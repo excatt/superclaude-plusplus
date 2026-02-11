@@ -574,7 +574,7 @@ if [ -n "$cost_usd" ] && [ "$cost_usd" != "0" ] && [ "$cost_usd" != "null" ]; th
   fi
 fi
 
-# Add API response time
+# Add API response time + average
 if [ -n "$api_duration_ms" ] && [ "$api_duration_ms" != "null" ] && [ "$api_duration_ms" != "" ] && [ "$api_duration_ms" -gt 0 ] 2>/dev/null; then
   api_sec=$((api_duration_ms / 1000))
   api_min=$((api_sec / 60))
@@ -584,7 +584,32 @@ if [ -n "$api_duration_ms" ] && [ "$api_duration_ms" != "null" ] && [ "$api_dura
   else
     api_time_fmt="${api_remaining_sec}s"
   fi
-  api_info="🔌 $(api_color)API: ${api_time_fmt}$(rst)"
+
+  # Count API calls from session file for average calculation
+  api_avg_fmt=""
+  if [ -n "$session_id" ] && [ "$HAS_JQ" -eq 1 ]; then
+    real_dir_for_session=$(echo "$current_dir" | sed "s|~|$HOME|g")
+    proj_dir_key=$(echo "$real_dir_for_session" | sed 's|/|-|g' | sed 's|^-||')
+    sf="$HOME/.claude/projects/-${proj_dir_key}/${session_id}.jsonl"
+    if [ -f "$sf" ]; then
+      api_calls=$(grep -c '"role":"assistant"' "$sf" 2>/dev/null || echo 0)
+      if [ "$api_calls" -gt 0 ]; then
+        avg_ms=$((api_duration_ms / api_calls))
+        avg_sec=$((avg_ms / 1000))
+        if [ "$avg_sec" -ge 60 ]; then
+          api_avg_fmt="avg $(( avg_sec / 60 ))m $(( avg_sec % 60 ))s"
+        else
+          api_avg_fmt="avg ${avg_sec}s"
+        fi
+      fi
+    fi
+  fi
+
+  if [ -n "$api_avg_fmt" ]; then
+    api_info="🔌 $(api_color)API: ${api_time_fmt} (${api_avg_fmt}, ${api_calls} calls)$(rst)"
+  else
+    api_info="🔌 $(api_color)API: ${api_time_fmt}$(rst)"
+  fi
   if [ -n "$line3" ]; then
     line3="$line3  $api_info"
   else
