@@ -5,6 +5,29 @@
 형식은 [Keep a Changelog](https://keepachangelog.com/ko/1.0.0/)를 따르며,
 [Semantic Versioning](https://semver.org/lang/ko/)을 준수합니다.
 
+## [0.8.2] - 2026-02-11
+
+### Changed
+- **statusline.sh**: 3-Line 간소화 레이아웃으로 리팩토링
+  - Line 1: 핵심 정보 (디렉토리, Git, 모델, CC 버전 + 업데이트 체크)
+  - Line 2: Transcript 경로 (클릭 가능 링크)
+  - Line 3: Context 사용량 + compact 경고 (80%+ 시 표시)
+- **Context 계산**: fallback에서 `cache_read_input_tokens` 제외 (내장 카운터와 일치)
+
+### Added
+- **CC 버전 업데이트 체크**: 첫 실행 시 npm 1회 체크, 캐시 영구 유지
+- **Compact 경고**: context 80%+ 사용 시 `⚠️ COMPACT SOON` 표시
+
+### Removed
+- Output style (🎨) 표시
+- 토큰 상세 (📦 in/out/cache)
+- Session ID (🔑)
+- Session 시간 (⌛)
+- 비용/시간당 비용 (💰)
+- API 응답 시간 (🔌)
+- TODO 진행상황 (📋)
+- Progress bar ([=======---])
+
 ## [0.8.1] - 2026-02-09
 
 ### Changed

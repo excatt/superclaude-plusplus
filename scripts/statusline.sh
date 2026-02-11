@@ -424,7 +424,7 @@ check_cc_update() {
   if command -v npm >/dev/null 2>&1; then
     (
       # Run in subshell to avoid blocking
-      latest_version=$(npm view claude-code version 2>/dev/null | head -1)
+      latest_version=$(npm view @anthropic-ai/claude-code version 2>/dev/null | head -1)
       if [ -n "$latest_version" ]; then
         echo "$latest_version" > "$cache_file" 2>/dev/null
       fi
