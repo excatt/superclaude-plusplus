@@ -20,7 +20,7 @@ SuperClaude++는 [SuperClaude Framework](https://github.com/SuperClaude-Org/Supe
 | **MODES.md** | 상황별 행동 모드 (Brainstorming, Orchestration, Token Efficiency 등) |
 | **MCP_SERVERS.md** | MCP 서버 통합 가이드 (Context7, Magic, Serena 등) |
 | **CONTEXTS.md** | DEV/REVIEW/RESEARCH/PLANNING 컨텍스트 모드 |
-| **CONVENTIONS.md** | 네이밍 컨벤션 + 패키지 관리 규칙 (Poetry/pnpm 필수) |
+| **CONVENTIONS.md** | 네이밍 컨벤션 + 패키지 관리 규칙 (uv/pnpm 필수) |
 | **PATTERNS.md** | 재사용 가능한 코드 패턴 모음 |
 | **KNOWLEDGE.md** | 축적된 인사이트 및 트러블슈팅 가이드 |
 
@@ -54,11 +54,11 @@ SuperClaude++는 [SuperClaude Framework](https://github.com/SuperClaude-Org/Supe
 | `/composition-patterns` | React Compound Components 패턴 |
 | `/python-best-practices` | Python 코드 리뷰 및 베스트 프랙티스 |
 | `/pytest-runner` | pytest 실행, 커버리지 분석 |
-| `/poetry-package` | Poetry 패키지 관리 |
+| `/uv-package` | uv 패키지 관리 |
 | `/feature-planner` | 기능 구현 계획 수립 |
 | `/gap-analysis` | 설계-구현 비교, Match Rate 계산 |
 
-#### Document Skills (NEW)
+#### Document Skills
 | Skill | 설명 |
 |-------|------|
 | `/docx` | Word 문서 생성/편집 (OOXML 기반) |
@@ -95,7 +95,7 @@ SuperClaude++는 [SuperClaude Framework](https://github.com/SuperClaude-Org/Supe
 | Next.js 작업 | `/nextjs` | page.tsx, layout.tsx |
 | FastAPI 작업 | `/fastapi` | @router, APIRouter |
 
-#### Proactive Suggestions (NEW)
+#### Proactive Suggestions
 작업 컨텍스트에 맞는 스킬/에이전트/MCP 서버를 **적극 제안** (확인 후 실행):
 
 | 상황 | 제안 도구 | 트리거 조건 |
@@ -147,7 +147,7 @@ SuperClaude++는 [SuperClaude Framework](https://github.com/SuperClaude-Org/Supe
 | `--ctx review` | 리뷰 | 심층 분석, 심각도별 정리 |
 | `--ctx research` | 리서치 | 완전성 > 속도, 증거 기반 |
 
-#### Proactive Suggestion Flags (NEW)
+#### Proactive Suggestion Flags
 | Flag | 설명 |
 |------|------|
 | `--suggest-all` | 모든 관련 도구 적극 제안 (기본값) |
@@ -221,7 +221,7 @@ cd superclaude-plusplus
 
 ## Key Concepts
 
-### PDCA Workflow (NEW)
+### PDCA Workflow
 체계적인 개발 사이클을 위한 Plan-Do-Check-Act 워크플로우:
 ```
 Plan → Design → Do → Check → Act → Report
@@ -255,7 +255,7 @@ TODO 항목이 남아있으면 작업 중단을 방지합니다:
 - 심볼 시스템 사용 (→, ⇒, ✅, ❌, ⚠️)
 - 30-50% 토큰 감소, ≥95% 정보 품질 유지
 
-### Orchestrator/Worker Pattern (NEW)
+### Orchestrator/Worker Pattern
 에이전트 역할 분리를 통한 효율적인 작업 분배:
 
 | 역할 | 책임 | 도구 |
@@ -267,7 +267,7 @@ TODO 항목이 남아있으면 작업 중단을 방지합니다:
 - `run_in_background=True` 항상 사용
 - 부모 모델 상속 기본, 필요시 명시적 지정 (haiku/sonnet/opus)
 
-### Orchestration Pipeline (NEW)
+### Orchestration Pipeline
 4단계 오케스트레이션 파이프라인:
 ```
 Step 1: CLARIFY (AskUserQuestion 4×4)
@@ -283,7 +283,7 @@ Step 4: SYNTHESIZE (결과 합성)
 - **의존성 분석**: 독립 작업 → 병렬, 의존 작업 → 순차
 - **Non-blocking Mindset**: 에이전트 작업 중 다음 할 일 준비
 
-### Agent Error Recovery (NEW)
+### Agent Error Recovery
 에이전트 실패 시 자동 복구 전략:
 
 | 실패 유형 | 복구 전략 |
@@ -320,7 +320,7 @@ Claude Code의 내장 Auto Memory를 활용한 세션 간 연속성:
 
 **확인/편집**: `/memory` 명령어
 
-### Two-Stage Review System (NEW)
+### Two-Stage Review System
 작업 완료 시 2단계 리뷰 자동 실행:
 
 | Stage | 목적 | 검증 항목 |
@@ -331,7 +331,7 @@ Claude Code의 내장 Auto Memory를 활용한 세션 간 연속성:
 - **Reviewer 원칙**: "DO NOT trust the implementer's report" - 실제 코드 직접 확인
 - **Review Loop**: Implement → Spec Review → Quality Review → Complete
 
-### Verification Iron Law (NEW)
+### Verification Iron Law
 완료 주장 시 자동 검증 게이트:
 ```
 "NO COMPLETION CLAIMS WITHOUT FRESH VERIFICATION EVIDENCE"
@@ -343,7 +343,7 @@ Claude Code의 내장 Auto Memory를 활용한 세션 간 연속성:
 | 기능 완료 | 각 요구사항 체크리스트 |
 | 버그 수정 | 재현 테스트 결과 |
 
-### 3+ Fixes Architecture Rule (NEW)
+### 3+ Fixes Architecture Rule
 동일 버그 3회 수정 실패 시:
 1. 즉시 코딩 중단
 2. 아키텍처/설계 재검토
@@ -355,10 +355,10 @@ Claude Code의 내장 Auto Memory를 활용한 세션 간 연속성:
 
 | 언어 | 필수 | 금지 |
 |------|------|------|
-| **Python** | Poetry | pip, uv, pipenv |
+| **Python** | uv | pip, poetry, pipenv |
 | **Node.js** | pnpm | npm, yarn |
 
-- 자동 감지: `requirements.txt`, `uv.lock`, `package-lock.json`, `yarn.lock` 발견 시 마이그레이션 제안
+- 자동 감지: `requirements.txt`, `poetry.lock`, `package-lock.json`, `yarn.lock` 발견 시 마이그레이션 제안
 - Dockerfile/CI 패턴 예시 포함
 
 ## Configuration
@@ -434,7 +434,7 @@ SuperClaude++ = SuperClaude + 다음 요소들의 통합:
 - 📝 Note 시스템 (컴팩션 대응)
 - 🎯 40+ 도메인별 Skills
 - 🔧 자동 스킬 호출 시스템 (24개 Auto-Invoke 트리거)
-- 📦 패키지 관리 규칙 강제 (Poetry/pnpm)
+- 📦 패키지 관리 규칙 강제 (uv/pnpm)
 - 🌐 한국어 우선 지원
 
 ## License

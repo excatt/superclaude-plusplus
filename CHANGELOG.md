@@ -5,6 +5,25 @@
 형식은 [Keep a Changelog](https://keepachangelog.com/ko/1.0.0/)를 따르며,
 [Semantic Versioning](https://semver.org/lang/ko/)을 준수합니다.
 
+## [0.8.4] - 2026-02-13
+
+### Changed
+- **Python 패키지 매니저 Poetry → uv 전환**:
+  - 모든 규칙/컨벤션 문서에서 Poetry 참조를 uv로 교체
+  - `pyproject.toml` 형식: `[tool.poetry]` → `[project]` (PEP 621 표준)
+  - Lock 파일: `poetry.lock` → `uv.lock`
+  - Dockerfile 패턴: `pip install poetry` → `COPY --from=ghcr.io/astral-sh/uv`
+  - CI/CD 패턴: `snok/install-poetry` → `astral-sh/setup-uv`
+  - 금지 목록: `pip, uv, pipenv` → `pip, poetry, pipenv`
+- **스킬 리네임**: `skills/poetry-package/` → `skills/uv-package/` (내용 전면 재작성)
+- **python-best-practices 스킬**: uv 기반 명령어 및 PEP 621 pyproject.toml 예시로 교체
+
+### Files Changed
+- `RULES.md`, `CONVENTIONS.md`, `CLAUDE.md`, `README.md`
+- `skills/uv-package/SKILL.md` (신규, poetry-package 대체)
+- `skills/python-best-practices/SKILL.md`
+- `.claude/context.md`
+
 ## [0.8.3] - 2026-02-11
 
 ### Added
@@ -284,6 +303,7 @@
 
 | 버전 | 날짜 | 주요 변경 |
 |------|------|----------|
+| 0.8.4 | 2026-02-13 | Python 패키지 매니저 Poetry → uv 전환 |
 | 0.8.1 | 2026-02-09 | Session Chaining → Auto Memory 전환 (내장 기능 활용) |
 | 0.8.0 | 2026-02-09 | Superpowers 통합 + Auto-Invoke 확장 (17→24개) |
 | 0.7.1 | 2026-02-06 | RULES.md 최적화 (42.3k → 17k, 60% 압축) |
@@ -291,7 +311,7 @@
 | 0.6.1 | 2026-02-04 | Progress Communication (자연어 표현, 마일스톤 박스) |
 | 0.6.0 | 2026-02-04 | Agent Error Recovery (실패 복구, 재시도, 에스컬레이션) |
 | 0.5.0 | 2026-02-04 | Orchestrator/Worker 패턴, Orchestration Pipeline 4단계 |
-| 0.4.0 | 2026-02-02 | optional/ 디렉토리, 패키지 관리 규칙 (Poetry/pnpm 필수) |
+| 0.4.0 | 2026-02-02 | optional/ 디렉토리, 패키지 관리 규칙 (uv/pnpm 필수) |
 | 0.3.0 | 2026-01-31 | PDCA Workflow, 새 스킬 3개, 템플릿 4개 |
 | 0.2.0 | 2025-01-30 | Document Skills 추가, 디렉토리 구조 단순화 |
 | 0.1.0 | 2025-01-29 | 초기 릴리스 |

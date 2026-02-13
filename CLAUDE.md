@@ -60,7 +60,7 @@
 - **Performance**: `/perf-optimize`, `/caching`, `/scaling`
 - **Frontend**: `/react-best-practices`, `/composition-patterns`, `/web-design-guidelines`, `/responsive`, `/a11y`, `/state`, `/seo`
 - **Backend**: `/graphql`, `/websocket`, `/queue`, `/pagination`, `/rate-limit`
-- **Python**: `/python-best-practices`, `/pytest-runner`, `/poetry-package`, `/fastapi`
+- **Python**: `/python-best-practices`, `/pytest-runner`, `/uv-package`, `/fastapi`
 - **DevOps**: `/docker`, `/cicd`, `/monitoring`, `/env`
 - **Git**: `/git-workflow`, `/commit-msg`, `/versioning`
 - **Quality**: `/clean-code`, `/refactoring`, `/testing`

@@ -165,7 +165,7 @@ SOLID 원칙, 에러 핸들링, 테스트 품질, 보안, 성능
 | UI 리뷰 | `/web-design-guidelines` | UI 리뷰, 접근성, a11y, 디자인 검토 |
 | Python 리뷰 | `/python-best-practices` | .py 파일 + 리뷰/검토 키워드 |
 | Python 테스트 | `/pytest-runner` | pytest, 테스트 돌려, coverage |
-| Python 패키지 | `/poetry-package` | ModuleNotFoundError, poetry install |
+| Python 패키지 | `/uv-package` | ModuleNotFoundError, uv sync |
 | 위험 작업 전 | `/checkpoint` | 리팩토링, 마이그레이션, 삭제, refactor |
 | 문제 해결 후 | `/learn` (제안) | 해결, 찾았다, solved, root cause |
 | 긴 세션 | `/note` (제안) | 메시지 50+, 컨텍스트 70%+, 기억해 |
@@ -444,37 +444,29 @@ Quality Review → [Fail: Fix → Re-review] → Complete
 ## Python Project Rules
 **Priority**: 🔴 **Triggers**: Python 프로젝트
 
-**패키지 매니저**: Poetry 필수 (pip, uv, pipenv 금지)
+**패키지 매니저**: uv 필수 (pip, poetry, pipenv 금지)
 
 | 항목 | 규칙 |
 |------|------|
-| 설정 파일 | `pyproject.toml` (Poetry 형식) |
-| Lock 파일 | `poetry.lock` (반드시 커밋) |
-| 앱 프로젝트 | `package-mode = false` 추가 |
+| 설정 파일 | `pyproject.toml` (PEP 621 표준) |
+| Lock 파일 | `uv.lock` (반드시 커밋) |
 
 **pyproject.toml 구조**:
 ```toml
-[tool.poetry]
+[project]
 name = "project-name"
-package-mode = false
+requires-python = ">=3.11"
+dependencies = []
 
-[tool.poetry.dependencies]
-python = "^3.11"
-
-[tool.poetry.group.dev.dependencies]
-pytest = "^8.0"
-
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+[dependency-groups]
+dev = ["pytest>=8.0"]
 ```
 
 **Dockerfile 패턴**:
 ```dockerfile
-RUN pip install poetry
-COPY pyproject.toml poetry.lock ./
-RUN poetry config virtualenvs.create false \
-    && poetry install --only main --no-interaction
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
+COPY pyproject.toml uv.lock ./
+RUN uv sync --frozen --no-dev
 ```
 
 ---

@@ -101,52 +101,45 @@ result = db.execute(query, {"id": user_id})
 
 ### 5. Dependencies (15%)
 
-**필수 규칙**: **Poetry** 사용 (pip, uv, pipenv 금지)
+**필수 규칙**: **uv** 사용 (pip, poetry, pipenv 금지)
 
 **체크 항목**:
-- `pyproject.toml` (Poetry 형식) 존재
-- `poetry.lock` 존재 및 커밋됨
+- `pyproject.toml` (PEP 621 표준) 존재
+- `uv.lock` 존재 및 커밋됨
 - 버전 범위 적절히 지정 (`^`, `~`)
 - 개발 의존성 그룹 분리
 
 ```toml
-# ✅ Good pyproject.toml (Poetry)
-[tool.poetry]
+# ✅ Good pyproject.toml (PEP 621 / uv)
+[project]
 name = "my-project"
 version = "0.1.0"
-package-mode = false  # 앱 프로젝트인 경우
+requires-python = ">=3.11"
+dependencies = []
 
-[tool.poetry.dependencies]
-python = "^3.11"
-fastapi = "^0.109.0"
-pydantic = "^2.5.0"
-
-[tool.poetry.group.dev.dependencies]
-pytest = "^8.0.0"
-mypy = "^1.8.0"
-ruff = "^0.1.0"
-
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+[dependency-groups]
+dev = [
+    "pytest>=8.0",
+    "mypy>=1.8",
+    "ruff>=0.1",
+]
 ```
 
 ```toml
-# ❌ Bad - requirements.txt 또는 [project] 형식 사용
-[project]
-dependencies = ["fastapi>=0.100.0"]
+# ❌ Bad - requirements.txt 또는 Poetry 형식 사용
+[tool.poetry]
+dependencies = {python = "^3.11"}
 
-# ❌ Bad - uv.lock 사용
+# ❌ Bad - poetry.lock 사용
 ```
 
-**검증 도구**: `poetry check`, `poetry lock --check`
+**검증 도구**: `uv lock --check`, `uv sync --frozen`
 
 **Docker 패턴**:
 ```dockerfile
-RUN pip install poetry
-COPY pyproject.toml poetry.lock ./
-RUN poetry config virtualenvs.create false \
-    && poetry install --only main --no-interaction
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
+COPY pyproject.toml uv.lock ./
+RUN uv sync --frozen --no-dev
 ```
 
 ---
@@ -207,30 +200,30 @@ RUN poetry config virtualenvs.create false \
 ## Verification Commands
 
 ```bash
-# Poetry 환경에서 실행 (poetry run 또는 poetry shell 후)
+# uv 환경에서 실행
 
 # Type checking
-poetry run mypy --strict src/
+uv run mypy --strict src/
 
 # Linting & formatting
-poetry run ruff check src/
-poetry run ruff format --check src/
+uv run ruff check src/
+uv run ruff format --check src/
 
 # Testing
-poetry run pytest --cov=src --cov-report=term-missing
+uv run pytest --cov=src --cov-report=term-missing
 
 # Security
-poetry run bandit -r src/
+uv run bandit -r src/
 
 # Dependencies
-poetry check           # pyproject.toml 검증
-poetry lock --check    # lock 파일 동기화 확인
-poetry show --outdated # 업데이트 가능한 패키지
+uv lock --check        # lock 파일 동기화 확인
+uv sync --frozen       # lock 파일 기반 설치 검증
+uv pip list --outdated # 업데이트 가능한 패키지
 
 # 가상환경 관리
-poetry env info        # 환경 정보
-poetry install         # 의존성 설치
-poetry update          # 의존성 업데이트
+uv venv                # 환경 정보/생성
+uv sync                # 의존성 설치
+uv lock --upgrade      # 의존성 업데이트
 ```
 
 ---

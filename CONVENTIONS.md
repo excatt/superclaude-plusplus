@@ -27,48 +27,43 @@
 
 | 항목 | 규칙 |
 |------|------|
-| **패키지 매니저** | **Poetry** (필수) |
-| 설정 파일 | `pyproject.toml` (단일 설정 파일) |
-| Lock 파일 | `poetry.lock` (커밋 필수) |
-| 가상환경 | Poetry 자동 관리 |
-| Docker | `poetry install --only main` |
+| **패키지 매니저** | **uv** (필수) |
+| 설정 파일 | `pyproject.toml` (PEP 621 표준) |
+| Lock 파일 | `uv.lock` (커밋 필수) |
+| 가상환경 | uv 자동 관리 |
+| Docker | `uv sync --frozen --no-dev` |
 
-**Poetry 기본 명령어**:
+**uv 기본 명령어**:
 ```bash
-poetry init          # 프로젝트 초기화
-poetry install       # 의존성 설치
-poetry add <pkg>     # 패키지 추가
-poetry add -G dev <pkg>  # 개발 의존성 추가
-poetry lock          # lock 파일 생성
-poetry run <cmd>     # 가상환경에서 실행
+uv init              # 프로젝트 초기화
+uv sync              # 의존성 설치
+uv add <pkg>         # 패키지 추가
+uv add --dev <pkg>   # 개발 의존성 추가
+uv lock              # lock 파일 생성
+uv run <cmd>         # 가상환경에서 실행
 ```
 
 **pyproject.toml 필수 구조**:
 ```toml
-[tool.poetry]
+[project]
 name = "project-name"
 version = "0.1.0"
-package-mode = false  # 라이브러리가 아닌 경우
+requires-python = ">=3.11"
+dependencies = []
 
-[tool.poetry.dependencies]
-python = "^3.11"
-
-[tool.poetry.group.dev.dependencies]
-pytest = "^8.0"
-mypy = "^1.8"
-ruff = "^0.1"
-
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+[dependency-groups]
+dev = [
+    "pytest>=8.0",
+    "mypy>=1.8",
+    "ruff>=0.1",
+]
 ```
 
 **Dockerfile 패턴**:
 ```dockerfile
-RUN pip install poetry
-COPY pyproject.toml poetry.lock ./
-RUN poetry config virtualenvs.create false \
-    && poetry install --only main --no-interaction
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
+COPY pyproject.toml uv.lock ./
+RUN uv sync --frozen --no-dev
 ```
 
 ## TypeScript

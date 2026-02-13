@@ -3,7 +3,7 @@
 ## 핵심 정보 (항상 로드)
 - **기술 스택**: Markdown documentation framework for Claude Code
 - **아키텍처**: Modular rules/skills/agents/commands structure
-- **컨벤션**: Korean responses, English code, pnpm/Poetry required
+- **컨벤션**: Korean responses, English code, pnpm/uv required
 
 ## 진행 중인 작업
 - (새 작업 추가 시 여기에 기록)
