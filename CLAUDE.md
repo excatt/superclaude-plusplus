@@ -102,10 +102,20 @@ Claude가 `~/.claude/projects/<project>/memory/`에 자동으로 학습 내용�
 | 개인 선호도 (프로젝트) | `./CLAUDE.local.md` |
 | Claude가 학습한 것 | Auto Memory (자동) |
 
+## Custom Validation Skills
+
+커스텀 검증 및 유지보수 스킬은 `.claude/skills/`에 정의되어 있습니다.
+
+| Skill | Purpose |
+|-------|---------|
+| `verify-implementation` | 프로젝트의 모든 verify 스킬을 순차 실행하여 통합 검증 보고서를 생성합니다 |
+| `manage-skills` | 세션 변경사항을 분석하고, 검증 스킬을 생성/업데이트하며, CLAUDE.md를 관리합니다 |
+
 ## Workflow Integration
 - **Pre-Implementation**: `/confidence-check` → ≥90% proceed
 - **Planning**: `/feature-planner` → `/architecture`
 - **Implementation**: Domain-specific skills
 - **Review**: `/code-review`, `/security-audit`, `/web-design-guidelines`
+- **Validation**: `/verify-implementation` → 통합 검증, `/manage-skills` → 스킬 유지보수
 - **Deployment**: `/docker`, `/cicd`, `/monitoring`
 - **Post-Implementation**: `/verify`, `/learn`
