@@ -1,25 +1,25 @@
 # MCP Servers Reference
 
-통합된 MCP 서버 매트릭스. 각 서버의 목적, 트리거, 선택 기준을 압축 형식으로 제공.
+Unified MCP server matrix. Provides purpose, triggers, and selection criteria in compressed format.
 
 ## Quick Selection Matrix
 
 | Server | Purpose | Best For | NOT For |
 |--------|---------|----------|---------|
-| **Context7** | 공식 문서 조회 | 프레임워크 패턴, 버전별 API | 일반 설명 |
-| **Magic** | UI 컴포넌트 생성 | 버튼, 폼, 모달, 테이블 | 백엔드 로직 |
-| **Morphllm** | 패턴 기반 편집 | 벌크 변환, 스타일 적용 | 심볼 리네임 |
-| **Playwright** | 브라우저 자동화 | E2E 테스트, 스크린샷 | 정적 코드 분석 |
-| **Sequential** | 다단계 추론 | 복잡한 디버깅, 아키텍처 분석 | 단순 작업 |
-| **Serena** | 시맨틱 코드 이해 | 심볼 작업, 세션 관리 | 단순 텍스트 치환 |
-| **Tavily** | 웹 검색/리서치 | 최신 정보, 리서치 | 로컬 파일 작업 |
+| **Context7** | Official docs lookup | Framework patterns, version-specific APIs | General explanations |
+| **Magic** | UI component generation | Buttons, forms, modals, tables | Backend logic |
+| **Morphllm** | Pattern-based editing | Bulk transforms, style application | Symbol renaming |
+| **Playwright** | Browser automation | E2E tests, screenshots | Static code analysis |
+| **Sequential** | Multi-step reasoning | Complex debugging, architecture analysis | Simple tasks |
+| **Serena** | Semantic code understanding | Symbol operations, session management | Simple text substitution |
+| **Tavily** | Web search/research | Latest info, research | Local file operations |
 
 ---
 
 ## Context7
-**Purpose**: 공식 라이브러리 문서 조회 및 프레임워크 패턴 가이드
+**Purpose**: Official library documentation lookup and framework pattern guide
 
-**Triggers**: `import`, `require`, `from` | 프레임워크 키워드 | 버전별 구현 필요
+**Triggers**: `import`, `require`, `from` | Framework keywords | Version-specific implementation needed
 
 **Examples**:
 - "implement React useEffect" → Context7
@@ -29,9 +29,9 @@
 ---
 
 ## Magic
-**Purpose**: 21st.dev 패턴 기반 모던 UI 컴포넌트 생성
+**Purpose**: 21st.dev pattern-based modern UI component generation
 
-**Triggers**: `/ui`, `/21` 명령 | button, form, modal, card, table, nav
+**Triggers**: `/ui`, `/21` commands | button, form, modal, card, table, nav
 
 **Examples**:
 - "create a login form" → Magic
@@ -41,21 +41,21 @@
 ---
 
 ## Morphllm
-**Purpose**: 토큰 최적화된 패턴 기반 코드 편집 엔진
+**Purpose**: Token-optimized pattern-based code editing engine
 
-**Triggers**: 다중 파일 편집 | 스타일 적용 | 벌크 텍스트 치환
+**Triggers**: Multi-file edits | Style application | Bulk text substitution
 
 **Examples**:
 - "update all class components to hooks" → Morphllm
 - "replace console.log with logger" → Morphllm
-- "rename getUserData everywhere" → Serena (심볼 작업)
+- "rename getUserData everywhere" → Serena (symbol operation)
 
 ---
 
 ## Playwright
-**Purpose**: 실제 브라우저 상호작용 및 E2E 테스트
+**Purpose**: Real browser interaction and E2E testing
 
-**Triggers**: 브라우저 테스트 | 스크린샷 | 폼 제출 테스트 | 접근성 검증
+**Triggers**: Browser tests | Screenshots | Form submission tests | Accessibility validation
 
 **Examples**:
 - "test the login flow" → Playwright
@@ -65,9 +65,9 @@
 ---
 
 ## Sequential
-**Purpose**: 복잡한 분석 및 체계적 문제 해결을 위한 다단계 추론
+**Purpose**: Multi-step reasoning for complex analysis and systematic problem-solving
 
-**Triggers**: `--think`, `--think-hard`, `--ultrathink` | 다층 디버깅 | 아키텍처 분석
+**Triggers**: `--think`, `--think-hard`, `--ultrathink` | Multi-layer debugging | Architecture analysis
 
 **Examples**:
 - "why is this API slow?" → Sequential
@@ -77,9 +77,9 @@
 ---
 
 ## Serena
-**Purpose**: 프로젝트 메모리 및 세션 지속성을 갖춘 시맨틱 코드 이해
+**Purpose**: Semantic code understanding with project memory and session persistence
 
-**Triggers**: 심볼 작업 (rename, extract, move) | `/sc:load`, `/sc:save` | LSP 통합
+**Triggers**: Symbol operations (rename, extract, move) | `/sc:load`, `/sc:save` | LSP integration
 
 **Examples**:
 - "rename getUserData everywhere" → Serena
@@ -89,11 +89,11 @@
 ---
 
 ## Tavily
-**Purpose**: 리서치 및 최신 정보를 위한 웹 검색
+**Purpose**: Web search for research and latest information
 
-**Triggers**: `/sc:research` | 지식 컷오프 이후 정보 | 팩트체킹 | 경쟁 분석
+**Triggers**: `/sc:research` | Post-cutoff info | Fact-checking | Competitive analysis
 
-**Config**: `TAVILY_API_KEY` 환경변수 필요
+**Config**: Requires `TAVILY_API_KEY` environment variable
 
 **Search Types**: Web | News | Academic | Domain-filtered
 
@@ -110,24 +110,24 @@
 
 | Task | Primary | Secondary |
 |------|---------|-----------|
-| 프레임워크 UI 구현 | Magic | Context7 |
-| 복잡한 리팩토링 | Serena | Morphllm |
-| 리서치 + 분석 | Tavily | Sequential |
-| E2E 테스트 설계 | Sequential | Playwright |
-| 문서 기반 코딩 | Context7 | Sequential |
+| Framework UI implementation | Magic | Context7 |
+| Complex refactoring | Serena | Morphllm |
+| Research + analysis | Tavily | Sequential |
+| E2E test design | Sequential | Playwright |
+| Doc-based coding | Context7 | Sequential |
 
 ---
 
 ## Flag Reference
 
 ```
---c7, --context7    → Context7 활성화
---magic             → Magic 활성화
---morph, --morphllm → Morphllm 활성화
---play, --playwright → Playwright 활성화
---seq, --sequential → Sequential 활성화
---serena            → Serena 활성화
---tavily            → Tavily 활성화
---all-mcp           → 전체 MCP 활성화
---no-mcp            → MCP 비활성화 (네이티브만)
+--c7, --context7    → Enable Context7
+--magic             → Enable Magic
+--morph, --morphllm → Enable Morphllm
+--play, --playwright → Enable Playwright
+--seq, --sequential → Enable Sequential
+--serena            → Enable Serena
+--tavily            → Enable Tavily
+--all-mcp           → Enable all MCP
+--no-mcp            → Disable MCP (native only)
 ```

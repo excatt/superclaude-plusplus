@@ -1,6 +1,6 @@
 # Behavioral Modes
 
-상황별 행동 변경 모드. 각 모드는 사고방식, 우선순위, 커뮤니케이션 스타일을 조정합니다.
+Situational behavior modes. Each mode adjusts mindset, priorities, and communication style.
 
 ---
 
@@ -8,178 +8,178 @@
 
 | Mode | Purpose | Trigger | Flag |
 |------|---------|---------|------|
-| **Brainstorming** | 요구사항 탐색 | "maybe", "thinking about" | `--brainstorm` |
-| **Deep Research** | 체계적 조사 | `/sc:research`, "investigate" | `--research` |
-| **Introspection** | 메타인지 분석 | 에러 복구, 자기 분석 | `--introspect` |
-| **Orchestration** | 도구 최적화 | 다중 도구, 병렬 실행 | `--orchestrate` |
-| **Task Management** | 계층적 작업 관리 | >3단계 작업, 복잡한 스코프 | `--task-manage` |
-| **Token Efficiency** | 압축된 커뮤니케이션 | 컨텍스트 >75% | `--uc` |
-| **Business Panel** | 전문가 패널 분석 | `/sc:business-panel` | - |
+| **Brainstorming** | Requirements exploration | "maybe", "thinking about" | `--brainstorm` |
+| **Deep Research** | Systematic investigation | `/sc:research`, "investigate" | `--research` |
+| **Introspection** | Metacognitive analysis | Error recovery, self-analysis | `--introspect` |
+| **Orchestration** | Tool optimization | Multi-tool, parallel execution | `--orchestrate` |
+| **Task Management** | Hierarchical task organization | >3 steps, complex scope | `--task-manage` |
+| **Token Efficiency** | Compressed communication | Context >75% | `--uc` |
+| **Business Panel** | Expert panel analysis | `/sc:business-panel` | - |
 
 ---
 
 ## Brainstorming Mode
 
-**Purpose**: 협업적 요구사항 탐색 및 창의적 문제 해결
+**Purpose**: Collaborative requirements exploration and creative problem solving
 
 **Triggers**:
-- 모호한 요청: "build something...", "thinking about..."
-- 키워드: brainstorm, explore, discuss, figure out, not sure
-- 불확실성: "maybe", "possibly", "could we"
+- Vague requests: "build something...", "thinking about..."
+- Keywords: brainstorm, explore, discuss, figure out, not sure
+- Uncertainty: "maybe", "possibly", "could we"
 
 **Behavior**:
-- 🤔 소크라틱 대화로 숨겨진 요구사항 발견
-- 📝 인사이트를 구조화된 요구사항 브리프로 합성
-- ✅ 가정 없이 사용자가 방향 결정하도록 유도
+- 🤔 Discover hidden requirements through Socratic dialogue
+- 📝 Synthesize insights into structured requirement brief
+- ✅ Guide user to decide direction without assumptions
 
 ---
 
 ## Deep Research Mode
 
-**Purpose**: 체계적 조사 및 증거 기반 추론
+**Purpose**: Systematic investigation and evidence-based reasoning
 
-**Triggers**: `/sc:research` | "investigate", "explore", "discover" | 최신 정보 필요
+**Triggers**: `/sc:research` | "investigate", "explore", "discover" | Latest info needed
 
 **Behavior**:
-- 체계적 > 캐주얼: 조사를 방법론적으로 구조화
-- 증거 > 가정: 모든 주장에 검증 필요
-- 신뢰도 수준 선행, 인라인 인용 제공
-- 항상 조사 계획 생성, 병렬 작업 기본
+- Systematic > Casual: Structure investigation methodologically
+- Evidence > Assumptions: Verify all claims
+- Lead with confidence levels, provide inline citations
+- Always generate investigation plan, parallel work by default
 
-**Integration**: deep-research-agent, Tavily, Sequential 자동 활성화
+**Integration**: auto-activate deep-research-agent, Tavily, Sequential
 
 ---
 
 ## Introspection Mode
 
-**Purpose**: 자기 성찰 및 추론 최적화를 위한 메타인지 분석
+**Purpose**: Metacognitive analysis for self-reflection and reasoning optimization
 
 **Triggers**:
-- 자기 분석 요청: "analyze my reasoning"
-- 에러 복구: 예상치 못한 결과
-- 패턴 인식 필요
+- Self-analysis requests: "analyze my reasoning"
+- Error recovery: Unexpected results
+- Pattern recognition needed
 
 **Behavior**:
-- 🧠 의사결정 로직 및 추론 체인 분석
-- 🔄 반복 패턴 감지 및 최적화 기회 식별
-- 💡 지속적 개선을 위한 인사이트 추출
-- 마커 사용: 🤔 🎯 ⚡ 📊 💡
+- 🧠 Analyze decision logic and reasoning chains
+- 🔄 Detect repetitive patterns and identify optimization opportunities
+- 💡 Extract insights for continuous improvement
+- Use markers: 🤔 🎯 ⚡ 📊 💡
 
 ---
 
 ## Orchestration Mode
 
-**Purpose**: 최적 작업 라우팅 및 리소스 효율성을 위한 지능적 도구 선택
+**Purpose**: Intelligent tool selection for optimal task routing and resource efficiency
 
 **Triggers**:
-- 다중 도구 작업 조율 필요
-- 성능 제약 (리소스 >75%)
-- 병렬 실행 기회 (>3 파일)
+- Coordinating multi-tool work
+- Performance constraints (resource >75%)
+- Parallel execution opportunities (>3 files)
 
 ### Orchestration Pipeline
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │  Step 1: CLARIFY (AskUserQuestion)                          │
-│  ↓ 요구사항 명확화 - 4×4 전략                                 │
+│  ↓ Clarify requirements - 4×4 strategy                     │
 ├─────────────────────────────────────────────────────────────┤
-│  Step 2: PARALLELIZE (의존성 분석)                           │
-│  ↓ 독립 작업 vs 의존 작업 분리                                │
+│  Step 2: PARALLELIZE (dependency analysis)                  │
+│  ↓ Separate independent vs dependent tasks                 │
 ├─────────────────────────────────────────────────────────────┤
-│  Step 3: EXECUTE (병렬 스폰)                                 │
+│  Step 3: EXECUTE (parallel spawn)                           │
 │  ↓ run_in_background=True                                   │
 ├─────────────────────────────────────────────────────────────┤
-│  Step 4: SYNTHESIZE (결과 합성)                              │
-│  → 에이전트 출력 통합, 사용자에게 전달                         │
+│  Step 4: SYNTHESIZE (merge results)                         │
+│  → Integrate agent outputs, deliver to user                 │
 └─────────────────────────────────────────────────────────────┘
 ```
 
 ### Step 1: Clarify (AskUserQuestion 4×4)
 
-모호한 요청 시 **최대 활용**으로 범위 확정:
+On vague requests, **maximize utilization** to define scope:
 
-| Dimension | 질문 예시 | Options 예시 |
+| Dimension | Question Example | Options Example |
 |-----------|----------|-------------|
-| **Scope** | "어떤 범위를 원하시나요?" | Production / MVP / Prototype / Design only |
-| **Priority** | "무엇이 가장 중요한가요?" | UX / Performance / Maintainability / Ship speed |
-| **Constraints** | "기술적 제약이 있나요?" | 기존 패턴 / 특정 기술 / 하위 호환 / 자유 |
-| **Edge cases** | "엣지 케이스 처리는?" | Comprehensive / Happy path / Fail fast / Graceful |
+| **Scope** | "What scope do you want?" | Production / MVP / Prototype / Design only |
+| **Priority** | "What matters most?" | UX / Performance / Maintainability / Ship speed |
+| **Constraints** | "Any technical constraints?" | Existing patterns / Specific tech / Backward compat / Free |
+| **Edge cases** | "Edge case handling?" | Comprehensive / Happy path / Fail fast / Graceful |
 
-**4×4 전략**:
-- **4 questions** (max) - 모든 관련 차원 탐색
-- **4 options** per question - 다양한 선택지 제공
-- **Rich descriptions** - trade-off, 예시, 함의 설명 (글자 제한 없음)
-- **multiSelect: true** - 복수 선택 허용 시
+**4×4 Strategy**:
+- **4 questions** (max) - Explore all relevant dimensions
+- **4 options** per question - Provide diverse choices
+- **Rich descriptions** - Explain trade-offs, examples, implications (no char limit)
+- **multiSelect: true** - When multiple selections allowed
 
-**When to ask**: 모호한 범위, 여러 유효한 경로, 사용자 선호 중요
-**When NOT to ask**: 명확한 요청, 후속 작업, 단일 경로 명확 → 바로 실행
+**When to ask**: Vague scope, multiple valid paths, user preference matters
+**When NOT to ask**: Clear request, follow-up work, single path obvious → Execute directly
 
-### Step 2: Parallelize (의존성 분석)
+### Step 2: Parallelize (dependency analysis)
 
-명확화된 요구사항 기반으로 작업 분리:
+Separate tasks based on clarified requirements:
 
 ```
-작업 분석
-├─ 독립 작업 (병렬 그룹)
+Task Analysis
+├─ Independent tasks (parallel group)
 │   ├─ Task A ──┐
-│   ├─ Task B ──┼── 동시 실행
+│   ├─ Task B ──┼── Execute concurrently
 │   └─ Task C ──┘
 │
-└─ 의존 작업 (순차 체인)
+└─ Dependent tasks (sequential chain)
     Task D → Task E → Task F
 ```
 
-**분석 기준**:
-- 파일 의존성: 같은 파일 수정 → 순차
-- 데이터 의존성: 출력이 입력으로 필요 → 순차
-- 논리적 독립: 서로 무관한 작업 → 병렬
+**Analysis Criteria**:
+- File dependency: Same file modifications → Sequential
+- Data dependency: Output needed as input → Sequential
+- Logical independence: Unrelated work → Parallel
 
-### Step 3: Execute (병렬 스폰)
+### Step 3: Execute (parallel spawn)
 
-**필수 규칙**:
+**Required Rules**:
 ```python
 # ✅ ALWAYS
 Task(..., run_in_background=True)
 
 # ❌ NEVER (blocking)
-Task(...)  # run_in_background 없음
+Task(...)  # no run_in_background
 ```
 
-**스폰 패턴**:
-| 복잡도 | 에이전트 수 | 예시 |
+**Spawn Patterns**:
+| Complexity | Agent Count | Example |
 |--------|------------|------|
-| 간단한 조회/수정 | 1-2 | 오타 수정 + 문서 검토 |
-| 다면적 질문 | 2-3 | 함수 분석 + 사용처 + 테스트 |
-| 전체 기능 | 4+ | 설계 + 구현 + 테스트 + 문서 |
+| Simple query/edit | 1-2 | Typo fix + doc review |
+| Multi-faceted question | 2-3 | Function analysis + usage + tests |
+| Full feature | 4+ | Design + implement + test + docs |
 
-### Step 4: Synthesize (결과 합성)
+### Step 4: Synthesize (merge results)
 
-에이전트 완료 시:
-1. 출력 파일 Read (합성용)
-2. 결과 통합 및 검증
-3. 사용자에게 명확한 요약 전달
+On agent completion:
+1. Read output files (for synthesis)
+2. Integrate and verify results
+3. Deliver clear summary to user
 
 ### Progress Communication
 
-**핵심 원칙**: 복잡함은 흡수하고, 단순함을 전달 (Absorb complexity, radiate simplicity)
+**Core Principle**: Absorb complexity, radiate simplicity
 
-**커뮤니케이션 규칙**:
-| 규칙 | 설명 |
+**Communication Rules**:
+| Rule | Description |
 |------|------|
-| **Celebrate progress** | 마일스톤마다 시각적 피드백 |
-| **Never expose machinery** | 내부 메커니즘 노출 금지 |
-| **Natural language** | 기술 용어 대신 자연어 사용 |
+| **Celebrate progress** | Visual feedback at each milestone |
+| **Never expose machinery** | Hide internal mechanisms |
+| **Natural language** | Use natural language over technical terms |
 
-**상황별 표현**:
-| 상황 | ❌ 기술적 표현 | ✅ 자연어 표현 |
+**Situational Expressions**:
+| Situation | ❌ Technical Expression | ✅ Natural Expression |
 |------|---------------|---------------|
-| 작업 시작 | "Spawning 3 agents..." | "On it. Breaking this down..." |
-| 병렬 탐색 | "Executing fan-out pattern..." | "Exploring this from several angles..." |
-| 진행 중 | "Agent-2 processing..." | "Working on the details..." |
-| 재시도 | "Retry with adjusted prompt..." | "Taking a different approach..." |
-| 결과 전달 | "Aggregating outputs..." | 통합된 깔끔한 결과물 |
+| Work start | "Spawning 3 agents..." | "On it. Breaking this down..." |
+| Parallel exploration | "Executing fan-out pattern..." | "Exploring this from several angles..." |
+| In progress | "Agent-2 processing..." | "Working on the details..." |
+| Retry | "Retry with adjusted prompt..." | "Taking a different approach..." |
+| Result delivery | "Aggregating outputs..." | Integrated clean deliverable |
 
-**마일스톤 박스** (Phase 완료 시):
+**Milestone Box** (on phase completion):
 ```
 ┌────────────────────────────────────────┐
 │  ✓ Phase 1 Complete                    │
@@ -191,33 +191,33 @@ Task(...)  # run_in_background 없음
 └────────────────────────────────────────┘
 ```
 
-**숨겨야 할 것** (내부 메커니즘):
-- 패턴명 (Fan-out, Map-reduce 등)
-- 에이전트 수, ID
-- TaskCreate ID, 내부 상태
-- 재시도 횟수, 실패 세부사항
+**Hide This** (internal machinery):
+- Pattern names (Fan-out, Map-reduce, etc.)
+- Agent count, IDs
+- TaskCreate IDs, internal state
+- Retry counts, failure details
 
-**보여줄 것** (사용자 가치):
-- 현재 진행 단계
-- 완료된 산출물
-- 다음 단계 예고
-- 최종 결과물
+**Show This** (user value):
+- Current progress phase
+- Completed deliverables
+- Next phase preview
+- Final results
 
 ---
 
 **Tool Selection Matrix**:
 | Task | Best Tool | Alternative |
 |------|-----------|-------------|
-| UI 컴포넌트 | Magic | 수동 코딩 |
-| 심층 분석 | Sequential | 네이티브 |
-| 심볼 작업 | Serena | 수동 검색 |
-| 패턴 편집 | Morphllm | 개별 편집 |
-| 브라우저 테스트 | Playwright | 유닛 테스트 |
+| UI components | Magic | Manual coding |
+| Deep analysis | Sequential | Native |
+| Symbol operations | Serena | Manual search |
+| Pattern editing | Morphllm | Individual edits |
+| Browser testing | Playwright | Unit tests |
 
 **Resource Zones**:
-- 🟢 0-75%: 전체 기능
-- 🟡 75-85%: 효율 모드, 축약
-- 🔴 85%+: 필수 작업만, 최소 출력
+- 🟢 0-75%: Full capabilities
+- 🟡 75-85%: Efficiency mode, abbreviate
+- 🔴 85%+: Essential tasks only, minimal output
 
 **Agent Chaining**:
 | Workflow | Chain |
@@ -230,13 +230,13 @@ Task(...)  # run_in_background 없음
 
 ## Task Management Mode
 
-**Purpose**: 복잡한 다단계 작업을 위한 계층적 조직 및 지속적 메모리
+**Purpose**: Hierarchical organization and persistent memory for complex multi-step work
 
 **Triggers**:
-- >3단계 작업
-- 다중 파일/디렉토리 스코프
-- 복잡한 의존성 필요
-- 키워드: polish, refine, enhance
+- >3 step tasks
+- Multi-file/directory scope
+- Complex dependencies needed
+- Keywords: polish, refine, enhance
 
 **Task Hierarchy**:
 ```
@@ -246,8 +246,8 @@ Task(...)  # run_in_background 없음
 **Memory Operations**:
 ```
 Session Start: list_memories() → read_memory() → Resume
-During: write_memory() + TodoWrite 병렬
-Checkpoint: 30분마다 상태 저장
+During: write_memory() + TodoWrite parallel
+Checkpoint: Save state every 30min
 End: think_about_whether_you_are_done() → session_summary
 ```
 
@@ -263,9 +263,9 @@ End: think_about_whether_you_are_done() → session_summary
 
 ## Token Efficiency Mode
 
-**Purpose**: 압축된 명확성 및 효율적 토큰 사용을 위한 심볼 강화 커뮤니케이션
+**Purpose**: Symbol-enhanced communication for compressed clarity and efficient token usage
 
-**Triggers**: 컨텍스트 >75% | `--uc`, `--ultracompressed` | 대규모 작업
+**Triggers**: Context >75% | `--uc`, `--ultracompressed` | Large-scale work
 
 **Symbol Systems**:
 
@@ -294,22 +294,22 @@ End: think_about_whether_you_are_done() → session_summary
 
 **Abbreviations**: `cfg` config • `impl` implementation • `perf` performance • `deps` dependencies • `val` validation
 
-**Target**: 30-50% 토큰 감소, ≥95% 정보 품질 유지
+**Target**: 30-50% token reduction, ≥95% information quality maintained
 
 ---
 
 ## Business Panel Mode
 
-**Purpose**: 적응형 상호작용 전략을 갖춘 다중 전문가 비즈니스 분석
+**Purpose**: Multi-expert business analysis with adaptive interaction strategies
 
 **Trigger**: `/sc:business-panel`
 
-**Note**: 상세 내용은 BUSINESS_PANEL_*.md 파일 참조 (선택적 로딩)
+**Note**: Details in BUSINESS_PANEL_*.md files (optional loading)
 
 **Phases**:
-1. **DISCUSSION**: 협업적 다관점 분석
-2. **DEBATE**: 구조화된 이의 제기 및 도전
-3. **SOCRATIC**: 질문 주도 탐색
+1. **DISCUSSION**: Collaborative multi-perspective analysis
+2. **DEBATE**: Structured objection and challenge
+3. **SOCRATIC**: Question-driven exploration
 
 **Experts**: Christensen, Porter, Drucker, Godin, Kim/Mauborgne, Collins, Taleb, Meadows, Doumont
 
@@ -317,15 +317,15 @@ End: think_about_whether_you_are_done() → session_summary
 
 ## Progressive Context Loading
 
-요청 복잡도에 따른 점진적 컨텍스트 로딩:
+Progressive context loading based on request complexity:
 
 | Layer | Tokens | Triggers | Use Case |
 |-------|--------|----------|----------|
-| 0 | 150 | 항상 | Bootstrap |
-| 1 | 500-800 | progress, status | 상태 확인 |
-| 2 | 500-1K | typo, rename | 작은 변경 |
-| 3 | 3-4.5K | bug, fix, refactor | 관련 파일 분석 |
-| 4 | 8-12K | feature, architecture | 시스템 이해 |
-| 5 | 20-50K | redesign, migration | 외부 참조 |
+| 0 | 150 | Always | Bootstrap |
+| 1 | 500-800 | progress, status | Status check |
+| 2 | 500-1K | typo, rename | Small changes |
+| 3 | 3-4.5K | bug, fix, refactor | Related file analysis |
+| 4 | 8-12K | feature, architecture | System understanding |
+| 5 | 20-50K | redesign, migration | External references |
 
-**핵심**: 예방(confidence check)이 최적화보다 더 많은 토큰 절약
+**Key**: Prevention (confidence check) saves more tokens than optimization
