@@ -5,7 +5,7 @@
 형식은 [Keep a Changelog](https://keepachangelog.com/ko/1.0.0/)를 따르며,
 [Semantic Versioning](https://semver.org/lang/ko/)을 준수합니다.
 
-## [0.8.5] - 2026-02-14
+## [0.9.0] - 2026-02-14
 
 ### Added
 - **`/audit` 스킬** (`skills/audit/`):
@@ -324,7 +324,7 @@
 
 | 버전 | 날짜 | 주요 변경 |
 |------|------|----------|
-| 0.8.5 | 2026-02-14 | `/audit` 스킬 추가 (프로젝트 고유 규칙 검증) |
+| 0.9.0 | 2026-02-14 | `/audit` 스킬 추가 (프로젝트 고유 규칙 검증) |
 | 0.8.4 | 2026-02-13 | Python 패키지 매니저 Poetry → uv 전환 |
 | 0.8.1 | 2026-02-09 | Session Chaining → Auto Memory 전환 (내장 기능 활용) |
 | 0.8.0 | 2026-02-09 | Superpowers 통합 + Auto-Invoke 확장 (17→24개) |
