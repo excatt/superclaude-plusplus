@@ -45,6 +45,7 @@ SuperClaude++는 [SuperClaude Framework](https://github.com/SuperClaude-Org/Supe
 | `/checkpoint` | 위험 작업 전 복원 지점 생성 |
 | `/note` | 컴팩션에서 살아남는 영구 메모 시스템 |
 | `/learn` | 재사용 가능한 패턴 추출 및 저장 |
+| `/audit` | 프로젝트 고유 규칙 검증 (비즈니스 로직, 아키텍처 패턴) |
 
 #### Development Skills
 | Skill | 설명 |
@@ -71,11 +72,11 @@ SuperClaude++는 [SuperClaude Framework](https://github.com/SuperClaude-Org/Supe
 - **Security**: `/security-audit`, `/auth`, `/error-handling`
 - **Performance**: `/perf-optimize`, `/caching`, `/scaling`
 - **DevOps**: `/docker`, `/cicd`, `/monitoring`, `/env`
-- **Quality**: `/clean-code`, `/refactoring`, `/testing`, `/code-review`
+- **Quality**: `/clean-code`, `/refactoring`, `/testing`, `/code-review`, `/audit`
 
 ### 🔧 Automation
 
-#### Auto-Invoked Skills (24개)
+#### Auto-Invoked Skills (25개)
 | 트리거 | 스킬 | 키워드 |
 |--------|------|--------|
 | 구현 시작 전 | `/confidence-check` | 구현, 만들어, implement |
@@ -94,6 +95,7 @@ SuperClaude++는 [SuperClaude Framework](https://github.com/SuperClaude-Org/Supe
 | 에러 핸들링 누락 | `/error-handling` | async/await + no try-catch |
 | Next.js 작업 | `/nextjs` | page.tsx, layout.tsx |
 | FastAPI 작업 | `/fastapi` | @router, APIRouter |
+| 프로젝트 규칙 검증 | `/audit` | commit, PR + `.claude/audit-rules/` 존재 시 |
 
 #### Proactive Suggestions
 작업 컨텍스트에 맞는 스킬/에이전트/MCP 서버를 **적극 제안** (확인 후 실행):
@@ -107,6 +109,8 @@ SuperClaude++는 [SuperClaude Framework](https://github.com/SuperClaude-Org/Supe
 | 프레임워크 | **Context7** MCP | React, Next.js, Vue |
 | UI 컴포넌트 | **Magic** MCP | button, form, modal |
 | 복잡한 분석 | **Sequential** MCP | 디버깅 3회+, 설계 |
+| 프로젝트 규칙 검증 | `/audit` | commit, PR + `.claude/audit-rules/` 존재 시 |
+| 새 패턴 도입 | `/audit manage` | 새 컨벤션, 아키텍처 패턴 정립 |
 
 **제안 강도 플래그**: `--suggest-all` (기본) | `--suggest-minimal` | `--suggest-off`
 
@@ -329,7 +333,7 @@ Claude Code의 내장 Auto Memory를 활용한 세션 간 연속성:
 | **Stage 2: Code Quality** | 코드 품질 | Critical/Important/Minor 이슈 |
 
 - **Reviewer 원칙**: "DO NOT trust the implementer's report" - 실제 코드 직접 확인
-- **Review Loop**: Implement → Spec Review → Quality Review → Complete
+- **Review Loop**: Implement → Spec Review → Quality Review → /verify → /audit → Complete
 
 ### Verification Iron Law
 완료 주장 시 자동 검증 게이트:
@@ -433,7 +437,7 @@ SuperClaude++ = SuperClaude + 다음 요소들의 통합:
 - ⚡ Superpowers 통합 (Two-Stage Review, Verification Iron Law, 3+ Fixes Rule)
 - 📝 Note 시스템 (컴팩션 대응)
 - 🎯 40+ 도메인별 Skills
-- 🔧 자동 스킬 호출 시스템 (24개 Auto-Invoke 트리거)
+- 🔧 자동 스킬 호출 시스템 (25개 Auto-Invoke 트리거)
 - 📦 패키지 관리 규칙 강제 (uv/pnpm)
 - 🌐 한국어 우선 지원
 

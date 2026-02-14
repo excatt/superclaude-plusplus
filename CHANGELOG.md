@@ -5,6 +5,27 @@
 형식은 [Keep a Changelog](https://keepachangelog.com/ko/1.0.0/)를 따르며,
 [Semantic Versioning](https://semver.org/lang/ko/)을 준수합니다.
 
+## [0.9.0] - 2026-02-14
+
+### Added
+- **`/audit` 스킬** (`skills/audit/`):
+  - 프로젝트 고유 규칙 검증 (린터가 잡지 못하는 비즈니스 로직, 아키텍처 패턴, 네이밍 컨벤션)
+  - RUN 모드: 규칙 실행 + 리포트 + 수정 워크플로우 (전체/개별/건너뛰기)
+  - MANAGE 모드: 프로젝트 타입 감지 → 시드 규칙 부트스트랩, 규칙 CRUD
+  - Auto-exempt 파일 목록 (lock, generated, docs, fixtures, vendor, CI/CD)
+  - Bundle Resources: `references/rule-format.md` (규칙 작성 가이드 + 품질 기준)
+  - 예제 규칙 3개: API 응답 형식, 에러 핸들링 패턴, 네이밍 컨벤션
+  - 규칙 저장 위치: `.claude/audit-rules/*.md`
+- **Auto-Invoke 확장** (24개 → 25개):
+  - commit/PR 시 `.claude/audit-rules/` 존재하면 `/audit` 자동 실행
+- **Proactive Suggestion 추가**:
+  - 새 컨벤션/아키텍처 패턴 정립 시 `/audit manage` 제안
+
+### Changed
+- **CLAUDE.md**: Auto-Invoke 테이블에 `/audit` 추가, Workflow Integration에 Verification 단계 추가
+- **RULES.md**: Review Loop에 `/verify → /audit` 단계 추가
+- **README.md**: Core Skills, Auto-Invoke, Proactive Suggestions, Quality 도메인 업데이트
+
 ## [0.8.4] - 2026-02-13
 
 ### Changed
@@ -303,6 +324,7 @@
 
 | 버전 | 날짜 | 주요 변경 |
 |------|------|----------|
+| 0.9.0 | 2026-02-14 | `/audit` 스킬 추가 (프로젝트 고유 규칙 검증) |
 | 0.8.4 | 2026-02-13 | Python 패키지 매니저 Poetry → uv 전환 |
 | 0.8.1 | 2026-02-09 | Session Chaining → Auto Memory 전환 (내장 기능 활용) |
 | 0.8.0 | 2026-02-09 | Superpowers 통합 + Auto-Invoke 확장 (17→24개) |
