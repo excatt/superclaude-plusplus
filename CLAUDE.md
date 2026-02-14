@@ -20,40 +20,40 @@
 ### Auto-Invoke (No confirmation)
 | Trigger | Skill | Keywords |
 |---------|-------|----------|
-| Before implementation | `/confidence-check` | implement, create, build |
-| After completion | `/verify` | done, finished, PR |
-| Build error | `/build-fix` | error TS, Build failed |
-| React review | `/react-best-practices` | .tsx + review |
-| Python review | `/python-best-practices` | .py + review |
-| UI review | `/web-design-guidelines` | UI review, accessibility, a11y |
-| Risky operation | `/checkpoint` | refactor, delete |
-| **Commit/PR** | **Two-Stage Review** | commit, PR, merge, review |
-| **Completion claim** | **Verification Gate** | fixed, works, passes |
-| **3+ fix failures** | **Architecture Alert** | (auto-detect) |
-| **Agent spawn** | **Worker Template** | When using Task tool |
-| Test failure | `/debug` | pytest FAILED, test failed |
-| Complex function | `/code-smell` | 50+ line function created |
-| Missing error handling | `/error-handling` | async/await + no try-catch |
-| Next.js work | `/nextjs` | page.tsx, layout.tsx, route.ts |
-| FastAPI work | `/fastapi` | @router, APIRouter |
-| Large-scale change | `/checkpoint` | 10+ files to modify |
-| Project rule validation | `/audit` | commit, PR + `.claude/audit-rules/` exists |
+| 구현 전 | `/confidence-check` | 구현, 만들어, implement, create, build |
+| 완료 후 | `/verify` | 완료, done, finished, PR |
+| 빌드 에러 | `/build-fix` | error TS, Build failed |
+| React 리뷰 | `/react-best-practices` | .tsx + 리뷰, review |
+| Python 리뷰 | `/python-best-practices` | .py + 리뷰, review |
+| UI 리뷰 | `/web-design-guidelines` | UI 리뷰, 접근성, a11y |
+| 위험 작업 | `/checkpoint` | 리팩토링, 삭제, refactor, delete |
+| **커밋/PR** | **Two-Stage Review** | 커밋, PR, 머지, 리뷰해줘, commit, merge, review |
+| **완료 주장** | **Verification Gate** | 됐어, 작동해, 통과, fixed, works, passes |
+| **수정 3회 실패** | **Architecture Alert** | (자동 감지) |
+| **에이전트 스폰** | **Worker Template** | Task tool 사용 시 |
+| 테스트 실패 | `/debug` | pytest FAILED, test failed |
+| 복잡한 함수 | `/code-smell` | 50줄+ 함수 생성 |
+| 에러 핸들링 누락 | `/error-handling` | async/await + no try-catch |
+| Next.js 작업 | `/nextjs` | page.tsx, layout.tsx, route.ts |
+| FastAPI 작업 | `/fastapi` | @router, APIRouter |
+| 대규모 변경 | `/checkpoint` | 10+ 파일 수정 예정 |
+| 프로젝트 규칙 검증 | `/audit` | commit, PR + `.claude/audit-rules/` 존재 시 |
 
 ### Proactive Suggestions (Confirm before run)
-**💡 Active suggestion mode**: Auto-detect relevant tools and suggest (confirm before run)
+**💡 적극 제안 모드**: 관련 도구를 자동 감지하여 제안 (실행 전 확인)
 
-| Situation | Suggested Tool | Trigger |
+| 상황 | 제안 도구 | 트리거 |
 |------|----------|--------|
-| Complex function | `/code-review`, `/code-smell` | 50+ line function |
-| API design | `/api-design`, `backend-architect` | endpoint, REST |
-| Performance issue | `performance-engineer` | slow, optimize |
-| Security related | `security-engineer`, `/auth` | login, JWT, security |
-| Framework | **Context7** MCP | React, Next.js, Vue |
-| UI component | **Magic** MCP | button, form, modal |
-| Complex analysis | **Sequential** MCP | 3+ debug attempts, design |
-| New pattern adoption | `/audit manage` | new convention, architecture pattern |
+| 복잡한 함수 | `/code-review`, `/code-smell` | 50줄+ 함수 |
+| API 설계 | `/api-design`, `backend-architect` | endpoint, REST |
+| 성능 이슈 | `performance-engineer` | 느림, slow, optimize |
+| 보안 관련 | `security-engineer`, `/auth` | 로그인, JWT, 보안 |
+| 프레임워크 | **Context7** MCP | React, Next.js, Vue |
+| UI 컴포넌트 | **Magic** MCP | button, form, modal |
+| 복잡한 분석 | **Sequential** MCP | 디버깅 3회+, 설계 |
+| 새 패턴 도입 | `/audit manage` | 새 컨벤션, 아키텍처 패턴 |
 
-**Suggestion intensity**: `--suggest-all` (default) | `--suggest-minimal` | `--suggest-off`
+**제안 강도**: `--suggest-all` (기본) | `--suggest-minimal` | `--suggest-off`
 
 ### By Domain (Suggest when relevant)
 - **Analysis**: `/think`, `/debug`, `/code-review`, `/code-smell`
@@ -68,41 +68,41 @@
 - **Quality**: `/clean-code`, `/refactoring`, `/testing`, `/audit`
 
 ### Agent Auto-Suggestion
-| Task Type | Recommended Agent |
+| 작업 유형 | 추천 에이전트 |
 |----------|--------------|
-| Frontend | `frontend-architect` |
-| Backend/API | `backend-architect` |
-| System design | `system-architect` |
-| Python work | `python-expert` |
-| Testing/QA | `quality-engineer` |
-| Security review | `security-engineer` |
-| Performance optimization | `performance-engineer` |
-| Documentation | `technical-writer` |
-| Problem analysis | `root-cause-analyst` |
-| Refactoring | `refactoring-expert` |
+| 프론트엔드 | `frontend-architect` |
+| 백엔드/API | `backend-architect` |
+| 시스템 설계 | `system-architect` |
+| Python 작업 | `python-expert` |
+| 테스트/QA | `quality-engineer` |
+| 보안 검토 | `security-engineer` |
+| 성능 최적화 | `performance-engineer` |
+| 문서 작성 | `technical-writer` |
+| 문제 분석 | `root-cause-analyst` |
+| 리팩토링 | `refactoring-expert` |
 
 ## Memory Management
 
-### Auto Memory (Built-in)
-Claude automatically records learning in `~/.claude/projects/<project>/memory/`.
+### Auto Memory (내장)
+Claude가 `~/.claude/projects/<project>/memory/`에 자동으로 학습 내용을 기록합니다.
 
-**Stored content**: Project patterns, debugging insights, architecture notes, user preferences
+**저장 내용**: 프로젝트 패턴, 디버깅 인사이트, 아키텍처 노트, 사용자 선호도
 
-**Explicit save requests**:
-- "Remember this project uses pnpm"
-- "Save that API tests require local Redis"
-- "Remember this bug resolution pattern"
+**명시적 저장 요청**:
+- "이 프로젝트는 pnpm 사용한다고 기억해"
+- "API 테스트는 로컬 Redis 필요하다고 저장해"
+- "이 버그 해결 패턴 기억해둬"
 
-**Check/edit memory**: `/memory` command
+**메모리 확인/편집**: `/memory` 명령어
 
 ### CLAUDE.md vs Auto Memory
 
-| Purpose | Where to Use |
+| 용도 | 사용할 곳 |
 |------|----------|
-| Team shared rules | `./CLAUDE.md` or `.claude/rules/` |
-| Personal preference (global) | `~/.claude/CLAUDE.md` |
-| Personal preference (project) | `./CLAUDE.local.md` |
-| What Claude learned | Auto Memory (automatic) |
+| 팀 공유 규칙 | `./CLAUDE.md` 또는 `.claude/rules/` |
+| 개인 선호도 (전역) | `~/.claude/CLAUDE.md` |
+| 개인 선호도 (프로젝트) | `./CLAUDE.local.md` |
+| Claude가 학습한 것 | Auto Memory (자동) |
 
 ## Workflow Integration
 - **Pre-Implementation**: `/confidence-check` → ≥90% proceed

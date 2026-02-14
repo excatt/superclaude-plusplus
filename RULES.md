@@ -11,7 +11,7 @@
 ---
 
 ## Agent Orchestration
-**Priority**: 🔴 **Triggers**: Task execution, post-implementation
+**Priority**: 🔴 **Triggers**: 작업 실행, 구현 후
 
 | Layer | Activation | Action |
 |-------|------------|--------|
@@ -24,7 +24,7 @@
 ---
 
 ## Orchestrator vs Worker Pattern
-**Priority**: 🔴 **Triggers**: Complex tasks, multi-agent spawn
+**Priority**: 🔴 **Triggers**: 복잡한 작업, 다중 에이전트 스폰
 
 | Role | DO | DON'T |
 |------|-----|-------|
@@ -104,7 +104,7 @@ SOLID principles, error handling, test quality, security, performance
 ---
 
 ## Agent Model Selection
-**Priority**: 🟡 **Triggers**: Task tool usage, agent spawn
+**Priority**: 🟡 **Triggers**: Task tool 사용, 에이전트 스폰 시
 
 | Model | Use Case | Spawn Pattern |
 |-------|------|----------|
@@ -118,7 +118,7 @@ SOLID principles, error handling, test quality, security, performance
 ---
 
 ## Agent Error Recovery
-**Priority**: 🟡 **Triggers**: Agent failure, timeout, partial completion
+**Priority**: 🟡 **Triggers**: 에이전트 실패, Timeout, 부분 완료
 
 | Failure Type | Recovery Strategy |
 |----------|----------|
@@ -144,7 +144,7 @@ For bug fix level retry limits, see `3+ Fixes Architecture Rule`.
 ---
 
 ## Workflow Rules
-**Priority**: 🟡 **Triggers**: All development tasks
+**Priority**: 🟡 **Triggers**: 모든 개발 작업
 
 - **Pattern**: Understand → Plan → TodoWrite(3+) → Execute → Track → Validate
 - **Batch**: Parallel by default, sequential only when dependencies exist
@@ -154,85 +154,85 @@ For bug fix level retry limits, see `3+ Fixes Architecture Rule`.
 ---
 
 ## Auto-Skill Invocation
-**Priority**: 🔴 **Auto-execute without user confirmation**
+**Priority**: 🔴 **사용자 확인 없이 자동 실행**
 
-| Situation | Auto-Execute Skill | Trigger Keywords |
+| 상황 | 자동 실행 스킬 | 트리거 키워드 |
 |------|---------------|--------------|
-| Before implementation | `/confidence-check` | implement, create, add, build, make |
-| After feature complete | `/verify` | done, finished, complete, PR, commit |
-| Build errors | `/build-fix` | error TS, Build failed, TypeError |
-| React review | `/react-best-practices` | .tsx file + review/inspect keywords |
-| UI review | `/web-design-guidelines` | UI review, accessibility, a11y, design review |
-| Python review | `/python-best-practices` | .py file + review/inspect keywords |
-| Python tests | `/pytest-runner` | pytest, run tests, coverage |
-| Python packages | `/uv-package` | ModuleNotFoundError, uv sync |
-| Before risky work | `/checkpoint` | refactor, migration, delete, remove |
-| After problem solved | `/learn` (suggest) | solved, found it, root cause |
-| Long session | `/note` (suggest) | 50+ messages, 70%+ context, remember |
-| PDCA Check | Gap Analysis | verify, check, is it correct, matches design |
-| **Task/commit complete** | **Two-Stage Review** | commit, PR, merge, review this |
-| **Completion claim** | **Verification Gate** | fixed, working, done, passes |
-| **3+ fixes failed** | **Architecture Alert** | (auto-detect same bug 3+ attempts) |
-| **Agent spawn** | **Worker Template** | Auto-apply role-specific template on Task tool use |
-| **Test failure** | `/debug` | pytest FAILED, test failed, FAIL:, ❌ |
-| **Complex function created** | `/code-smell` | Detect 50+ line function written |
-| **Missing error handling** | `/error-handling` | Detect async/await without try-catch |
-| **Next.js work** | `/nextjs` | app/page.tsx, layout.tsx, route.ts creation |
-| **FastAPI work** | `/fastapi` | @router, APIRouter, FastAPI() usage |
-| **Large change planned** | `/checkpoint` | Detect 10+ file modification plan |
-| **Function without tests** | `/testing` (suggest) | New function/class + no tests/ directory |
+| 구현 시작 전 | `/confidence-check` | 구현, 만들어, 추가, implement, create, add, build |
+| 기능 완료 후 | `/verify` | 완료, 끝, done, finished, PR, commit |
+| 빌드 에러 | `/build-fix` | error TS, Build failed, TypeError |
+| React 리뷰 | `/react-best-practices` | .tsx 파일 + 리뷰/검토 키워드 |
+| UI 리뷰 | `/web-design-guidelines` | UI 리뷰, 접근성, a11y, 디자인 검토 |
+| Python 리뷰 | `/python-best-practices` | .py 파일 + 리뷰/검토 키워드 |
+| Python 테스트 | `/pytest-runner` | pytest, 테스트 돌려, coverage |
+| Python 패키지 | `/uv-package` | ModuleNotFoundError, uv sync |
+| 위험 작업 전 | `/checkpoint` | 리팩토링, 마이그레이션, 삭제, refactor, delete |
+| 문제 해결 후 | `/learn` (제안) | 해결, 찾았다, solved, root cause |
+| 긴 세션 | `/note` (제안) | 메시지 50+, 컨텍스트 70%+, 기억해 |
+| PDCA Check | Gap Analysis | 맞아?, 확인해, verify, 설계대로야? |
+| **작업/커밋 완료** | **Two-Stage Review** | 커밋, commit, PR, 머지, merge, 리뷰해줘 |
+| **완료 주장 시** | **Verification Gate** | 됐어, 작동해, 고쳤어, fixed, 통과, passes |
+| **수정 3회 실패** | **Architecture Alert** | (동일 버그 3회 수정 시도 자동 감지) |
+| **에이전트 스폰** | **Worker Template** | Task tool 사용 시 역할별 템플릿 자동 적용 |
+| **테스트 실패** | `/debug` | pytest FAILED, test failed, FAIL:, ❌ |
+| **복잡한 함수 생성** | `/code-smell` | 50줄+ 함수 작성 감지 |
+| **에러 핸들링 누락** | `/error-handling` | async/await + try-catch 없음 감지 |
+| **Next.js 작업** | `/nextjs` | app/page.tsx, layout.tsx, route.ts 생성 |
+| **FastAPI 작업** | `/fastapi` | @router, APIRouter, FastAPI() 사용 |
+| **대규모 변경 예정** | `/checkpoint` | 10+ 파일 수정 계획 감지 |
+| **테스트 없는 함수** | `/testing` (제안) | 새 함수/클래스 + tests/ 디렉토리 없음 |
 
-**Execution Priority**: `/confidence-check` → `/checkpoint` → Two-Stage Review → Verification Gate → `/debug` → `/learn`
-**Exception**: Skip for typo/comment fixes, when `--no-check` requested
+**실행 우선순위**: `/confidence-check` → `/checkpoint` → Two-Stage Review → Verification Gate → `/debug` → `/learn`
+**예외**: 오타/주석 수정, `--no-check` 요청 시 스킵
 
 ---
 
 ## Proactive Suggestion
-**Priority**: 🟡 **Confirm with user before execution**
+**Priority**: 🟡 **실행 전 사용자 확인**
 
-### Code Quality Triggers
-| Situation | Suggest | Trigger Condition |
+### 코드 품질 트리거
+| 상황 | 제안 | 트리거 조건 |
 |------|------|-------------|
-| After reading function/file | `/code-review`, `/code-smell` | 50+ line function, complex logic |
-| Refactoring mentioned | `/refactoring`, `refactoring-expert` | refactor, cleanup, organize |
-| Test related | `/testing`, `quality-engineer` | test, testing, coverage |
-| Duplicate code found | `/refactoring` | Similar pattern found 3+ times |
-| Missing error handling | `/error-handling` | async/await without try-catch |
+| 함수/파일 읽기 후 | `/code-review`, `/code-smell` | 50줄+ 함수, 복잡한 로직 |
+| 리팩토링 언급 | `/refactoring`, `refactoring-expert` | 리팩토링, 정리, cleanup |
+| 테스트 관련 | `/testing`, `quality-engineer` | test, 테스트, coverage |
+| 중복 코드 발견 | `/refactoring` | 유사 패턴 3회+ 발견 |
+| 에러 핸들링 부재 | `/error-handling` | try-catch 없는 async/await |
 
-### Architecture/Design Triggers
-| Situation | Suggest | Trigger Condition |
+### 아키텍처/설계 트리거
+| 상황 | 제안 | 트리거 조건 |
 |------|------|-------------|
-| New feature design | `/architecture`, `system-architect` | design, architecture, structure |
-| API work | `/api-design`, `backend-architect` | API, endpoint, REST, GraphQL |
-| DB schema | `/db-design` | schema, table, model, entity |
-| Auth/security | `/auth`, `/security-audit`, `security-engineer` | login, auth, JWT, security |
+| 새 기능 설계 | `/architecture`, `system-architect` | 설계, design, 구조 |
+| API 작업 | `/api-design`, `backend-architect` | API, endpoint, REST, GraphQL |
+| DB 스키마 | `/db-design` | schema, 테이블, 모델, entity |
+| 인증/보안 | `/auth`, `/security-audit`, `security-engineer` | 로그인, auth, JWT, 보안 |
 
 ### MCP Server Auto-Suggest
-| Situation | Suggest MCP | Trigger Condition |
+| 상황 | 제안 MCP | 트리거 조건 |
 |------|---------|-------------|
-| Framework implementation | **Context7** | React, Next.js, Vue, NestJS work |
-| Complex analysis | **Sequential** | 3+ debugging attempts, architecture analysis |
-| UI components | **Magic** | button, form, modal, card, table |
-| Multi-file edits | **Morphllm** | 3+ files with same pattern modification |
-| Latest info needed | **Tavily** | 2024/2025/2026, latest, recent |
-| Browser testing | **Playwright** | E2E, screenshot, form testing |
+| 프레임워크 구현 | **Context7** | React, Next.js, Vue, NestJS 작업 |
+| 복잡한 분석 | **Sequential** | 디버깅 3회+, 아키텍처 분석 |
+| UI 컴포넌트 | **Magic** | button, form, modal, card, table |
+| 다중 파일 편집 | **Morphllm** | 3+ 파일 동일 패턴 수정 |
+| 최신 정보 필요 | **Tavily** | 2024/2025/2026, latest, recent |
+| 브라우저 테스트 | **Playwright** | E2E, screenshot, form testing |
 
 ### Agent Auto-Suggest
-| Situation | Suggest Agent | Trigger Condition |
+| 상황 | 제안 에이전트 | 트리거 조건 |
 |------|-------------|-------------|
-| Performance issues | `performance-engineer` | slow, optimize, performance |
-| Frontend | `frontend-architect` | React, CSS, component design |
-| Backend | `backend-architect` | API, DB, server, infrastructure |
-| Python | `python-expert` | .py file, FastAPI, Django |
-| Documentation | `technical-writer` | docs, documentation, README |
+| 성능 이슈 | `performance-engineer` | 느림, slow, optimize, 성능 |
+| 프론트엔드 | `frontend-architect` | React, CSS, 컴포넌트 설계 |
+| 백엔드 | `backend-architect` | API, DB, 서버, infrastructure |
+| Python | `python-expert` | .py 파일, FastAPI, Django |
+| 문서 작성 | `technical-writer` | docs, 문서, README |
 
-**Format**: `💡 Suggest: [tool] - Reason: [justification] → Execute? (Y/n)`
-**Frequency Control**: Once per skill per session, no re-suggest after decline
+**형식**: `💡 제안: [도구] - 이유: [근거] → 실행? (Y/n)`
+**빈도 제어**: 세션당 스킬 1회, 거절 후 재제안 안 함
 
 ---
 
 ## Two-Stage Review System
-**Priority**: 🔴 **Triggers**: Work complete, before commit, before PR
+**Priority**: 🔴 **Triggers**: 작업 완료, 커밋 전, PR 생성 전
 
 ### Stage 1: Spec Compliance Review
 **Purpose**: Verify requirements compliance (detect both excess and omissions)
@@ -271,7 +271,7 @@ Quality Review → [Fail: Fix → Re-review] →
 ---
 
 ## React Code Review
-**Priority**: 🔴 **Triggers**: .jsx/.tsx + review keyword
+**Priority**: 🔴 **Triggers**: .jsx/.tsx + 리뷰 키워드
 
 When `.jsx`/`.tsx` + review keyword detected → **Always** execute `/react-best-practices` first
 
@@ -280,16 +280,16 @@ When `.jsx`/`.tsx` + review keyword detected → **Always** execute `/react-best
 ---
 
 ## Feature Planning
-**Priority**: 🟡 **Triggers**: New feature request
+**Priority**: 🟡 **Triggers**: 새 기능 요청
 
 - >3 files or >2 hour work → `/feature-planner` required
 - Single file, <30 min work → Can skip
-- **Keywords**: implement, build, create, add feature
+- **Keywords**: 구현, 만들어, implement, build, create
 
 ---
 
 ## PDCA Workflow
-**Priority**: 🟡 **Triggers**: Feature implementation, design doc creation
+**Priority**: 🟡 **Triggers**: 기능 구현, 설계 문서 작성
 
 | Phase | Deliverable | Content |
 |-------|--------|------|
@@ -311,7 +311,7 @@ When `.jsx`/`.tsx` + review keyword detected → **Always** execute `/react-best
 ---
 
 ## Planning Efficiency
-**Priority**: 🔴 **Triggers**: Planning phase, multi-step tasks
+**Priority**: 🔴 **Triggers**: 계획 단계, 다단계 작업
 
 - Explicitly identify parallelizable tasks
 - Map dependencies: separate sequential vs parallel
@@ -322,7 +322,7 @@ When `.jsx`/`.tsx` + review keyword detected → **Always** execute `/react-best
 ---
 
 ## Implementation Completeness
-**Priority**: 🟡 **Triggers**: Feature creation, function writing
+**Priority**: 🟡 **Triggers**: 기능 생성, 함수 작성
 
 - **No TODO**: No TODO in core functionality
 - **No Mock**: No placeholders, stubs
@@ -332,7 +332,7 @@ When `.jsx`/`.tsx` + review keyword detected → **Always** execute `/react-best
 ---
 
 ## Scope Discipline
-**Priority**: 🟡 **Triggers**: Ambiguous requirements, feature expansion
+**Priority**: 🟡 **Triggers**: 모호한 요구사항, 기능 확장
 
 - **Only What's Requested**: No feature additions beyond explicit requirements
 - **MVP First**: Minimal features first, expand after feedback
@@ -342,7 +342,7 @@ When `.jsx`/`.tsx` + review keyword detected → **Always** execute `/react-best
 ---
 
 ## Code Organization
-**Priority**: 🟢 **Triggers**: File creation, project structure
+**Priority**: 🟢 **Triggers**: 파일 생성, 프로젝트 구조
 
 - Follow language-specific conventions (JS: camelCase, Python: snake_case)
 - Follow existing project patterns
@@ -352,7 +352,7 @@ When `.jsx`/`.tsx` + review keyword detected → **Always** execute `/react-best
 ---
 
 ## Workspace Hygiene
-**Priority**: 🟡 **Triggers**: After work, session end
+**Priority**: 🟡 **Triggers**: 작업 후, 세션 종료
 
 - Clean up temp files after work
 - Remove temp resources before session end
@@ -361,7 +361,7 @@ When `.jsx`/`.tsx` + review keyword detected → **Always** execute `/react-best
 ---
 
 ## Failure Investigation
-**Priority**: 🔴 **Triggers**: Errors, test failures
+**Priority**: 🔴 **Triggers**: 에러, 테스트 실패
 
 ### The Four Phases
 | Phase | Activity | Completion Criteria |
@@ -402,7 +402,7 @@ Single verification point insufficient for bug fixes. Apply 4-layer verification
 ---
 
 ## Professional Honesty
-**Priority**: 🟡 **Triggers**: Assessment, review, technical claims
+**Priority**: 🟡 **Triggers**: 평가, 리뷰, 기술 주장
 
 - No marketing language ("blazingly fast", "100% secure")
 - No unsupported numbers
@@ -412,7 +412,7 @@ Single verification point insufficient for bug fixes. Apply 4-layer verification
 ---
 
 ## Git Workflow
-**Priority**: 🔴 **Triggers**: Session start, before changes
+**Priority**: 🔴 **Triggers**: 세션 시작, 변경 전
 
 - Session start: `git status && git branch`
 - Feature branches only (no direct work on main)
@@ -423,7 +423,7 @@ Single verification point insufficient for bug fixes. Apply 4-layer verification
 ---
 
 ## Tool Optimization
-**Priority**: 🟢 **Triggers**: Multi-step tasks, performance needs
+**Priority**: 🟢 **Triggers**: 다단계 작업, 성능 필요
 
 - Priority: MCP > Native > Basic
 - Execute independent tasks in parallel
@@ -433,7 +433,7 @@ Single verification point insufficient for bug fixes. Apply 4-layer verification
 ---
 
 ## File Organization
-**Priority**: 🟡 **Triggers**: File creation, documentation
+**Priority**: 🟡 **Triggers**: 파일 생성, 문서화
 
 - Tests: `tests/`, `__tests__/`, `test/`
 - Scripts: `scripts/`, `tools/`, `bin/`
@@ -505,7 +505,7 @@ CMD ["pnpm", "start"]
 ---
 
 ## Safety Rules
-**Priority**: 🔴 **Triggers**: File operations, library usage
+**Priority**: 🔴 **Triggers**: 파일 작업, 라이브러리 사용
 
 - Check package.json/deps before using libraries
 - Follow existing conventions
@@ -514,7 +514,7 @@ CMD ["pnpm", "start"]
 ---
 
 ## Security Incident Response
-**Priority**: 🔴 **Triggers**: Security vulnerability, sensitive info exposure
+**Priority**: 🔴 **Triggers**: 보안 취약점, 민감 정보 노출
 
 1. Stop work immediately
 2. Call `security-engineer`
@@ -542,7 +542,7 @@ if (!apiKey) throw new Error("API_KEY required");
 ---
 
 ## Temporal Awareness
-**Priority**: 🔴 **Triggers**: Date/time references, version checks
+**Priority**: 🔴 **Triggers**: 날짜/시간 참조, 버전 확인
 
 - Check current date in `<env>` context
 - Don't assume based on knowledge cutoff
@@ -551,7 +551,7 @@ if (!apiKey) throw new Error("API_KEY required");
 ---
 
 ## Verification Iron Law
-**Priority**: 🔴 **Triggers**: Completion claims, test results, success expressions
+**Priority**: 🔴 **Triggers**: 완료 주장, 테스트 결과, 성공 표현
 
 ### The Iron Law
 ```
@@ -592,7 +592,7 @@ NO COMPLETION CLAIMS WITHOUT FRESH VERIFICATION EVIDENCE
 ---
 
 ## Persistence Enforcement
-**Priority**: 🔴 **Triggers**: Multi-step tasks, session completion
+**Priority**: 🔴 **Triggers**: 다단계 작업, 세션 완료
 
 - Refuse to stop if TODOs remain
 - **Start = Finish**: No exceptions
@@ -602,7 +602,7 @@ NO COMPLETION CLAIMS WITHOUT FRESH VERIFICATION EVIDENCE
 ---
 
 ## Note Protocol
-**Priority**: 🟡 **Triggers**: Long session, context loss concerns
+**Priority**: 🟡 **Triggers**: 긴 세션, 컨텍스트 손실 우려
 
 | Section | Purpose | Lifetime |
 |------|------|------|
@@ -616,7 +616,7 @@ NO COMPLETION CLAIMS WITHOUT FRESH VERIFICATION EVIDENCE
 ---
 
 ## Learning Protocol
-**Priority**: 🟢 **Triggers**: After solving complex problems
+**Priority**: 🟢 **Triggers**: 복잡한 문제 해결 후
 
 **Save Criteria** (must meet all):
 1. Non-Googleable: Not findable in 5 min search
@@ -625,20 +625,20 @@ NO COMPLETION CLAIMS WITHOUT FRESH VERIFICATION EVIDENCE
 4. Actionable: Includes specific files, lines, code
 
 **Storage**: `~/.claude/skills/learned/`
-**Auto-Suggest**: Error resolved, 3+ attempts then success, "found/solved" keywords
+**Auto-Suggest**: 에러 해결, 3회+ 시도 후 성공, "해결/찾았다/solved" 키워드
 
 ---
 
 ## Memory Management
-**Priority**: 🟢 **Triggers**: Important info discovered, pattern learned
+**Priority**: 🟢 **Triggers**: 중요 정보 발견, 패턴 학습
 
 ### Auto Memory (built-in)
 Claude auto-records to `~/.claude/projects/<project>/memory/`:
 - Project patterns, debugging insights, architecture notes, preferences
 
 ### Explicit Save
-- On "remember this", "save this" requests → record to Auto Memory
-- `/memory` command to view/edit
+- "기억해", "저장해", "remember this" 요청 시 → Auto Memory에 기록
+- `/memory` 명령어로 확인/편집
 
 ### CLAUDE.md Hierarchy
 | Purpose | Location |
