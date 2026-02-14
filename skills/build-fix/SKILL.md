@@ -1,51 +1,51 @@
 ---
 name: build-fix
-description: 최소 변경 원칙으로 빌드 에러만 해결하는 전문 스킬. 빌드 실패, 타입 에러, 컴파일 에러 발생 시 사용합니다. Keywords: build, fix, error, compile, typescript, type, resolve, 빌드, 에러, 수정, 컴파일.
+description: Expert skill for resolving build errors with minimal change principle. Use for build failures, type errors, compile errors. Keywords: build, fix, error, compile, typescript, type, resolve.
 ---
 
 # Build Fix Skill
 
 ## Purpose
-빌드/컴파일 에러를 **최소한의 변경**으로 해결합니다. 아키텍처 변경, 리팩토링, 기능 추가 없이 오직 빌드 통과만을 목표로 합니다.
+Resolve build/compile errors with **minimal changes**. Target only build passing - no architecture changes, refactoring, or feature additions.
 
-**핵심 원칙**: 최소 변경 → 빌드 통과 → 끝. 그 이상 하지 않음.
+**Core Principle**: Minimal change → Build passes → Done. Nothing more.
 
 ## Activation Triggers
-- 빌드 실패 (`npm run build` 실패)
-- TypeScript 컴파일 에러 (`tsc --noEmit` 실패)
-- 타입 에러 다수 발생
-- CI/CD 파이프라인 빌드 실패
-- 사용자 명시적 요청: `/build-fix`, `빌드 고쳐줘`, `컴파일 에러`
+- Build failure (`npm run build` fails)
+- TypeScript compilation error (`tsc --noEmit` fails)
+- Multiple type errors occurring
+- CI/CD pipeline build failure
+- User explicit request: `/build-fix`, `fix build`, `compile error`
 
 ---
 
 ## Scope Definition
 
-### ✅ DO Fix (수정 대상)
+### ✅ DO Fix (Targets for fixing)
 | Category | Examples |
 |----------|----------|
-| **타입 어노테이션** | 누락된 타입, 잘못된 타입 |
-| **Null/Undefined 처리** | Optional chaining, nullish coalescing |
-| **Import/Export** | 누락된 import, 잘못된 경로 |
-| **타입 정의** | interface, type 추가/수정 |
-| **의존성 문제** | 누락된 패키지, 버전 충돌 |
-| **설정 파일** | tsconfig, eslint 설정 오류 |
+| **Type annotations** | Missing types, incorrect types |
+| **Null/Undefined handling** | Optional chaining, nullish coalescing |
+| **Import/Export** | Missing imports, incorrect paths |
+| **Type definitions** | Add/modify interface, type |
+| **Dependency issues** | Missing packages, version conflicts |
+| **Config files** | tsconfig, eslint configuration errors |
 
-### ❌ DON'T Change (건드리지 않음)
+### ❌ DON'T Change (Don't touch)
 | Category | Reason |
 |----------|--------|
-| **관련 없는 코드** | 범위 외 |
-| **아키텍처** | 별도 작업 필요 |
-| **변수명/함수명** | 리팩토링 영역 |
-| **로직 흐름** | 기능 변경 위험 |
-| **성능 최적화** | 별도 최적화 작업 |
-| **테스트 코드** | 테스트 수정은 별개 |
+| **Unrelated code** | Out of scope |
+| **Architecture** | Requires separate work |
+| **Variable/function names** | Refactoring area |
+| **Logic flow** | Risk of functionality change |
+| **Performance optimization** | Separate optimization work |
+| **Test code** | Test fixes are separate |
 
 ---
 
 ## Workflow
 
-### Step 1: 에러 수집
+### Step 1: Collect Errors
 ```bash
 # TypeScript
 npx tsc --noEmit 2>&1 | head -100
@@ -53,15 +53,15 @@ npx tsc --noEmit 2>&1 | head -100
 # Build
 npm run build 2>&1
 
-# ESLint (에러만)
+# ESLint (errors only)
 npx eslint src/ --quiet
 ```
 
-### Step 2: 에러 분류
+### Step 2: Classify Errors
 ```
 /build-fix
 
-🔍 에러 분석 중...
+🔍 Analyzing errors...
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 📊 Error Summary
@@ -85,7 +85,7 @@ Total: 15 errors
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 
-### Step 3: 최소 수정 적용
+### Step 3: Apply Minimal Fixes
 ```
 🔧 Fixing errors...
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -104,11 +104,11 @@ Total: 15 errors
   - function formatDate(date) {
   + function formatDate(date: Date): string {
 
-... (계속)
+... (continued)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 
-### Step 4: 검증
+### Step 4: Verify
 ```
 ✅ Verification
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -237,13 +237,13 @@ async function fetchData() {
 
 ## Fix Strategies
 
-### Strategy 1: Type Assertion (빠르지만 위험)
+### Strategy 1: Type Assertion (Quick but risky)
 ```typescript
 // Quick fix - use sparingly
 const data = response as UserData;
 ```
 
-### Strategy 2: Type Guard (안전)
+### Strategy 2: Type Guard (Safe)
 ```typescript
 // Safer approach
 function isUser(obj: unknown): obj is User {
@@ -251,7 +251,7 @@ function isUser(obj: unknown): obj is User {
 }
 ```
 
-### Strategy 3: Type Narrowing (권장)
+### Strategy 3: Type Narrowing (Recommended)
 ```typescript
 // Best practice
 if (user && user.profile) {
@@ -265,12 +265,12 @@ if (user && user.profile) {
 
 | Situation | Use Instead |
 |-----------|-------------|
-| 테스트 실패 | `/verify` → 테스트 수정 |
-| 성능 문제 | `/perf-optimize` |
-| 보안 취약점 | `/security-audit` |
-| 리팩토링 필요 | `/refactoring` |
-| 아키텍처 변경 | `/architecture` |
-| 새 기능 추가 | `/feature-planner` |
+| Test failures | `/verify` → Fix tests |
+| Performance issues | `/perf-optimize` |
+| Security vulnerabilities | `/security-audit` |
+| Refactoring needed | `/refactoring` |
+| Architecture change | `/architecture` |
+| Add new feature | `/feature-planner` |
 
 ---
 
@@ -278,9 +278,9 @@ if (user && user.profile) {
 
 ### With `/verify`
 ```
-/build-fix → 빌드 통과
-/verify quick → Build + Type 확인
-/verify full → 전체 품질 검증
+/build-fix → Build passes
+/verify quick → Confirm Build + Type
+/verify full → Full quality verification
 ```
 
 ### With `/checkpoint`
@@ -288,12 +288,12 @@ if (user && user.profile) {
 /checkpoint create "before-build-fix"
 /build-fix
 /verify quick
-# 문제 있으면: /checkpoint restore "before-build-fix"
+# If issues: /checkpoint restore "before-build-fix"
 ```
 
-### CI/CD 연동
+### CI/CD Integration
 ```yaml
-# Build 실패 시 자동 수정 시도
+# Auto-fix attempt on build failure
 - name: Build
   run: npm run build
   continue-on-error: true
@@ -309,16 +309,16 @@ if (user && user.profile) {
 
 | Command | Description |
 |---------|-------------|
-| `/build-fix` | 빌드 에러 분석 및 수정 |
-| `/build-fix --dry-run` | 수정 미리보기 (적용 안 함) |
-| `/build-fix --auto` | 자동 수정 (확인 없이) |
-| `/build-fix <file>` | 특정 파일만 수정 |
+| `/build-fix` | Analyze and fix build errors |
+| `/build-fix --dry-run` | Preview fixes (don't apply) |
+| `/build-fix --auto` | Auto-fix (no confirmation) |
+| `/build-fix <file>` | Fix specific file only |
 
 ---
 
 ## Output Format
 
-### 성공
+### Success
 ```
 ╔══════════════════════════════════════════════════════╗
 ║              🔧 BUILD FIX COMPLETE                   ║
@@ -334,7 +334,7 @@ if (user && user.profile) {
 ╚══════════════════════════════════════════════════════╝
 ```
 
-### 부분 성공
+### Partial Success
 ```
 ╔══════════════════════════════════════════════════════╗
 ║              🔧 BUILD FIX PARTIAL                    ║

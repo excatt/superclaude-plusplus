@@ -439,7 +439,7 @@ SuperClaude++ = SuperClaude + 다음 요소들의 통합:
 - 🎯 40+ 도메인별 Skills
 - 🔧 자동 스킬 호출 시스템 (25개 Auto-Invoke 트리거)
 - 📦 패키지 관리 규칙 강제 (uv/pnpm)
-- 🌐 한국어 우선 지원
+- 🌐 한국어 응답 지원 (config/skill 파일은 영어 - 토큰 효율 30-40% 향상)
 
 ## License
 

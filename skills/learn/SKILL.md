@@ -1,98 +1,98 @@
 ---
 name: learn
-description: 세션에서 재사용 가능한 패턴을 추출하여 스킬로 저장합니다. 복잡한 문제 해결 후, 유용한 워크어라운드 발견 시, 프로젝트별 컨벤션 정립 시 사용합니다. Keywords: learn, pattern, extract, skill, knowledge, save, remember, 학습, 패턴, 추출, 기억.
+description: Extract reusable patterns from sessions and save them as skills. Use after solving complex problems, discovering useful workarounds, or establishing project-specific conventions. Keywords: learn, pattern, extract, skill, knowledge, save, remember.
 ---
 
 # Learn Skill
 
 ## Purpose
-세션에서 발생한 문제 해결 패턴, 디버깅 기법, 워크어라운드를 분석하여 재사용 가능한 스킬로 저장합니다.
+Analyze problem-solving patterns, debugging techniques, and workarounds from sessions to save them as reusable skills.
 
-**핵심 원칙**: 반복되는 문제 해결 → 패턴 추출 → 스킬화 → 미래 세션에서 재사용
+**Core Principle**: Recurring problem-solving → Pattern extraction → Skill creation → Reuse in future sessions
 
 ## Activation Triggers
-- 복잡한 에러 해결 후
-- 유용한 워크어라운드 발견 시
-- 프로젝트별 컨벤션 정립 시
-- 세션 종료 전 학습 정리
-- 사용자 명시적 요청: `/learn`, `이거 기억해`, `패턴 저장`
+- After solving complex errors
+- When discovering useful workarounds
+- When establishing project-specific conventions
+- Session end knowledge consolidation
+- Explicit user request: `/learn`, `remember this`, `save pattern`
 
 ---
 
 ## Pattern Extraction Focus
 
-### 추출 대상 ✅
-| 카테고리 | 예시 |
-|----------|------|
-| **에러 해결 패턴** | TypeScript 타입 에러 해결법, 빌드 실패 수정 |
-| **디버깅 기법** | 특정 도구 조합, 로그 분석 방법 |
-| **라이브러리 quirks** | 문서화되지 않은 동작, 버전별 차이 |
-| **API 워크어라운드** | Rate limit 우회, 인증 처리 패턴 |
-| **프로젝트 컨벤션** | 네이밍 규칙, 파일 구조, 코드 스타일 |
-| **아키텍처 결정** | 특정 패턴 선택 이유, 트레이드오프 |
+### Include ✅
+| Category | Examples |
+|----------|----------|
+| **Error Resolution Patterns** | TypeScript type error fixes, build failure repairs |
+| **Debugging Techniques** | Specific tool combinations, log analysis methods |
+| **Library Quirks** | Undocumented behaviors, version-specific differences |
+| **API Workarounds** | Rate limit bypasses, authentication patterns |
+| **Project Conventions** | Naming rules, file structure, code style |
+| **Architecture Decisions** | Pattern selection rationale, trade-offs |
 
-### 추출 제외 ❌
-| 카테고리 | 이유 |
-|----------|------|
-| 단순 오타 수정 | 재사용 가치 없음 |
-| 일회성 문제 | 외부 서비스 장애 등 |
-| 문법 에러 | 기본 지식 범위 |
-| 환경별 설정 | 범용성 부족 |
+### Exclude ❌
+| Category | Reason |
+|----------|--------|
+| Simple typo fixes | No reuse value |
+| One-time issues | External service outages, etc. |
+| Syntax errors | Basic knowledge scope |
+| Environment-specific configs | Lacks generalizability |
 
 ---
 
 ## Workflow
 
-### Step 1: 세션 분석
+### Step 1: Session Analysis
 ```
 /learn
 
-🔍 세션 분석 중...
+🔍 Analyzing session...
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-메시지 수: 47
-도구 호출: 89
-에러 해결: 3건
-주요 작업: Auth 시스템 구현
+Messages: 47
+Tool calls: 89
+Errors resolved: 3 cases
+Main task: Auth system implementation
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 
-### Step 2: 패턴 식별
+### Step 2: Pattern Identification
 ```
-💡 추출 가능한 패턴 발견
+💡 Extractable patterns found
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-1. [HIGH VALUE] NextAuth + Prisma 세션 타입 확장
-   - 문제: Session 타입에 userId 누락
-   - 해결: next-auth.d.ts 타입 확장
-   - 재사용성: ⭐⭐⭐⭐⭐
+1. [HIGH VALUE] NextAuth + Prisma Session Type Extension
+   - Problem: userId missing in Session type
+   - Solution: Type extension in next-auth.d.ts
+   - Reusability: ⭐⭐⭐⭐⭐
 
-2. [MEDIUM VALUE] Supabase RLS 디버깅 패턴
-   - 문제: RLS 정책으로 인한 빈 결과
-   - 해결: service_role 키로 테스트 후 정책 수정
-   - 재사용성: ⭐⭐⭐⭐
+2. [MEDIUM VALUE] Supabase RLS Debugging Pattern
+   - Problem: Empty results due to RLS policy
+   - Solution: Test with service_role key, then fix policy
+   - Reusability: ⭐⭐⭐⭐
 
-3. [LOW VALUE] ESLint 규칙 비활성화
-   - 문제: unused-vars 경고
-   - 해결: .eslintrc 수정
-   - 재사용성: ⭐⭐ (프로젝트별 상이)
+3. [LOW VALUE] ESLint Rule Disable
+   - Problem: unused-vars warning
+   - Solution: .eslintrc modification
+   - Reusability: ⭐⭐ (project-specific)
 
-저장할 패턴을 선택하세요 [1,2,3 또는 all]:
+Select patterns to save [1,2,3 or all]:
 ```
 
-### Step 3: 스킬 문서 생성
+### Step 3: Skill Document Generation
 ```
-📝 스킬 문서 생성 중...
+📝 Generating skill document...
 
-파일: ~/.claude/skills/learned/nextauth-prisma-session-type.md
+File: ~/.claude/skills/learned/nextauth-prisma-session-type.md
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 # NextAuth + Prisma Session Type Extension
 
 ## Problem
-NextAuth 세션에서 userId 접근 시 타입 에러 발생
+Type error when accessing userId in NextAuth session
 `Property 'userId' does not exist on type 'Session'`
 
 ## Solution
-`types/next-auth.d.ts` 파일 생성:
+Create `types/next-auth.d.ts`:
 \`\`\`typescript
 import { DefaultSession } from "next-auth"
 
@@ -106,27 +106,27 @@ declare module "next-auth" {
 \`\`\`
 
 ## When to Apply
-- NextAuth + Prisma 조합 사용 시
-- 세션에 커스텀 필드 추가 필요 시
+- When using NextAuth + Prisma combination
+- When adding custom fields to session
 
 ## Related
-- NextAuth 공식 문서: TypeScript 섹션
-- Prisma adapter 설정
+- NextAuth official docs: TypeScript section
+- Prisma adapter configuration
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-✅ 스킬 저장 완료
+✅ Skill saved
 ```
 
-### Step 4: 확인
+### Step 4: Confirmation
 ```
-저장된 스킬을 확인하시겠습니까? [y/N]
+View saved skill? [y/N]
 ```
 
 ---
 
 ## Learned Skills Storage
 
-### 저장 위치
+### Storage Location
 ```
 ~/.claude/skills/learned/
 ├── nextauth-prisma-session-type.md
@@ -135,11 +135,11 @@ declare module "next-auth" {
 └── vercel-edge-function-timeout.md
 ```
 
-### 스킬 파일 구조
+### Skill File Structure
 ```markdown
 ---
 name: pattern-name
-description: 간단한 설명
+description: Brief description
 learned_at: 2025-01-26
 source_project: project-name
 tags: [nextauth, prisma, typescript]
@@ -148,29 +148,29 @@ tags: [nextauth, prisma, typescript]
 # Pattern Name
 
 ## Problem
-문제 상황 설명
+Problem situation description
 
 ## Cause
-근본 원인 분석
+Root cause analysis
 
 ## Solution
-해결 방법 (코드 예시 포함)
+Resolution method (with code examples)
 
 ## When to Apply
-이 패턴이 적용되는 상황
+Situations where this pattern applies
 
 ## Caveats
-주의사항, 엣지 케이스
+Warnings, edge cases
 
 ## Related
-관련 문서, 리소스 링크
+Related documentation, resource links
 ```
 
 ---
 
 ## Auto-Learning (Stop Hook)
 
-### 세션 종료 시 자동 분석
+### Automatic Session End Analysis
 `.claude/settings.json`:
 ```json
 {
@@ -185,7 +185,7 @@ tags: [nextauth, prisma, typescript]
 }
 ```
 
-### 자동 학습 설정
+### Auto-Learning Configuration
 `.claude/learn.config.json`:
 ```json
 {
@@ -220,32 +220,32 @@ tags: [nextauth, prisma, typescript]
 ## Integration
 
 ### With PM Agent
-PM Agent의 자기 개선 레이어와 연동:
+Integration with PM Agent's self-improvement layer:
 ```
-세션 완료
+Session complete
     │
-    ├─→ /learn (패턴 추출)
+    ├─→ /learn (pattern extraction)
     │
-    └─→ PM Agent (문서화, 지식 베이스 업데이트)
+    └─→ PM Agent (documentation, knowledge base update)
 ```
 
 ### With `/checkpoint`
 ```
 /checkpoint create "before-experiment"
-... 실험적 해결 시도 ...
-... 성공! ...
-/learn  # 성공한 패턴 저장
+... experimental resolution attempts ...
+... success! ...
+/learn  # Save successful pattern
 ```
 
 ### With Future Sessions
-저장된 스킬은 유사한 문제 발생 시 자동 참조:
+Saved skills auto-referenced when similar problems occur:
 ```
-🔍 유사한 패턴 발견
+🔍 Similar pattern detected
 ━━━━━━━━━━━━━━━━━━━━━━━━━━
-이전에 학습한 패턴이 있습니다:
+Previously learned pattern available:
 - nextauth-prisma-session-type.md
 
-적용하시겠습니까? [y/N]
+Apply? [y/N]
 ```
 
 ---
@@ -253,17 +253,17 @@ PM Agent의 자기 개선 레이어와 연동:
 ## Quality Filters
 
 ### Value Assessment
-| 기준 | 가중치 |
-|------|--------|
-| 해결 복잡도 | 30% |
-| 재사용 가능성 | 40% |
-| 시간 절약 효과 | 20% |
-| 문서화 가치 | 10% |
+| Criterion | Weight |
+|-----------|--------|
+| Resolution complexity | 30% |
+| Reusability potential | 40% |
+| Time-saving impact | 20% |
+| Documentation value | 10% |
 
 ### Extraction Threshold
-- **Low**: 대부분의 패턴 추출 (노이즈 많음)
-- **Medium**: 중간 가치 이상만 추출 (권장)
-- **High**: 높은 가치 패턴만 추출 (엄격)
+- **Low**: Extract most patterns (noisy)
+- **Medium**: Medium+ value only (recommended)
+- **High**: High-value patterns only (strict)
 
 ---
 
@@ -271,27 +271,27 @@ PM Agent의 자기 개선 레이어와 연동:
 
 | Command | Description |
 |---------|-------------|
-| `/learn` | 현재 세션 분석 및 패턴 추출 |
-| `/learn list` | 저장된 스킬 목록 |
-| `/learn show <name>` | 특정 스킬 내용 보기 |
-| `/learn delete <name>` | 스킬 삭제 |
-| `/learn search <keyword>` | 스킬 검색 |
+| `/learn` | Analyze current session and extract patterns |
+| `/learn list` | List saved skills |
+| `/learn show <name>` | View specific skill content |
+| `/learn delete <name>` | Delete skill |
+| `/learn search <keyword>` | Search skills |
 
 ---
 
 ## Best Practices
 
-### 좋은 패턴 예시
+### Good Pattern Example
 ```markdown
 # React Server Component Data Fetching
 
 ## Problem
-클라이언트 컴포넌트에서 서버 데이터 fetch 시
-waterfall 문제 발생
+Waterfall issue when fetching server data
+in client components
 
 ## Solution
-서버 컴포넌트에서 데이터 fetch 후 props로 전달
-또는 Suspense + parallel fetch 사용
+Fetch data in server component, pass as props
+or use Suspense + parallel fetch
 
 ## Code Example
 \`\`\`tsx
@@ -303,13 +303,13 @@ async function Page() {
 \`\`\`
 ```
 
-### 피해야 할 패턴
+### Pattern to Avoid
 ```markdown
 # Fix Typo in Config  ❌
 ## Problem
-오타로 인한 빌드 실패
+Build failure due to typo
 ## Solution
-오타 수정
+Fix typo
 
-→ 재사용 가치 없음, 저장하지 않음
+→ No reuse value, do not save
 ```

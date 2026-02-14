@@ -1,44 +1,44 @@
 ---
 name: pytest-runner
-description: pytest 기반 테스트 실행 및 분석. 커버리지 리포트, 실패 분석, 픽스처 디버깅 포함.
+description: Execute and analyze pytest-based tests. Includes coverage reports, failure analysis, and fixture debugging.
 ---
 
 # Pytest Runner Skill
 
 ## Purpose
 
-Python 프로젝트의 테스트를 실행하고 결과를 분석합니다.
+Execute and analyze tests for Python projects.
 
 ## When to Use
 
-- Python 테스트 실행 요청 시 **자동 실행**
-- "테스트 돌려줘", "pytest", "test" 키워드 감지 시
-- CI/CD 전 로컬 테스트 검증
+- **Auto-invoke** when test execution is requested
+- Triggered by keywords: "run tests", "pytest", "test"
+- Local test verification before CI/CD
 
 ## Execution Modes
 
 ### 1. Quick Test
 ```bash
 pytest -x -q
-# 첫 번째 실패 시 중단, 간단한 출력
+# Stop at first failure, minimal output
 ```
 
 ### 2. Full Test with Coverage
 ```bash
 pytest --cov=src --cov-report=term-missing --cov-report=html
-# 전체 테스트 + 커버리지 리포트
+# Full test suite + coverage report
 ```
 
 ### 3. Specific Test
 ```bash
 pytest tests/test_api.py::test_create_user -v
-# 특정 테스트만 실행
+# Run specific test only
 ```
 
 ### 4. Failed Only
 ```bash
 pytest --lf
-# 마지막 실패한 테스트만 재실행
+# Re-run only last failed tests
 ```
 
 ---
@@ -81,20 +81,20 @@ pytest --lf
    ├─ Expected: ValidationError
    └─ Got: None
 
-   💡 Fix: 이메일 검증 로직 확인 필요
+   💡 Fix: Check email validation logic
    📍 Location: src/api.py:45
 
 2. test_db.py::test_connection_timeout
    ├─ Expected: TimeoutError after 5s
    └─ Got: Hung indefinitely
 
-   💡 Fix: DB 연결 타임아웃 설정 확인
+   💡 Fix: Verify DB connection timeout setting
 
 3. test_utils.py::test_parse_date
    ├─ Expected: datetime(2024, 1, 15)
    └─ Got: ValueError
 
-   💡 Fix: 날짜 포맷 파싱 로직 확인
+   💡 Fix: Check date format parsing logic
 ```
 
 ---
@@ -104,7 +104,7 @@ pytest --lf
 ### Minimum Thresholds
 ```yaml
 coverage:
-  minimum: 80%      # 전체 최소
+  minimum: 80%      # Overall minimum
   critical_paths:
     - src/api.py: 90%
     - src/auth.py: 95%
@@ -119,7 +119,7 @@ src/utils.py (78% covered):
    Lines 45-52: Error handling branch
    Lines 78-85: Edge case for empty input
 
-   💡 테스트 추가 필요:
+   💡 Tests needed:
    - test_parse_with_empty_input()
    - test_parse_with_invalid_format()
 ```
@@ -138,7 +138,7 @@ db_session
           └─→ admin_client
 
 ⚠️  Warning: Deep fixture chain (4 levels)
-    → 테스트 격리 확인 필요
+    → Verify test isolation
 ```
 
 ### Slow Fixtures
@@ -151,7 +151,7 @@ db_session
 | redis_client | 0.5s | 12 tests |
 | mock_api | 0.3s | 8 tests |
 
-💡 Optimization: db_session을 module scope로 변경 고려
+💡 Optimization: Consider changing db_session to module scope
 ```
 
 ---
@@ -175,8 +175,8 @@ ptw -- --lf
 
 | Command | Description |
 |---------|-------------|
-| `/pytest` | 전체 테스트 실행 |
-| `/pytest --quick` | 빠른 테스트 (-x -q) |
-| `/pytest --cov` | 커버리지 포함 |
-| `/pytest --failed` | 실패한 것만 재실행 |
-| `/pytest [path]` | 특정 경로만 실행 |
+| `/pytest` | Run all tests |
+| `/pytest --quick` | Quick test (-x -q) |
+| `/pytest --cov` | Include coverage |
+| `/pytest --failed` | Re-run failed only |
+| `/pytest [path]` | Run specific path |

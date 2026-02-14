@@ -1,26 +1,26 @@
 ---
 name: verify
-description: 6단계 체계적 검증 루프로 코드 품질을 보장합니다. 기능 완료 후, PR 생성 전, 리팩토링 후, 또는 주기적 품질 체크 시 사용합니다. Keywords: verify, verification, check, validate, quality, build, lint, test, security, pr-ready, 검증, 확인, 품질.
+description: Ensure code quality with systematic 6-phase verification loop. Use after feature completion, before PR creation, after refactoring, or for periodic quality checks. Keywords: verify, verification, check, validate, quality, build, lint, test, security, pr-ready.
 ---
 
 # Verification Loop Skill
 
 ## Purpose
-코드 변경 후 체계적인 6단계 검증을 통해 품질을 보장하고 PR 준비 상태를 확인합니다.
+Ensure quality through systematic 6-phase verification after code changes and confirm PR-ready state.
 
-**핵심 원칙**: Build 실패 시 즉시 중단 → 문제 해결 → 재검증
+**Core Principle**: Build failure → Immediate stop → Fix issue → Re-verify
 
 ## Activation Triggers
-- 기능 구현 완료 후
-- PR 생성 전 (`--pre-pr`)
-- 리팩토링 작업 후
-- 주기적 품질 체크 (15분 간격 또는 주요 컴포넌트 완료 시)
-- 사용자 명시적 요청: `/verify`, `검증해줘`, `확인해줘`
+- After feature implementation completion
+- Before PR creation (`--pre-pr`)
+- After refactoring work
+- Periodic quality checks (15-min intervals or major component completion)
+- User explicit request: `/verify`, `verify`, `check`
 
 ## 6-Phase Verification Pipeline
 
 ### Phase 1: Build Verification 🔨
-**목적**: 프로젝트 컴파일/빌드 성공 확인
+**Purpose**: Confirm project compilation/build success
 
 ```bash
 # JavaScript/TypeScript
@@ -36,12 +36,12 @@ go build ./...
 cargo build
 ```
 
-**실패 시**: 🚨 **즉시 중단** - 빌드 에러 해결이 최우선
+**On Failure**: 🚨 **Immediate stop** - Build error resolution is top priority
 
 ---
 
 ### Phase 2: Type Checking 📝
-**목적**: 타입 안전성 검증
+**Purpose**: Verify type safety
 
 ```bash
 # TypeScript
@@ -54,12 +54,12 @@ pyright src/ || mypy src/
 npx flow check
 ```
 
-**출력**: 타입 에러 개수 및 위치
+**Output**: Type error count and locations
 
 ---
 
 ### Phase 3: Linting 🔍
-**목적**: 코드 스타일 및 잠재적 문제 검출
+**Purpose**: Detect code style and potential issues
 
 ```bash
 # JavaScript/TypeScript
@@ -75,12 +75,12 @@ golangci-lint run
 cargo clippy
 ```
 
-**출력**: 린트 위반 개수 및 심각도
+**Output**: Lint violation count and severity
 
 ---
 
 ### Phase 4: Testing 🧪
-**목적**: 테스트 통과 및 커버리지 확인
+**Purpose**: Confirm test passing and coverage
 
 ```bash
 # JavaScript/TypeScript
@@ -96,68 +96,68 @@ go test -cover ./...
 cargo test
 ```
 
-**기준**:
-- ✅ 모든 테스트 통과
-- ✅ 커버리지 ≥ 80% (비즈니스 로직)
-- ⚠️ 커버리지 < 80% → 경고 표시
+**Criteria**:
+- ✅ All tests pass
+- ✅ Coverage ≥ 80% (business logic)
+- ⚠️ Coverage < 80% → Show warning
 
 ---
 
 ### Phase 5: Security Scanning 🛡️
-**목적**: 보안 취약점 및 민감 정보 노출 검사
+**Purpose**: Check security vulnerabilities and sensitive information exposure
 
 **5.1 Secrets Detection**:
 ```bash
-# .env, credentials, API keys 검사
+# Check .env, credentials, API keys
 grep -r "PRIVATE_KEY\|SECRET\|PASSWORD\|API_KEY" src/ --include="*.ts" --include="*.js" --include="*.py"
 ```
 
 **5.2 Debug Statement Detection**:
 ```bash
-# console.log, print, debugger 검사
+# Check console.log, print, debugger
 grep -rn "console\.log\|console\.debug\|debugger" src/ --include="*.ts" --include="*.tsx" --include="*.js"
 grep -rn "print(" src/ --include="*.py" | grep -v "# noqa"
 ```
 
-**5.3 Dependency Vulnerabilities** (선택적):
+**5.3 Dependency Vulnerabilities** (optional):
 ```bash
 npm audit --audit-level=high
 pip-audit
 ```
 
-**출력**: 발견된 보안 이슈 목록
+**Output**: List of discovered security issues
 
 ---
 
 ### Phase 6: Diff Review 📋
-**목적**: 변경사항 최종 검토
+**Purpose**: Final review of changes
 
 ```bash
 git diff --stat
 git diff HEAD~1 --name-only
 ```
 
-**검토 항목**:
-- [ ] 의도치 않은 파일 변경 없음
-- [ ] 누락된 에러 핸들링 없음
-- [ ] 엣지 케이스 처리 확인
-- [ ] 불필요한 console.log/print 제거
-- [ ] 하드코딩된 값 없음
+**Review Items**:
+- [ ] No unintended file changes
+- [ ] No missing error handling
+- [ ] Edge case handling confirmed
+- [ ] Unnecessary console.log/print removed
+- [ ] No hardcoded values
 
 ---
 
 ## Verification Modes
 
 ### Quick Mode (`/verify quick`)
-빠른 검증 - Build + Type Check만 실행
+Fast verification - Execute Build + Type Check only
 ```
 Phase 1: Build ✅
 Phase 2: Types ✅
-⏱️ 완료: ~30초
+⏱️ Complete: ~30 seconds
 ```
 
-### Full Mode (`/verify` 또는 `/verify full`)
-전체 6단계 검증
+### Full Mode (`/verify` or `/verify full`)
+Complete 6-phase verification
 ```
 Phase 1: Build ✅
 Phase 2: Types ✅
@@ -165,20 +165,20 @@ Phase 3: Lint ✅
 Phase 4: Tests ✅ (Coverage: 85%)
 Phase 5: Security ✅
 Phase 6: Diff ✅
-⏱️ 완료: ~2-5분
+⏱️ Complete: ~2-5 minutes
 ```
 
 ### Pre-PR Mode (`/verify pre-pr`)
-PR 제출 전 엄격한 검증 (Security 강화)
+Strict verification before PR submission (Enhanced security)
 ```
 Phase 1-6: Full verification
-+ 추가 보안 스캔
-+ 의존성 취약점 검사
-+ 커밋 메시지 검토
++ Additional security scan
++ Dependency vulnerability check
++ Commit message review
 ```
 
 ### Pre-Commit Mode (`/verify pre-commit`)
-커밋 전 빠른 검증
+Quick verification before commit
 ```
 Phase 1: Build ✅
 Phase 2: Types ✅
@@ -190,7 +190,7 @@ Phase 5: Security (secrets only) ✅
 
 ## Report Format
 
-### 성공 보고서
+### Success Report
 ```
 ╔══════════════════════════════════════════════════════╗
 ║              🎯 VERIFICATION REPORT                  ║
@@ -207,7 +207,7 @@ Phase 5: Security (secrets only) ✅
 ╚══════════════════════════════════════════════════════╝
 ```
 
-### 실패 보고서
+### Failure Report
 ```
 ╔══════════════════════════════════════════════════════╗
 ║              🎯 VERIFICATION REPORT                  ║
@@ -237,27 +237,27 @@ Phase 5: Security (secrets only) ✅
 ## Periodic Verification Strategy
 
 ### Mental Checkpoints
-- 함수/컴포넌트 완료 후 → `/verify quick`
-- 15분 경과 시 → `/verify`
-- 주요 마일스톤 완료 → `/verify full`
+- After function/component completion → `/verify quick`
+- After 15 minutes elapsed → `/verify`
+- Major milestone completed → `/verify full`
 
 ### Session Integration
 ```
-작업 시작
+Start work
     │
-    ├─→ 기능 구현
+    ├─→ Feature implementation
     │       │
-    │       └─→ [15분 경과] → /verify quick
+    │       └─→ [15min elapsed] → /verify quick
     │
-    ├─→ 컴포넌트 완료
+    ├─→ Component completion
     │       │
     │       └─→ /verify
     │
-    ├─→ 기능 완료
+    ├─→ Feature completion
     │       │
     │       └─→ /verify full
     │
-    └─→ PR 준비
+    └─→ PR preparation
             │
             └─→ /verify pre-pr
 ```
@@ -269,39 +269,39 @@ Phase 5: Security (secrets only) ✅
 ### With `/checkpoint`
 ```
 /checkpoint create "before-refactor"
-... 리팩토링 작업 ...
+... refactoring work ...
 /verify full
-/checkpoint verify "before-refactor"  # 변경사항 비교
+/checkpoint verify "before-refactor"  # Compare changes
 ```
 
 ### With `/feature-planner`
-각 Phase Quality Gate에서 자동 `/verify` 실행
+Auto-execute `/verify` at each Phase Quality Gate
 
 ### With `/code-review`
 ```
 /verify pre-pr
-/code-review  # 검증 통과 후 코드 리뷰
+/code-review  # Code review after verification passes
 ```
 
 ---
 
 ## Auto-Fix Suggestions
 
-검증 실패 시 자동 수정 제안:
+Suggest automatic fixes on verification failure:
 
 | Issue Type | Suggested Fix |
 |------------|---------------|
-| Type Error | 타입 어노테이션 추가/수정 |
-| Lint Error | `npm run lint -- --fix` 또는 `ruff --fix` |
-| Missing Test | 테스트 케이스 생성 제안 |
-| console.log | 해당 라인 제거 또는 logger로 교체 |
-| Security Issue | 환경변수로 이동 제안 |
+| Type Error | Add/modify type annotation |
+| Lint Error | `npm run lint -- --fix` or `ruff --fix` |
+| Missing Test | Suggest test case creation |
+| console.log | Remove line or replace with logger |
+| Security Issue | Suggest moving to environment variables |
 
 ---
 
 ## Configuration
 
-프로젝트별 설정 (`.claude/verify.config.json`):
+Project-specific configuration (`.claude/verify.config.json`):
 ```json
 {
   "coverageThreshold": 80,
@@ -331,8 +331,8 @@ Phase 5: Security (secrets only) ✅
 
 | Command | Description |
 |---------|-------------|
-| `/verify` | 전체 6단계 검증 |
-| `/verify quick` | Build + Type만 검증 |
-| `/verify pre-pr` | PR 전 엄격한 검증 |
-| `/verify pre-commit` | 커밋 전 빠른 검증 |
-| `/verify --fix` | 자동 수정 가능한 것들 수정 |
+| `/verify` | Full 6-phase verification |
+| `/verify quick` | Verify Build + Type only |
+| `/verify pre-pr` | Strict verification before PR |
+| `/verify pre-commit` | Quick verification before commit |
+| `/verify --fix` | Fix auto-fixable issues |

@@ -1,18 +1,18 @@
 ---
 name: note
-description: 세션 컴팩션에서 살아남는 영구 메모 시스템. 중요한 컨텍스트를 .claude/notepad.md에 저장하여 긴 세션에서도 정보 손실을 방지합니다. Keywords: note, memo, remember, context, save, 메모, 기억, 저장, 컨텍스트.
+description: Persistent memo system surviving session compaction. Save critical context to .claude/notepad.md preventing information loss in long sessions. Keywords: note, memo, remember, context, save.
 ---
 
 # Note Skill
 
 ## Purpose
-세션 컴팩션(context compaction)에서 살아남는 영구 메모 시스템입니다. 긴 세션에서 중요한 컨텍스트가 압축으로 손실되는 것을 방지합니다.
+Persistent memo system surviving session compaction. Prevents critical context loss through compression in long sessions.
 
-**핵심 원칙**: 중요한 정보 → 메모 저장 → 컴팩션 후에도 유지 → 다음 세션에서도 활용
+**Core Principle**: Critical info → Save memo → Persist after compaction → Available in next session
 
 ## Storage Location
-- **프로젝트 레벨**: `.claude/notepad.md` (프로젝트 루트)
-- **글로벌 레벨**: `~/.claude/notepad.md` (모든 프로젝트 공용)
+- **Project Level**: `.claude/notepad.md` (project root)
+- **Global Level**: `~/.claude/notepad.md` (shared across projects)
 
 ---
 
@@ -20,58 +20,58 @@ description: 세션 컴팩션에서 살아남는 영구 메모 시스템. 중요
 
 | Command | Description |
 |---------|-------------|
-| `/note <content>` | Working Memory에 타임스탬프와 함께 추가 |
-| `/note --priority <content>` | Priority Context에 추가 (항상 로드) |
-| `/note --manual <content>` | MANUAL 섹션에 추가 (절대 삭제 안 됨) |
-| `/note --show` | 현재 notepad 내용 표시 |
-| `/note --prune` | 7일 이상 된 Working Memory 항목 정리 |
-| `/note --clear` | Working Memory만 삭제 (Priority, MANUAL 유지) |
+| `/note <content>` | Add to Working Memory with timestamp |
+| `/note --priority <content>` | Add to Priority Context (always loaded) |
+| `/note --manual <content>` | Add to MANUAL section (never deleted) |
+| `/note --show` | Display current notepad contents |
+| `/note --prune` | Clean Working Memory items older than 7 days |
+| `/note --clear` | Delete Working Memory only (keep Priority, MANUAL) |
 
 ---
 
 ## Sections
 
-### 1. Priority Context (항상 로드)
+### 1. Priority Context (Always Loaded)
 ```markdown
 ## Priority Context
-<!-- 500자 제한 - 세션 시작 시 항상 주입됨 -->
+<!-- 500 char limit - always injected at session start -->
 - Project uses pnpm, not npm
 - API client: src/api/client.ts
 - Auth: NextAuth + Prisma adapter
 ```
 
-**용도**:
-- 프로젝트 핵심 정보
-- 매 세션 시작 시 알아야 할 것
-- **500자 제한** (컨텍스트 예산 고려)
+**Purpose**:
+- Project core information
+- Must-know at every session start
+- **500 char limit** (context budget consideration)
 
-### 2. Working Memory (임시 메모)
+### 2. Working Memory (Temporary Memos)
 ```markdown
 ## Working Memory
-<!-- 타임스탬프 포함, 7일 후 자동 정리 -->
-[2025-01-28 14:30] Auth 버그 발견 - UserContext에서 useEffect 의존성 누락
-[2025-01-28 15:45] RLS 정책 문제 해결 - service_role 키로 테스트 필요
+<!-- Includes timestamp, auto-cleaned after 7 days -->
+[2025-01-28 14:30] Auth bug found - UserContext missing useEffect dependency
+[2025-01-28 15:45] RLS policy issue resolved - test with service_role key
 ```
 
-**용도**:
-- 디버깅 중 발견한 것
-- 현재 작업 중인 내용
-- 7일 후 자동 정리 (--prune)
+**Purpose**:
+- Debugging discoveries
+- Current work content
+- Auto-cleaned after 7 days (--prune)
 
-### 3. MANUAL (영구 저장)
+### 3. MANUAL (Permanent Storage)
 ```markdown
 ## MANUAL
-<!-- 절대 자동 삭제 안 됨 -->
+<!-- Never auto-deleted -->
 - Backend Team: backend@company.com
-- Production DB: readonly, 절대 직접 수정 금지
-- Deploy: main 브랜치 push → Vercel 자동 배포
+- Production DB: readonly, never directly modify
+- Deploy: main branch push → Vercel auto-deploy
 ```
 
-**용도**:
-- 팀 연락처
-- 배포 정보
-- 프로젝트 규칙
-- 절대 잊으면 안 되는 정보
+**Purpose**:
+- Team contacts
+- Deployment info
+- Project rules
+- Never-forget information
 
 ---
 
@@ -79,21 +79,21 @@ description: 세션 컴팩션에서 살아남는 영구 메모 시스템. 중요
 
 ```markdown
 # Notepad
-<!-- 컴팩션에서 살아남는 세션 메모 -->
-<!-- 저장 위치: .claude/notepad.md -->
+<!-- Session memos surviving compaction -->
+<!-- Storage: .claude/notepad.md -->
 
 ## Priority Context
-<!-- 500자 제한 - 항상 로드됨 -->
+<!-- 500 char limit - always loaded -->
 - Project uses TypeScript strict mode
 - All files in src/, tests in tests/
 - API endpoints: /api/v1/*
 
 ## Working Memory
-<!-- 타임스탬프 포함, 7일 후 자동 정리 -->
+<!-- Includes timestamp, auto-cleaned after 7 days -->
 [2025-01-28 14:30] Found race condition in worker.ts:89
 
 ## MANUAL
-<!-- 영구 저장 - 절대 자동 삭제 안 됨 -->
+<!-- Permanent storage - never auto-deleted -->
 - Contact: api-team@company.com for backend questions
 - NEVER commit to main directly
 ```
@@ -105,30 +105,30 @@ description: 세션 컴팩션에서 살아남는 영구 메모 시스템. 중요
 ### Adding a Note
 
 ```
-User: /note Auth 모듈에서 JWT 만료 처리 필요
+User: /note Auth module needs JWT expiry handling
 
 Claude:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-📝 [Note] Working Memory에 추가됨
+📝 [Note] Added to Working Memory
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-[2025-01-28 14:30] Auth 모듈에서 JWT 만료 처리 필요
+[2025-01-28 14:30] Auth module needs JWT expiry handling
 
-저장 위치: .claude/notepad.md
+Saved to: .claude/notepad.md
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 
 ### Adding Priority Context
 
 ```
-User: /note --priority 이 프로젝트는 pnpm 사용, npm 명령어 금지
+User: /note --priority This project uses pnpm, npm commands forbidden
 
 Claude:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-📌 [Note] Priority Context에 추가됨
+📌 [Note] Added to Priority Context
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-- 이 프로젝트는 pnpm 사용, npm 명령어 금지
+- This project uses pnpm, npm commands forbidden
 
-⚠️ Priority Context: 127/500자 사용 중
+⚠️ Priority Context: 127/500 chars used
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 
@@ -139,16 +139,16 @@ User: /note --show
 
 Claude:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-📋 [Note] 현재 Notepad 내용
+📋 [Note] Current Notepad Contents
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-## Priority Context (127/500자)
-- 이 프로젝트는 pnpm 사용, npm 명령어 금지
+## Priority Context (127/500 chars)
+- This project uses pnpm, npm commands forbidden
 - API: src/api/client.ts
 
 ## Working Memory (2 items)
-[2025-01-28 14:30] Auth 모듈에서 JWT 만료 처리 필요
-[2025-01-28 15:00] UserService.ts:45 타입 에러 해결함
+[2025-01-28 14:30] Auth module needs JWT expiry handling
+[2025-01-28 15:00] Fixed type error in UserService.ts:45
 
 ## MANUAL (1 item)
 - Backend Team: backend@company.com
@@ -163,81 +163,81 @@ Claude:
 ### On Skill Invocation
 
 1. **Parse Arguments**
-   - 옵션 확인: `--priority`, `--manual`, `--show`, `--prune`, `--clear`
-   - 내용 추출
+   - Check options: `--priority`, `--manual`, `--show`, `--prune`, `--clear`
+   - Extract content
 
 2. **Load/Create Notepad**
-   - `.claude/notepad.md` 읽기 또는 생성
-   - 섹션별 파싱
+   - Read or create `.claude/notepad.md`
+   - Parse by section
 
 3. **Execute Action**
-   - 기본: Working Memory에 타임스탬프와 함께 추가
-   - `--priority`: Priority Context에 추가 (500자 제한 체크)
-   - `--manual`: MANUAL 섹션에 추가
-   - `--show`: 전체 내용 표시
-   - `--prune`: 7일 이상 된 Working Memory 삭제
-   - `--clear`: Working Memory 전체 삭제
+   - Default: Add to Working Memory with timestamp
+   - `--priority`: Add to Priority Context (check 500 char limit)
+   - `--manual`: Add to MANUAL section
+   - `--show`: Display full contents
+   - `--prune`: Delete Working Memory older than 7 days
+   - `--clear`: Delete entire Working Memory
 
 4. **Save Notepad**
-   - 변경 사항 저장
+   - Save changes
 
 ---
 
 ## Session Integration
 
 ### Session Start
-세션 시작 시 자동으로 notepad 확인:
-1. `.claude/notepad.md` 또는 `~/.claude/notepad.md` 존재 확인
-2. Priority Context 로드 (항상)
-3. 최근 Working Memory 로드 (24시간 이내)
+Auto-check notepad at session start:
+1. Check `.claude/notepad.md` or `~/.claude/notepad.md` existence
+2. Load Priority Context (always)
+3. Load recent Working Memory (within 24 hours)
 
 ### Session End
-세션 종료 전 중요 정보 메모 제안:
-- 해결한 복잡한 문제
-- 발견한 프로젝트 규칙
-- 다음 세션에 필요한 컨텍스트
+Suggest noting important info before session end:
+- Complex problems solved
+- Project rules discovered
+- Context needed for next session
 
 ---
 
 ## Best Practices
 
-### Priority Context 작성 팁
+### Priority Context Writing Tips
 ```markdown
-✅ Good (간결하고 핵심적)
-- pnpm 사용, npm 금지
+✅ Good (concise and essential)
+- Use pnpm, not npm
 - API: src/api/client.ts
 - Auth: NextAuth + Prisma
 
-❌ Bad (너무 상세)
-- 이 프로젝트는 pnpm 패키지 매니저를 사용합니다.
-  npm이나 yarn을 사용하면 lock 파일 충돌이 발생할 수
-  있으므로 반드시 pnpm을 사용해주세요...
+❌ Bad (too detailed)
+- This project uses the pnpm package manager.
+  Using npm or yarn can cause lock file conflicts,
+  so please always use pnpm...
 ```
 
-### Working Memory 작성 팁
+### Working Memory Writing Tips
 ```markdown
-✅ Good (구체적, 파일/라인 포함)
-[2025-01-28] worker.ts:89 Promise.all에 await 누락 - race condition 원인
+✅ Good (specific, includes file/line)
+[2025-01-28] worker.ts:89 missing await on Promise.all - race condition cause
 
-❌ Bad (모호함)
-[2025-01-28] 버그 발견
+❌ Bad (vague)
+[2025-01-28] Bug found
 ```
 
-### MANUAL 작성 팁
+### MANUAL Writing Tips
 ```markdown
-✅ Good (영구적으로 유용한 정보)
-- Production DB: readonly 접근만 허용
-- Deploy: main push → Vercel 자동 배포
-- Hotfix: hotfix/* 브랜치 → 즉시 배포
+✅ Good (permanently useful info)
+- Production DB: readonly access only
+- Deploy: main push → Vercel auto-deploy
+- Hotfix: hotfix/* branch → immediate deploy
 
-❌ Bad (임시 정보)
-- 오늘 회의 3시
+❌ Bad (temporary info)
+- Meeting today at 3pm
 ```
 
 ---
 
 ## Related
 
-- `/learn` - 패턴 추출 및 스킬 저장
-- `/checkpoint` - 작업 전 복원 지점 생성
-- `/sc:save` - 세션 전체 상태 저장
+- `/learn` - Pattern extraction and skill saving
+- `/checkpoint` - Create restore point before work
+- `/sc:save` - Save entire session state
