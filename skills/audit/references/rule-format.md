@@ -75,6 +75,14 @@ Bullet list of conditions. All must be satisfied to pass. Be specific and verifi
 ### Examples (Optional but Recommended)
 Show BAD and GOOD patterns side by side. Helps Claude and humans understand intent.
 
+## Quality Criteria
+
+Every rule must satisfy:
+- **Real file paths** — Scope patterns must match actual project files (verify with `ls` or `glob`)
+- **Working check commands** — All bash commands in `## Check` must execute without errors
+- **Clear pass/fail** — Pass Criteria must be objectively verifiable, not subjective
+- **Realistic exceptions** — Include at least 1-2 cases that look like violations but aren't
+
 ## Tips
 
 - One rule per concern (Single Responsibility)

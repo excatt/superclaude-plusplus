@@ -46,6 +46,15 @@ git diff "$BASE"...HEAD --name-only
 
 Skip rules whose scope has no matching changes.
 
+**Auto-exempt files** (always skip, no rule needed):
+- Lock files: `pnpm-lock.yaml`, `uv.lock`, `package-lock.json`, `Cargo.lock`
+- Generated/build output: `dist/`, `build/`, `.next/`, `__pycache__/`
+- Docs: `README.md`, `CHANGELOG.md`, `LICENSE`
+- Test fixtures: `fixtures/`, `__fixtures__/`, `test-data/`
+- Vendor/third-party: `vendor/`, `node_modules/`
+- CI/CD config: `.github/`, `.gitlab-ci.yml`, `Dockerfile`
+- CLAUDE.md and `.claude/` internals
+
 ### Step 2: Execute
 
 For each matched rule:
@@ -69,6 +78,15 @@ AUDIT REPORT
 ```
 
 Status: all pass → `CLEAR` / any error-severity fail → `NEEDS FIX` / warning-only → `REVIEW`
+
+### Step 4: Fix (if issues found)
+
+Ask user via `AskUserQuestion`:
+1. **전체 수정** — Apply all recommended fixes automatically
+2. **개별 수정** — Review and approve each fix one by one
+3. **건너뛰기** — Report only, no changes
+
+After fixes, re-run only failed rules and show before/after comparison.
 
 ---
 
