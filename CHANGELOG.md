@@ -5,6 +5,25 @@
 형식은 [Keep a Changelog](https://keepachangelog.com/ko/1.0.0/)를 따르며,
 [Semantic Versioning](https://semver.org/lang/ko/)을 준수합니다.
 
+## [0.9.1] - 2026-02-15
+
+### Changed
+- **Core config files translated to English** (6 files):
+  - CLAUDE.md, FLAGS.md, RULES.md, MODES.md, MCP_SERVERS.md, CONVENTIONS.md
+  - PRINCIPLES.md already in English, unchanged
+  - Language section in CLAUDE.md retains Korean instruction ("ALWAYS respond in Korean")
+- **15 skill files translated to English**:
+  - web-design-guidelines, confidence-check, learn, gap-analysis, note, eval-harness,
+    python-best-practices, composition-patterns, verify, uv-package, checkpoint, build-fix,
+    pytest-runner, react-best-practices, audit
+  - 21 skills already in English, unchanged
+- **Token efficiency improvement**: ~30-40% savings on system prompt due to English tokenization
+  - Korean text consumed 1.5-2.5x more tokens per meaning unit
+  - Addresses context overflow issue (previous sessions hitting limit at ~13 turns)
+
+### Files Changed
+- 6 core config files + 15 skill SKILL.md files (21 files total, 1,734 lines changed)
+
 ## [0.9.0] - 2026-02-14
 
 ### Added
