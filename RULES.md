@@ -259,7 +259,8 @@ SOLID 원칙, 에러 핸들링, 테스트 품질, 보안, 성능
 ### Review Loop
 ```
 Implement → Spec Review → [Fail: Fix → Re-review] →
-Quality Review → [Fail: Fix → Re-review] → Complete
+Quality Review → [Fail: Fix → Re-review] →
+/verify → /audit → Complete
 ```
 
 **Red Flags**:

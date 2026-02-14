@@ -37,6 +37,7 @@
 | Next.js 작업 | `/nextjs` | page.tsx, layout.tsx, route.ts |
 | FastAPI 작업 | `/fastapi` | @router, APIRouter |
 | 대규모 변경 | `/checkpoint` | 10+ 파일 수정 예정 |
+| 프로젝트 규칙 검증 | `/audit` | commit, PR + `.claude/audit-rules/` 존재 시 |
 
 ### Proactive Suggestions (Confirm before run)
 **💡 적극 제안 모드**: 관련 도구를 자동 감지하여 제안 (실행 전 확인)
@@ -50,6 +51,7 @@
 | 프레임워크 | **Context7** MCP | React, Next.js, Vue |
 | UI 컴포넌트 | **Magic** MCP | button, form, modal |
 | 복잡한 분석 | **Sequential** MCP | 디버깅 3회+, 설계 |
+| 새 패턴 도입 | `/audit manage` | 새 컨벤션, 아키텍처 패턴 정립 |
 
 **제안 강도**: `--suggest-all` (기본) | `--suggest-minimal` | `--suggest-off`
 
@@ -63,7 +65,7 @@
 - **Python**: `/python-best-practices`, `/pytest-runner`, `/uv-package`, `/fastapi`
 - **DevOps**: `/docker`, `/cicd`, `/monitoring`, `/env`
 - **Git**: `/git-workflow`, `/commit-msg`, `/versioning`
-- **Quality**: `/clean-code`, `/refactoring`, `/testing`
+- **Quality**: `/clean-code`, `/refactoring`, `/testing`, `/audit`
 
 ### Agent Auto-Suggestion
 | 작업 유형 | 추천 에이전트 |
@@ -108,4 +110,5 @@ Claude가 `~/.claude/projects/<project>/memory/`에 자동으로 학습 내용�
 - **Implementation**: Domain-specific skills
 - **Review**: `/code-review`, `/security-audit`, `/web-design-guidelines`
 - **Deployment**: `/docker`, `/cicd`, `/monitoring`
-- **Post-Implementation**: `/verify`, `/learn`
+- **Verification**: `/verify` → `/audit` (project rules)
+- **Post-Implementation**: `/learn`
