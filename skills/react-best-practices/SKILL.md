@@ -22,15 +22,15 @@ Reference these guidelines when:
 
 ## Priority 0: Package Management (MANDATORY)
 
-**필수 규칙**: **pnpm** 사용 (npm, yarn 금지)
+**Required Rule**: Use **pnpm** (npm, yarn forbidden)
 
 ### Rule 0.1: Package Manager
 
-| 항목 | 규칙 |
+| Item | Rule |
 |------|------|
-| 패키지 매니저 | **pnpm** (필수) |
-| Lock 파일 | `pnpm-lock.yaml` (커밋 필수) |
-| 워크스페이스 | `pnpm-workspace.yaml` (모노레포) |
+| Package Manager | **pnpm** (mandatory) |
+| Lock File | `pnpm-lock.yaml` (must commit) |
+| Workspace | `pnpm-workspace.yaml` (monorepo) |
 
 ```bash
 # ✅ Correct
@@ -72,7 +72,7 @@ CMD ["pnpm", "start"]
 - run: pnpm build
 ```
 
-**Detection**: `package-lock.json` 또는 `yarn.lock` 발견 시 pnpm으로 마이그레이션 제안
+**Detection**: Suggest migration to pnpm if `package-lock.json` or `yarn.lock` found
 
 ---
 

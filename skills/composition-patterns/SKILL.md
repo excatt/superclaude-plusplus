@@ -1,20 +1,20 @@
 ---
 name: composition-patterns
 description: |
-  React 컴포지션 패턴 - 유연하고 유지보수 가능한 컴포넌트 구조.
-  Boolean prop 남용을 방지하고 Compound Components로 확장 가능한 아키텍처 구축.
+  React composition patterns - Flexible and maintainable component structure.
+  Prevent boolean prop abuse and build extensible architecture with Compound Components.
 
   Use proactively when:
-  - Boolean props가 많은 컴포넌트 리팩토링
-  - 재사용 가능한 컴포넌트 라이브러리 구축
-  - 유연한 컴포넌트 API 설계
-  - 컴포넌트 아키텍처 리뷰
-  - Compound components 또는 Context providers 작업
+  - Refactoring components with many boolean props
+  - Building reusable component libraries
+  - Designing flexible component APIs
+  - Reviewing component architecture
+  - Working with compound components or Context providers
 
-  Triggers: composition, compound component, boolean props, 컴포넌트 구조,
-  아키텍처 리뷰, provider pattern, context, 리팩토링 컴포넌트
+  Triggers: composition, compound component, boolean props, component structure,
+  architecture review, provider pattern, context, refactor component
 
-  Do NOT use for: 성능 최적화 (→ react-best-practices), UI/UX 검사 (→ web-design-guidelines)
+  Do NOT use for: Performance optimization (→ react-best-practices), UI/UX inspection (→ web-design-guidelines)
 user-invocable: true
 metadata:
   author: vercel (adapted for SuperClaude)
@@ -24,30 +24,30 @@ metadata:
 
 # React Composition Patterns
 
-유연하고 유지보수 가능한 React 컴포넌트를 위한 컴포지션 패턴.
-Boolean prop 남용을 피하고, compound components, state lifting, composing internals를 사용합니다.
+Composition patterns for flexible and maintainable React components.
+Avoid boolean prop abuse, use compound components, state lifting, and composing internals.
 
-## 규칙 카테고리 (우선순위별)
+## Rule Categories (by Priority)
 
-| Priority | Category | Impact | 설명 |
-|:--------:|----------|:------:|------|
-| 1 | Component Architecture | HIGH | 컴포넌트 구조화 |
-| 2 | State Management | MEDIUM | 상태 관리 패턴 |
-| 3 | Implementation Patterns | MEDIUM | 구현 패턴 |
-| 4 | React 19 APIs | MEDIUM | React 19 변경사항 |
+| Priority | Category | Impact | Description |
+|:--------:|----------|:------:|-------------|
+| 1 | Component Architecture | HIGH | Component structuring |
+| 2 | State Management | MEDIUM | State management patterns |
+| 3 | Implementation Patterns | MEDIUM | Implementation patterns |
+| 4 | React 19 APIs | MEDIUM | React 19 changes |
 
 ---
 
 ## 1. Component Architecture (HIGH)
 
-### 1.1 Boolean Prop 남용 방지
+### 1.1 Prevent Boolean Prop Abuse
 
 **Impact: CRITICAL**
 
-Boolean props는 조합이 기하급수적으로 증가. Composition 사용 권장.
+Boolean props lead to combinatorial explosion. Use composition instead.
 
 ```tsx
-// ❌ Boolean props 폭발 - 유지보수 불가
+// ❌ Boolean prop explosion - unmaintainable
 function Composer({
   isThread,
   isDMThread,
@@ -62,7 +62,7 @@ function Composer({
   )
 }
 
-// ✅ Composition - 명시적 variant
+// ✅ Composition - explicit variants
 function ThreadComposer({ channelId }: { channelId: string }) {
   return (
     <Composer.Frame>
@@ -88,11 +88,11 @@ function EditComposer() {
 }
 ```
 
-### 1.2 Compound Components 사용
+### 1.2 Use Compound Components
 
 **Impact: HIGH**
 
-복잡한 컴포넌트를 공유 context로 연결된 subcomponents로 구조화.
+Structure complex components into subcomponents connected by shared context.
 
 ```tsx
 // ❌ Monolithic + render props
@@ -136,7 +136,7 @@ const Composer = {
   Footer: ComposerFooter,
 }
 
-// 사용
+// Usage
 <Composer.Provider state={state} actions={actions} meta={meta}>
   <Composer.Frame>
     <Composer.Input />
@@ -151,21 +151,21 @@ const Composer = {
 
 ## 2. State Management (MEDIUM)
 
-### 2.1 State 구현과 UI 분리
+### 2.1 Separate State Implementation from UI
 
 **Impact: MEDIUM**
 
-Provider만 state 구현을 알고, UI는 context interface만 사용.
+Provider knows state implementation, UI only uses context interface.
 
 ```tsx
-// ❌ UI가 state 구현에 결합
+// ❌ UI coupled to state implementation
 function ChannelComposer({ channelId }: { channelId: string }) {
-  const state = useGlobalChannelState(channelId)  // 특정 구현에 결합
+  const state = useGlobalChannelState(channelId)  // Coupled to specific implementation
   const { submit } = useChannelSync(channelId)
   return <Composer.Input value={state.input} />
 }
 
-// ✅ State 관리는 Provider에서 분리
+// ✅ State management separated in Provider
 function ChannelProvider({ channelId, children }: Props) {
   const { state, update, submit } = useGlobalChannel(channelId)
   return (
@@ -175,25 +175,25 @@ function ChannelProvider({ channelId, children }: Props) {
   )
 }
 
-// UI는 interface만 알면 됨
+// UI only needs interface
 function ChannelComposer() {
   return (
     <Composer.Frame>
-      <Composer.Input />  {/* context에서 state 읽음 */}
+      <Composer.Input />  {/* Reads state from context */}
       <Composer.Submit />
     </Composer.Frame>
   )
 }
 ```
 
-### 2.2 Generic Context Interface 정의
+### 2.2 Define Generic Context Interface
 
 **Impact: HIGH**
 
-`state`, `actions`, `meta` 3부분으로 generic interface 정의.
+Define generic interface with 3 parts: `state`, `actions`, `meta`.
 
 ```tsx
-// Generic interface - 어떤 provider든 구현 가능
+// Generic interface - any provider can implement
 interface ComposerContextValue {
   state: {
     input: string
@@ -221,41 +221,41 @@ function ChannelProvider({ channelId, children }) {
   return <ComposerContext value={{ state, actions: { update, submit }, meta }}>{children}</ComposerContext>
 }
 
-// 같은 UI가 두 Provider 모두에서 동작!
+// Same UI works with both providers!
 ```
 
-### 2.3 State를 Provider로 Lift
+### 2.3 Lift State to Provider
 
 **Impact: HIGH**
 
-State를 Provider로 올려서 형제 컴포넌트들이 접근 가능하게.
+Lift state to Provider so sibling components can access it.
 
 ```tsx
-// ❌ State가 컴포넌트 내부에 갇힘
+// ❌ State trapped inside component
 function ForwardMessageDialog() {
   return (
     <Dialog>
-      <ForwardMessageComposer />  {/* state 여기 안에 */}
-      <MessagePreview />          {/* state 접근 불가! */}
-      <ForwardButton />           {/* submit 호출 불가! */}
+      <ForwardMessageComposer />  {/* state trapped here */}
+      <MessagePreview />          {/* Cannot access state! */}
+      <ForwardButton />           {/* Cannot call submit! */}
     </Dialog>
   )
 }
 
-// ✅ State를 Provider로 lift
+// ✅ Lift state to Provider
 function ForwardMessageDialog() {
   return (
     <ForwardMessageProvider>
       <Dialog>
         <ForwardMessageComposer />
-        <MessagePreview />    {/* context로 state 접근 */}
-        <ForwardButton />     {/* context로 submit 호출 */}
+        <MessagePreview />    {/* Access state via context */}
+        <ForwardButton />     {/* Call submit via context */}
       </Dialog>
     </ForwardMessageProvider>
   )
 }
 
-// Provider 내부면 어디서든 state/actions 접근 가능
+// Anywhere inside Provider can access state/actions
 function ForwardButton() {
   const { actions } = use(ComposerContext)
   return <Button onPress={actions.submit}>Forward</Button>
@@ -266,36 +266,36 @@ function ForwardButton() {
 
 ## 3. Implementation Patterns (MEDIUM)
 
-### 3.1 명시적 Component Variants 생성
+### 3.1 Create Explicit Component Variants
 
 **Impact: MEDIUM**
 
-Boolean props 대신 명시적 variant 컴포넌트 생성.
+Create explicit variant components instead of boolean props.
 
 ```tsx
-// ❌ 무슨 UI가 렌더링되는지 불명확
+// ❌ Unclear what UI renders
 <Composer isThread isEditing={false} channelId="abc" showAttachments />
 
-// ✅ 즉시 명확
+// ✅ Immediately clear
 <ThreadComposer channelId="abc" />
 <EditMessageComposer messageId="xyz" />
 <ForwardMessageComposer messageId="123" />
 ```
 
-### 3.2 Render Props보다 Children 선호
+### 3.2 Prefer Children over Render Props
 
 **Impact: MEDIUM**
 
-`renderX` props 대신 `children`으로 composition.
+Use `children` for composition instead of `renderX` props.
 
 ```tsx
-// ❌ Render props - 읽기 어려움
+// ❌ Render props - hard to read
 <Composer
   renderHeader={() => <CustomHeader />}
   renderFooter={() => <><Formatting /><Emojis /></>}
 />
 
-// ✅ Children - 자연스러운 composition
+// ✅ Children - natural composition
 <Composer.Frame>
   <CustomHeader />
   <Composer.Input />
@@ -306,7 +306,7 @@ Boolean props 대신 명시적 variant 컴포넌트 생성.
 </Composer.Frame>
 ```
 
-**Render props가 적절한 경우**: 부모가 데이터를 자식에게 전달해야 할 때
+**When render props appropriate**: Parent needs to pass data to children
 
 ```tsx
 <List data={items} renderItem={({ item, index }) => <Item item={item} />} />
@@ -316,17 +316,17 @@ Boolean props 대신 명시적 variant 컴포넌트 생성.
 
 ## 4. React 19 APIs (MEDIUM)
 
-> **⚠️ React 19+ 전용**. React 18 이하면 이 섹션 스킵.
+> **⚠️ React 19+ only**. Skip this section for React 18 or below.
 
-### 4.1 React 19 API 변경
+### 4.1 React 19 API Changes
 
 ```tsx
-// ❌ forwardRef (React 19에서 불필요)
+// ❌ forwardRef (unnecessary in React 19)
 const ComposerInput = forwardRef<TextInput, Props>((props, ref) => {
   return <TextInput ref={ref} {...props} />
 })
 
-// ✅ ref는 일반 prop
+// ✅ ref as regular prop
 function ComposerInput({ ref, ...props }: Props & { ref?: React.Ref<TextInput> }) {
   return <TextInput ref={ref} {...props} />
 }
@@ -334,7 +334,7 @@ function ComposerInput({ ref, ...props }: Props & { ref?: React.Ref<TextInput> }
 // ❌ useContext (React 19)
 const value = useContext(MyContext)
 
-// ✅ use() 사용 - 조건부 호출도 가능
+// ✅ use() - conditional calls possible
 const value = use(MyContext)
 ```
 
@@ -342,16 +342,16 @@ const value = use(MyContext)
 
 ## Quick Checklist
 
-| 체크 | 규칙 |
+| Check | Rule |
 |:----:|------|
-| [ ] | Boolean props 3개 이상? → Composition으로 리팩토링 |
-| [ ] | 조건부 렌더링 복잡? → Explicit variants 생성 |
-| [ ] | State가 컴포넌트에 갇힘? → Provider로 lift |
-| [ ] | renderX props? → children으로 변경 |
-| [ ] | React 19? → forwardRef 제거, use() 사용 |
+| [ ] | 3+ Boolean props? → Refactor to composition |
+| [ ] | Complex conditional rendering? → Create explicit variants |
+| [ ] | State trapped in component? → Lift to Provider |
+| [ ] | renderX props? → Change to children |
+| [ ] | React 19? → Remove forwardRef, use use() |
 
-## 관련 스킬
+## Related Skills
 
-- `/react-best-practices` - 성능 최적화 (워터폴, 번들, 렌더링)
-- `/web-design-guidelines` - UI/UX 품질 (접근성, 인터랙션)
-- `/design-patterns` - 일반 디자인 패턴
+- `/react-best-practices` - Performance optimization (waterfall, bundle, rendering)
+- `/web-design-guidelines` - UI/UX quality (accessibility, interaction)
+- `/design-patterns` - General design patterns

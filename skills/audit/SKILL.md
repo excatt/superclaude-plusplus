@@ -1,10 +1,11 @@
 ---
 name: audit
 description: |
-  프로젝트 고유 검증 규칙을 실행하는 스킬. 린터가 잡지 못하는 비즈니스 로직,
-  아키텍처 패턴, 네이밍 컨벤션을 검증합니다. 규칙이 없으면 자동으로 부트스트랩을 제안합니다.
+  Execute project-specific verification rules. Validates business logic,
+  architecture patterns, and naming conventions that linters cannot catch.
+  Auto-suggests bootstrap if no rules exist.
 
-  Triggers: audit, check rules, 규칙 검증, run audit, audit manage, 규칙 관리
+  Triggers: audit, check rules, run audit, audit manage
   Do NOT use for: build/lint/test (/verify), design vs implementation (/gap-analysis)
 user-invocable: true
 argument-hint: "[manage]"
@@ -82,9 +83,9 @@ Status: all pass → `CLEAR` / any error-severity fail → `NEEDS FIX` / warning
 ### Step 4: Fix (if issues found)
 
 Ask user via `AskUserQuestion`:
-1. **전체 수정** — Apply all recommended fixes automatically
-2. **개별 수정** — Review and approve each fix one by one
-3. **건너뛰기** — Report only, no changes
+1. **Apply All Fixes** — Automatically apply all recommended fixes
+2. **Review Each Fix** — Approve each fix individually
+3. **Skip Fixes** — Report only, make no changes
 
 After fixes, re-run only failed rules and show before/after comparison.
 

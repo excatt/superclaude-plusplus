@@ -1,21 +1,21 @@
 ---
 name: eval-harness
-description: AI 개발을 위한 평가 기반 개발(EDD) 프레임워크. AI 기능 구현, 프롬프트 엔지니어링, LLM 통합 시 사용합니다. Keywords: eval, evaluation, test, AI, LLM, prompt, benchmark, quality, EDD, 평가, 벤치마크.
+description: Eval-Driven Development (EDD) framework for AI development. Use when implementing AI features, prompt engineering, or LLM integration. Keywords: eval, evaluation, test, AI, LLM, prompt, benchmark, quality, EDD.
 ---
 
 # Eval Harness Skill (Eval-Driven Development)
 
 ## Purpose
-AI 기능 개발 시 "평가를 먼저 정의하고, 그 평가를 통과하도록 구현"하는 EDD(Eval-Driven Development) 방법론을 적용합니다.
+Apply EDD (Eval-Driven Development) methodology when developing AI features: "Define evaluation first, then implement to pass the eval."
 
-**핵심 원칙**: Eval은 AI 개발의 단위 테스트 → 성공 기준 먼저 정의 → 구현 → 평가 → 반복
+**Core Principle**: Eval is the unit test of AI development → Define success criteria first → Implement → Evaluate → Iterate
 
 ## Activation Triggers
-- AI/LLM 기능 구현 시
-- 프롬프트 엔지니어링 작업
-- AI 품질 벤치마크 필요 시
-- 회귀 테스트 설정 시
-- 사용자 명시적 요청: `/eval`, `평가 설정`, `벤치마크`
+- AI/LLM feature implementation
+- Prompt engineering work
+- AI quality benchmarking needed
+- Regression test setup
+- User explicit request: `/eval`, `evaluation setup`, `benchmark`
 
 ---
 
@@ -36,15 +36,15 @@ Deterministic            Probabilistic
 
 | Type | Purpose | Example |
 |------|---------|---------|
-| **Capability Eval** | 새 기능 테스트 | "요약 기능이 핵심 포인트를 포함하는가?" |
-| **Regression Eval** | 기존 기능 유지 | "기존 분류 정확도가 유지되는가?" |
-| **Safety Eval** | 안전성 검증 | "유해 콘텐츠를 거부하는가?" |
+| **Capability Eval** | Test new feature | "Does summary include key points?" |
+| **Regression Eval** | Maintain existing | "Does classification accuracy hold?" |
+| **Safety Eval** | Verify safety | "Does it reject harmful content?" |
 
 ---
 
 ## EDD Workflow
 
-### Phase 1: Define (평가 정의)
+### Phase 1: Define (Evaluation Definition)
 ```
 /eval define <feature-name>
 
@@ -54,26 +54,26 @@ Feature: document-summarizer
 Type: Capability
 
 Success Criteria:
-□ 요약이 원문의 30% 이하 길이
-□ 핵심 키워드 80% 이상 포함
-□ 문법적으로 올바른 문장
-□ 할루시네이션 없음
+□ Summary length < 30% of original
+□ Contains 80%+ key keywords
+□ Grammatically correct sentences
+□ No hallucinations
 
 Test Cases:
-1. 짧은 뉴스 기사 (200단어)
-2. 긴 기술 문서 (2000단어)
-3. 구조화된 리포트 (표 포함)
-4. 다국어 문서 (영/한 혼합)
+1. Short news article (200 words)
+2. Long tech doc (2000 words)
+3. Structured report (with tables)
+4. Multilingual doc (EN/KR mixed)
 
 Grading Method: Model-based + Code-based hybrid
 Target: pass@3 > 90%
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 
-### Phase 2: Implement (구현)
-평가 정의에 맞춰 기능 구현
+### Phase 2: Implement (Implementation)
+Implement feature according to eval definition
 
-### Phase 3: Evaluate (평가 실행)
+### Phase 3: Evaluate (Run Evaluation)
 ```
 /eval run <feature-name>
 
@@ -102,7 +102,7 @@ Status: ✅ PASSED (pass@3 > 90%)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 
-### Phase 4: Report (보고서)
+### Phase 4: Report (Report Generation)
 ```
 /eval report
 
@@ -137,16 +137,16 @@ Recommendation: Ready for production
 
 ### Code-Based Graders (Deterministic)
 ```python
-# 길이 검증
+# Length verification
 def check_length(summary, original):
     return len(summary) < len(original) * 0.3
 
-# 키워드 포함 검증
+# Keyword inclusion verification
 def check_keywords(summary, keywords):
     found = sum(1 for k in keywords if k in summary)
     return found / len(keywords) >= 0.8
 
-# 빌드 성공 검증
+# Build success verification
 def check_build():
     return subprocess.run(["npm", "run", "build"]).returncode == 0
 ```
@@ -154,24 +154,24 @@ def check_build():
 ### Model-Based Graders (LLM Judge)
 ```python
 JUDGE_PROMPT = """
-다음 요약을 평가하세요:
+Evaluate the following summary:
 
-원문: {original}
-요약: {summary}
+Original: {original}
+Summary: {summary}
 
-평가 기준:
-1. 핵심 정보 포함 (1-5)
-2. 간결성 (1-5)
-3. 정확성 (1-5)
-4. 가독성 (1-5)
+Evaluation criteria:
+1. Key information inclusion (1-5)
+2. Conciseness (1-5)
+3. Accuracy (1-5)
+4. Readability (1-5)
 
-JSON 형식으로 점수와 이유를 제공하세요.
+Provide scores and reasons in JSON format.
 """
 
 def model_grade(original, summary):
     response = llm.generate(JUDGE_PROMPT.format(...))
     scores = json.loads(response)
-    return sum(scores.values()) / 20  # 0-1 정규화
+    return sum(scores.values()) / 20  # Normalize to 0-1
 ```
 
 ### Human Graders (Manual Review)
@@ -193,38 +193,38 @@ human_review:
 
 ### pass@k
 ```
-pass@k: k번 시도 중 최소 1번 성공
+pass@k: At least 1 success in k trials
 
-pass@1 = 단일 시도 성공률 (엄격)
-pass@3 = 3번 중 1번 이상 성공 (일반적)
-pass@5 = 5번 중 1번 이상 성공 (관대)
+pass@1 = Single trial success rate (strict)
+pass@3 = At least 1 success in 3 trials (common)
+pass@5 = At least 1 success in 5 trials (lenient)
 ```
 
 ### pass^k (Critical)
 ```
-pass^k: k번 모두 성공해야 통과
+pass^k: All k trials must succeed
 
-안전 관련 기능에 사용:
-- 유해 콘텐츠 필터링
-- PII 감지
-- 보안 검증
+Use for safety-critical features:
+- Harmful content filtering
+- PII detection
+- Security validation
 ```
 
 ### Score Threshold
 ```
 score >= threshold
 
-연속 점수 평가:
-- 품질 점수
-- 유사도 점수
-- 신뢰도 점수
+Continuous score evaluation:
+- Quality score
+- Similarity score
+- Confidence score
 ```
 
 ---
 
 ## Eval File Structure
 
-### 저장 위치
+### Storage Location
 ```
 .claude/evals/
 ├── capability/
@@ -291,20 +291,20 @@ model_judge:
 
 ### With `/verify`
 ```
-/verify → 일반 코드 품질
-/eval → AI 기능 품질
+/verify → General code quality
+/eval → AI feature quality
 
-둘 다 통과해야 PR Ready
+Both must pass for PR Ready
 ```
 
 ### With `/feature-planner`
 ```
-AI 기능 Phase 구조:
-1. Eval 정의 (RED)
-2. 구현 (GREEN)
-3. 평가 실행
-4. 리팩토링 (BLUE)
-5. 회귀 테스트 추가
+AI feature phase structure:
+1. Define eval (RED)
+2. Implement (GREEN)
+3. Run evaluation
+4. Refactor (BLUE)
+5. Add regression test
 ```
 
 ### With CI/CD
@@ -332,27 +332,27 @@ eval:
 
 | Command | Description |
 |---------|-------------|
-| `/eval define <name>` | 새 평가 정의 |
-| `/eval run <name>` | 평가 실행 |
-| `/eval run --all` | 모든 평가 실행 |
-| `/eval report` | 평가 보고서 생성 |
-| `/eval regression` | 회귀 테스트 실행 |
-| `/eval baseline <version>` | 기준선 저장 |
+| `/eval define <name>` | Define new evaluation |
+| `/eval run <name>` | Run evaluation |
+| `/eval run --all` | Run all evaluations |
+| `/eval report` | Generate eval report |
+| `/eval regression` | Run regression tests |
+| `/eval baseline <version>` | Save baseline |
 
 ---
 
 ## Best Practices
 
-### Eval 작성 원칙
-1. **구체적 성공 기준**: 모호한 기준 피하기
-2. **다양한 테스트 케이스**: 엣지 케이스 포함
-3. **적절한 Grader 선택**: 결정적 vs 확률적
-4. **현실적 목표**: pass@1 100%는 비현실적
+### Eval Writing Principles
+1. **Specific Success Criteria**: Avoid vague criteria
+2. **Diverse Test Cases**: Include edge cases
+3. **Appropriate Grader Selection**: Deterministic vs probabilistic
+4. **Realistic Goals**: pass@1 100% is unrealistic
 
-### 안티패턴
+### Anti-Patterns
 ```
-❌ "결과가 좋아야 함" → 측정 불가
-❌ 단일 테스트 케이스 → 과적합 위험
-❌ pass@1 > 99% 목표 → 비현실적
-❌ 모든 것을 Model-based로 → 비용 및 일관성 문제
+❌ "Result should be good" → Not measurable
+❌ Single test case → Overfitting risk
+❌ pass@1 > 99% target → Unrealistic
+❌ Everything model-based → Cost and consistency issues
 ```

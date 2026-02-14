@@ -1,21 +1,21 @@
 ---
 name: checkpoint
-description: Git 기반 경량 체크포인트 시스템으로 작업 상태를 저장하고 복원합니다. 위험한 작업 전, 마일스톤 완료 시, 실험적 변경 전에 사용합니다. Keywords: checkpoint, save, restore, rollback, snapshot, backup, git, stash, 체크포인트, 저장, 복원, 롤백.
+description: Save and restore work state with Git-based lightweight checkpoint system. Use before risky work, milestone completion, experimental changes. Keywords: checkpoint, save, restore, rollback, snapshot, backup, git, stash.
 ---
 
 # Checkpoint Skill
 
 ## Purpose
-Git stash/commit 기반의 경량 체크포인트 시스템으로 작업 상태를 저장하고, 비교하고, 필요시 복원합니다.
+Save, compare, and restore work state when necessary using Git stash/commit-based lightweight checkpoint system.
 
-**핵심 원칙**: 위험한 작업 전 항상 체크포인트 → 안전한 실험 → 필요시 롤백
+**Core Principle**: Always checkpoint before risky work → Safe experimentation → Rollback if needed
 
 ## Activation Triggers
-- 위험한 리팩토링 전
-- 실험적 변경 시작 전
-- 주요 마일스톤 완료 시
-- PR 제출 전 최종 상태 저장
-- 사용자 명시적 요청: `/checkpoint`, `체크포인트`, `저장해줘`
+- Before risky refactoring
+- Before starting experimental changes
+- On major milestone completion
+- Before PR submission (save final state)
+- User explicit request: `/checkpoint`, `checkpoint`, `save`
 
 ---
 
@@ -26,13 +26,13 @@ Git stash/commit 기반의 경량 체크포인트 시스템으로 작업 상태�
 /checkpoint create <name>
 ```
 
-**동작**:
-1. 현재 상태가 clean인지 확인
-2. 변경사항이 있으면 stash 또는 commit 생성
-3. `.claude/checkpoints.log`에 기록
-4. 타임스탬프와 Git SHA 저장
+**Actions**:
+1. Verify current state is clean
+2. Create stash or commit if changes exist
+3. Record in `.claude/checkpoints.log`
+4. Save timestamp and Git SHA
 
-**예시**:
+**Example**:
 ```
 /checkpoint create before-auth-refactor
 
@@ -53,12 +53,12 @@ Status:    Clean state saved
 /checkpoint verify <name>
 ```
 
-**동작**:
-1. 저장된 체크포인트 찾기
-2. 현재 상태와 비교
-3. 변경 메트릭 보고
+**Actions**:
+1. Find saved checkpoint
+2. Compare with current state
+3. Report change metrics
 
-**예시**:
+**Example**:
 ```
 /checkpoint verify before-auth-refactor
 
@@ -91,7 +91,7 @@ Current SHA:   d4e5f6g
 /checkpoint list
 ```
 
-**예시**:
+**Example**:
 ```
 /checkpoint list
 
@@ -113,12 +113,12 @@ Total: 3 checkpoints
 /checkpoint restore <name>
 ```
 
-**동작**:
-1. 현재 변경사항 백업 (자동 stash)
-2. 체크포인트로 복원
-3. 복원 확인
+**Actions**:
+1. Backup current changes (auto stash)
+2. Restore to checkpoint
+3. Confirm restoration
 
-**예시**:
+**Example**:
 ```
 /checkpoint restore before-auth-refactor
 
@@ -139,7 +139,7 @@ Proceed? [y/N]
 /checkpoint clear
 ```
 
-**동작**: 최근 5개만 유지, 나머지 삭제
+**Action**: Keep only the most recent 5 checkpoints, delete the rest
 
 ---
 
@@ -181,17 +181,17 @@ git log --oneline --grep="checkpoint:"
 ```
 /checkpoint create "start-feature"
     │
-    ├─→ 구현 작업
+    ├─→ Implementation work
     │
     ├─→ /verify quick
     │
     ├─→ /checkpoint create "mid-feature"
     │
-    ├─→ 위험한 리팩토링
+    ├─→ Risky refactoring
     │       │
-    │       ├─→ 성공 → 계속 진행
+    │       ├─→ Success → Continue
     │       │
-    │       └─→ 실패 → /checkpoint restore "mid-feature"
+    │       └─→ Failure → /checkpoint restore "mid-feature"
     │
     ├─→ /verify full
     │
@@ -201,20 +201,20 @@ git log --oneline --grep="checkpoint:"
 ### With `/verify`
 ```
 /checkpoint create "before-refactor"
-... 리팩토링 ...
+... refactoring ...
 /verify full
     │
-    ├─→ ✅ 통과 → 계속 진행
+    ├─→ ✅ Pass → Continue
     │
-    └─→ ❌ 실패 → /checkpoint restore "before-refactor"
+    └─→ ❌ Fail → /checkpoint restore "before-refactor"
 ```
 
 ### With `/feature-planner`
-각 Phase 시작 전 자동 체크포인트:
+Auto-checkpoint before each Phase:
 ```
-Phase 1 시작 → /checkpoint create "phase-1-start"
-Phase 1 완료 → /checkpoint create "phase-1-complete"
-Phase 2 시작 → /checkpoint create "phase-2-start"
+Phase 1 start → /checkpoint create "phase-1-start"
+Phase 1 complete → /checkpoint create "phase-1-complete"
+Phase 2 start → /checkpoint create "phase-2-start"
 ...
 ```
 
@@ -222,7 +222,7 @@ Phase 2 시작 → /checkpoint create "phase-2-start"
 
 ## Best Practices
 
-### 체크포인트 네이밍 규칙
+### Checkpoint Naming Rules
 ```
 ✅ Good:
 - before-auth-refactor
@@ -237,19 +237,19 @@ Phase 2 시작 → /checkpoint create "phase-2-start"
 - asdf
 ```
 
-### 권장 체크포인트 타이밍
-| 상황 | 체크포인트 |
-|------|-----------|
-| 기능 시작 | `start-<feature>` |
-| 작동하는 상태 도달 | `working-<feature>` |
-| 위험한 변경 전 | `before-<change>` |
-| Phase 완료 | `phase-N-complete` |
-| PR 전 | `pre-pr-<feature>` |
+### Recommended Checkpoint Timing
+| Situation | Checkpoint Name |
+|-----------|----------------|
+| Feature start | `start-<feature>` |
+| Reached working state | `working-<feature>` |
+| Before risky change | `before-<change>` |
+| Phase completion | `phase-N-complete` |
+| Before PR | `pre-pr-<feature>` |
 
-### 체크포인트 관리
-- 5개 이상 쌓이면 `/checkpoint clear`
-- 의미 있는 이름 사용
-- 작동하는 상태에서만 체크포인트 생성
+### Checkpoint Management
+- Run `/checkpoint clear` when 5+ accumulate
+- Use meaningful names
+- Create checkpoints only in working states
 
 ---
 
@@ -257,8 +257,8 @@ Phase 2 시작 → /checkpoint create "phase-2-start"
 
 | Command | Description |
 |---------|-------------|
-| `/checkpoint create <name>` | 체크포인트 생성 |
-| `/checkpoint verify <name>` | 체크포인트와 비교 |
-| `/checkpoint list` | 모든 체크포인트 목록 |
-| `/checkpoint restore <name>` | 체크포인트로 복원 |
-| `/checkpoint clear` | 오래된 체크포인트 정리 |
+| `/checkpoint create <name>` | Create checkpoint |
+| `/checkpoint verify <name>` | Compare with checkpoint |
+| `/checkpoint list` | List all checkpoints |
+| `/checkpoint restore <name>` | Restore to checkpoint |
+| `/checkpoint clear` | Clean old checkpoints |
