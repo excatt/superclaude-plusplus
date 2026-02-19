@@ -126,6 +126,27 @@ SuperClaude++는 [SuperClaude Framework](https://github.com/SuperClaude-Org/Supe
 | `session-summary` | 매 응답 시 세션 요약 자동 생성 (`memory/last-session.md`) |
 | `convention-check` | 파일 작성 후 네이밍 컨벤션 체크 |
 
+### 🔔 Sound Notifications (peon-ping)
+
+[peon-ping](https://github.com/PeonPing/peon-ping) 연동으로 AI 코딩 에이전트 이벤트를 게임 캐릭터 음성으로 알림합니다.
+
+| 기능 | 설명 |
+|------|------|
+| **오디오 알림** | 작업 완료, 에러, 입력 요청 시 게임 캐릭터 보이스 재생 |
+| **데스크톱 오버레이** | macOS JXA 기반 화면 상단 배너 (멀티스크린 지원) |
+| **모바일 푸시** | ntfy.sh / Pushover / Telegram 연동 |
+| **MCP 서버** | Claude가 대화 중 `play_sound` tool로 직접 사운드 재생 |
+
+**설치된 사운드 팩**: Orc Peon, Human Peasant, GLaDOS (Portal), Sarah Kerrigan (StarCraft), Battlecruiser
+
+**Quick controls**:
+```bash
+peon toggle           # 음소거/해제
+peon volume 0.7       # 볼륨 조절
+peon packs use glados # 팩 변경
+/peon-ping-toggle     # Claude Code 내에서 토글
+```
+
 ### 🎛️ Flags & Modes
 
 #### Analysis Depth
@@ -194,13 +215,20 @@ cd superclaude-plusplus
 ├── PATTERNS.md            # 코드 패턴
 ├── KNOWLEDGE.md           # 인사이트/트러블슈팅
 ├── notepad.md             # 영구 메모
-├── settings.json          # hooks, statusLine 설정
+├── settings.json          # hooks, statusLine, MCP 서버 설정
 ├── scripts/
 │   ├── statusline.sh       # 상태바 스크립트
 │   ├── convention-check.sh # 네이밍 컨벤션 자동 체크
 │   ├── post-write-check.sh  # Convention 체크
 │   ├── pre-compact-save.sh  # 컴팩션 전 저장
 │   └── session-summary.py   # 세션 요약 자동 생성
+├── hooks/
+│   └── peon-ping/          # 사운드 알림 시스템
+│       ├── peon.sh         # 메인 CLI
+│       ├── config.json     # 팩/볼륨/카테고리 설정
+│       ├── mcp/            # MCP 서버 (play_sound tool)
+│       ├── packs/          # 사운드 팩 (5종)
+│       └── scripts/        # 이벤트 핸들러
 ├── optional/               # 선택적 로딩 문서
 │   ├── MCP_*.md            # MCP 서버별 상세 가이드 (7개)
 │   ├── MODE_*.md           # MODE별 상세 가이드 (7개)
@@ -221,6 +249,14 @@ cd superclaude-plusplus
     ├── analysis.template.md   # PDCA Check (Gap Analysis)
     ├── report.template.md     # PDCA Report
     └── hooks.json             # 훅 설정 예시
+
+superclaude-plusplus/       # 프로젝트 저장소 (source of truth)
+├── config/
+│   ├── peon-ping.json      # peon-ping 설정 (포터블)
+│   └── settings.json       # settings.json (~ 경로, 포터블)
+├── scripts/
+│   └── sync-global.sh      # 프로젝트 → ~/.claude/ 동기화
+└── ...                     # 프레임워크 .md 파일들
 ```
 
 ## Key Concepts
@@ -439,6 +475,7 @@ SuperClaude++ = SuperClaude + 다음 요소들의 통합:
 - 🎯 40+ 도메인별 Skills
 - 🔧 자동 스킬 호출 시스템 (25개 Auto-Invoke 트리거)
 - 📦 패키지 관리 규칙 강제 (uv/pnpm)
+- 🔔 peon-ping 사운드 알림 (게임 캐릭터 보이스 + MCP 서버)
 - 🌐 한국어 응답 지원 (config/skill 파일은 영어 - 토큰 효율 30-40% 향상)
 
 ## License

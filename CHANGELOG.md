@@ -5,6 +5,28 @@
 형식은 [Keep a Changelog](https://keepachangelog.com/ko/1.0.0/)를 따르며,
 [Semantic Versioning](https://semver.org/lang/ko/)을 준수합니다.
 
+## [0.9.2] - 2026-02-19
+
+### Added
+- **peon-ping 사운드 알림 통합**:
+  - [peon-ping](https://github.com/PeonPing/peon-ping) 설치 및 Claude Code 연동
+  - CESP (Coding Event Sound Pack Specification) 기반 이벤트 알림
+  - 8개 이벤트 훅 등록: SessionStart, SessionEnd, SubagentStart, Stop, Notification, PermissionRequest, PostToolUseFailure, PreCompact
+  - MCP 서버 (`peon-mcp.js`): Claude가 대화 중 `play_sound` tool로 사운드 재생
+  - 설치된 팩 5종: Orc Peon, Human Peasant, GLaDOS, Sarah Kerrigan, Battlecruiser
+- **`config/` 디렉토리** (포터블 설정 관리):
+  - `config/peon-ping.json`: peon-ping 설정 (볼륨, 팩, 카테고리, Trainer 비활성화)
+  - `config/settings.json`: Claude Code settings.json 포터블 버전 (`~` 경로 사용)
+- **`scripts/sync-global.sh`**: 프로젝트 → `~/.claude/` 동기화 스크립트
+  - 프레임워크 .md 파일 7개 동기화
+  - peon-ping config 동기화
+  - settings.json 동기화 (`~` → `$HOME` 경로 확장)
+  - `--dry-run` 모드 지원
+
+### Changed
+- **README.md**: peon-ping Sound Notifications 섹션 추가, Directory Structure 업데이트
+- **settings.json**: peon-ping 훅 8개 + MCP 서버 설정 추가
+
 ## [0.9.1] - 2026-02-15
 
 ### Changed
@@ -343,6 +365,7 @@
 
 | 버전 | 날짜 | 주요 변경 |
 |------|------|----------|
+| 0.9.2 | 2026-02-19 | peon-ping 사운드 알림 통합, 포터블 설정 관리, 동기화 스크립트 |
 | 0.9.0 | 2026-02-14 | `/audit` 스킬 추가 (프로젝트 고유 규칙 검증) |
 | 0.8.4 | 2026-02-13 | Python 패키지 매니저 Poetry → uv 전환 |
 | 0.8.1 | 2026-02-09 | Session Chaining → Auto Memory 전환 (내장 기능 활용) |
