@@ -1,0 +1,210 @@
+{
+  "permissions": {
+    "allow": [
+      "Skill(*)",
+      "mcp__pencil"
+    ],
+    "defaultMode": "default"
+  },
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/scripts/pre-compact-note.sh",
+            "timeout": 2000
+          }
+        ]
+      },
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/peon-ping/scripts/hook-handle-use.sh",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "CLAUDE_FILE_PATH=\"$CLAUDE_FILE_PATH\" ~/.claude/scripts/type-check.sh",
+            "timeout": 10000
+          },
+          {
+            "type": "command",
+            "command": "CLAUDE_FILE_PATH=\"$CLAUDE_FILE_PATH\" ~/.claude/scripts/console-log-check.sh",
+            "timeout": 5000
+          },
+          {
+            "type": "command",
+            "command": "CLAUDE_FILE_PATH=\"$CLAUDE_FILE_PATH\" ~/.claude/scripts/auto-format.sh",
+            "timeout": 10000
+          },
+          {
+            "type": "command",
+            "command": "CLAUDE_FILE_PATH=\"$CLAUDE_FILE_PATH\" ~/.claude/scripts/convention-check.sh",
+            "timeout": 5000
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/scripts/todo-continuation.sh",
+            "timeout": 5000
+          },
+          {
+            "type": "command",
+            "command": "~/.claude/scripts/evaluate-session.sh",
+            "timeout": 5000
+          },
+          {
+            "type": "command",
+            "command": "python3 ~/.claude/scripts/session-summary.py",
+            "timeout": 5000
+          }
+        ]
+      },
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/peon-ping/peon.sh",
+            "timeout": 10,
+            "async": true
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/scripts/suggest-compact.sh",
+            "timeout": 2000
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/peon-ping/peon.sh",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/peon-ping/peon.sh",
+            "timeout": 10,
+            "async": true
+          }
+        ]
+      }
+    ],
+    "SubagentStart": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/peon-ping/peon.sh",
+            "timeout": 10,
+            "async": true
+          }
+        ]
+      }
+    ],
+    "Notification": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/peon-ping/peon.sh",
+            "timeout": 10,
+            "async": true
+          }
+        ]
+      }
+    ],
+    "PermissionRequest": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/peon-ping/peon.sh",
+            "timeout": 10,
+            "async": true
+          }
+        ]
+      }
+    ],
+    "PostToolUseFailure": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/peon-ping/peon.sh",
+            "timeout": 10,
+            "async": true
+          }
+        ]
+      }
+    ],
+    "PreCompact": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/peon-ping/peon.sh",
+            "timeout": 10,
+            "async": true
+          }
+        ]
+      }
+    ]
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "~/.claude/statusline.sh",
+    "padding": 0
+  },
+  "language": "한국어",
+  "alwaysThinkingEnabled": true,
+  "mcpServers": {
+    "peon-ping": {
+      "command": "node",
+      "args": [
+        "~/.claude/hooks/peon-ping/mcp/peon-mcp.js"
+      ]
+    }
+  }
+}
