@@ -15,8 +15,8 @@ SuperClaude++는 [SuperClaude Framework](https://github.com/SuperClaude-Org/Supe
 |------|------|
 | **CLAUDE.md** | 엔트리 포인트 및 언어 설정 (한국어) |
 | **FLAGS.md** | 행동 플래그 시스템 (`--think`, `--ultrathink`, `--uc` 등) |
-| **RULES.md** | 개발 규칙 및 자동화 트리거 (17k, 최적화됨) |
-| **PRINCIPLES.md** | SOLID, DRY, KISS 등 소프트웨어 엔지니어링 원칙 |
+| **RULES.md** | 개발 규칙 및 자동화 트리거 (Karpathy Guidelines 통합) |
+| **PRINCIPLES.md** | SOLID, DRY, KISS, Complexity Timing 등 엔지니어링 원칙 |
 | **MODES.md** | 상황별 행동 모드 (Brainstorming, Orchestration, Token Efficiency 등) |
 | **MCP_SERVERS.md** | MCP 서버 통합 가이드 (Context7, Magic, Serena 등) |
 | **CONTEXTS.md** | DEV/REVIEW/RESEARCH/PLANNING 컨텍스트 모드 |
@@ -459,6 +459,7 @@ rm -rf ~/.claude
 ### Inspirations & Integrations
 
 - **[SuperClaude Framework](https://github.com/SuperClaude-Org/SuperClaude_Framework)** - 핵심 프레임워크 구조 및 모드 시스템
+- **[Karpathy Guidelines](https://github.com/forrestchang/andrej-karpathy-skills)** - LLM 코딩 행동 규칙 (Think Before Coding, Simplicity First, Surgical Changes, Goal-Driven Execution). [Andrej Karpathy의 관찰](https://x.com/karpathy/status/2015883857489522876)에서 파생
 - **[oh-my-claudecode](https://github.com/Yeachan-Heo/oh-my-claudecode)** - 자동화 훅 및 워크플로우 아이디어
 - **[cc-statusline](https://www.npmjs.com/package/@chongdashu/cc-statusline)** - 상태바 구현 참고
 - **Business Panel** - 클래식 비즈니스 문헌 기반 전문가 패널 방법론 (Christensen, Porter, Drucker 등)
@@ -471,6 +472,7 @@ SuperClaude++ = SuperClaude + 다음 요소들의 통합:
 - 💡 Proactive Suggestion (스킬/에이전트/MCP 적극 제안)
 - 🧠 Auto Memory 활용 가이드 (Claude Code 내장 기능)
 - ⚡ Superpowers 통합 (Two-Stage Review, Verification Iron Law, 3+ Fixes Rule)
+- 🔬 Karpathy Guidelines 통합 (가정 투명성, 수술적 변경, 코드 단순성, 목표 정의 프로토콜)
 - 📝 Note 시스템 (컴팩션 대응)
 - 🎯 40+ 도메인별 Skills
 - 🔧 자동 스킬 호출 시스템 (25개 Auto-Invoke 트리거)

@@ -5,6 +5,32 @@
 형식은 [Keep a Changelog](https://keepachangelog.com/ko/1.0.0/)를 따르며,
 [Semantic Versioning](https://semver.org/lang/ko/)을 준수합니다.
 
+## [0.9.3] - 2026-02-23
+
+### Added
+- **Karpathy Guidelines 통합** ([source](https://github.com/forrestchang/andrej-karpathy-skills)):
+  Andrej Karpathy의 [LLM 코딩 문제점 관찰](https://x.com/karpathy/status/2015883857489522876)에서 파생된 미시적 코딩 행동 규칙을 프레임워크에 통합.
+
+  **RULES.md - 5개 새 섹션**:
+  - **Framework Meta-Rule**: "신중함 > 속도" 편향 선언. 사소한 작업(오타, 주석, 1줄 수정)에는 판단력 사용
+  - **Code Simplicity Guard**: 코드 수준 단순성 규칙 (추상화 타이밍, Senior Engineer Test, Volume Check)
+  - **Assumption Transparency**: 가정 명시 의무, 침묵적 해석 선택 금지, 혼란 표면화 ("멈춰라 → 명명하라 → 물어라")
+  - **Change Scope Discipline**: 수술적 변경 원칙 (drive-by refactoring 금지, orphan 구분, 변경 추적성 테스트)
+  - **Goal Definition Protocol**: 모호한 요청 → 검증 가능한 목표 변환 사전, 강/약 기준 구분
+
+  **RULES.md - 2개 기존 섹션 보강**:
+  - **Workflow Rules**: 점진적 구현 원칙 추가 (각 단계 독립 검증, 300줄+ 단일 커밋 Red Flag)
+  - **Code Organization**: 스타일 우선순위 피라미드 (현재 파일 > 프로젝트 패턴 > CONVENTIONS.md > 커뮤니티 표준)
+
+  **PRINCIPLES.md - 2개 보강**:
+  - **Complexity Timing**: SOLID과 YAGNI 긴장 해소 ("올바르지만 아직 불필요하면 나중에 적용")
+  - **KISS 확장**: 리트머스 테스트 4개 추가 (단일 사용 추상화 금지, 불가능 시나리오 에러핸들링 금지, 코드량 자기점검, Senior Engineer Test)
+
+### Changed
+- **README.md**: Credits에 Karpathy Guidelines 출처 추가, What's Added에 통합 내용 반영
+
+---
+
 ## [0.9.2] - 2026-02-19
 
 ### Added
@@ -365,6 +391,7 @@
 
 | 버전 | 날짜 | 주요 변경 |
 |------|------|----------|
+| 0.9.3 | 2026-02-23 | Karpathy Guidelines 통합 (미시적 코딩 행동 규칙 7개 섹션) |
 | 0.9.2 | 2026-02-19 | peon-ping 사운드 알림 통합, 포터블 설정 관리, 동기화 스크립트 |
 | 0.9.0 | 2026-02-14 | `/audit` 스킬 추가 (프로젝트 고유 규칙 검증) |
 | 0.8.4 | 2026-02-13 | Python 패키지 매니저 Poetry → uv 전환 |

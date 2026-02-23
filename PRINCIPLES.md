@@ -17,9 +17,19 @@
 - **Interface Segregation**: Don't depend on unused interfaces
 - **Dependency Inversion**: Depend on abstractions, not concretions
 
+### Complexity Timing
+- SOLID principles apply when complexity **actually exists**, not preemptively
+- No Strategy pattern, ABC, Protocol for single-use code
+- The second usage is the right time to abstract, not the first
+- "The pattern is correct but not yet needed" → apply later
+
 ### Core Patterns
 - **DRY**: Abstract common functionality, eliminate duplication
 - **KISS**: Prefer simplicity over complexity in design decisions
+  - No abstractions for single-use code
+  - No error handling for impossible scenarios
+  - Self-check: "Could 200 lines be 50?" → YES → rewrite
+  - Senior Engineer Test: "Would they call this overcomplicated?" → YES → simplify
 - **YAGNI**: Implement current requirements only, avoid speculation
 
 ### Systems Thinking

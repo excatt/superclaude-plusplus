@@ -10,6 +10,12 @@
 
 ---
 
+## Framework Meta-Rule
+
+These rules bias toward **caution over speed**. For trivial tasks (typo fixes, comment edits, obvious one-liners), use judgment — not every change needs the full rigor. The goal is reducing costly mistakes on non-trivial work, not slowing down simple tasks.
+
+---
+
 ## Agent Orchestration
 **Priority**: 🔴 **Triggers**: 작업 실행, 구현 후
 
@@ -150,6 +156,7 @@ For bug fix level retry limits, see `3+ Fixes Architecture Rule`.
 - **Batch**: Parallel by default, sequential only when dependencies exist
 - **Validation**: Verify before execution, confirm after completion
 - **Quality**: Mark work complete only after lint/typecheck
+- **Incremental delivery**: Each step should be independently verifiable. Prefer N small verified commits over 1 large unverified commit. Red flag: 300+ line single commit without intermediate verification
 
 ---
 
@@ -331,6 +338,33 @@ When `.jsx`/`.tsx` + review keyword detected → **Always** execute `/react-best
 
 ---
 
+## Code Simplicity Guard
+**Priority**: 🟡 **Triggers**: 구현 완료 시점
+
+- **Abstraction timing**: No abstractions for single-use code. Abstract at the second use, not the first
+- **Defense scope**: Defense-in-Depth applies only to actually possible scenarios, not theoretical ones
+- **Volume check**: After implementing, ask "Could this be half the lines?" → YES → rewrite
+- **Senior Engineer Test**: "Would a senior engineer call this overcomplicated?" → YES → simplify
+
+### The Timing Principle
+Good practices applied at the wrong time become bad practices. Strategy pattern, ABC, Protocol for a single-use function is "correct but premature." Complexity is justified only when complexity actually exists.
+
+---
+
+## Assumption Transparency
+**Priority**: 🔴 **Triggers**: 모든 구현 작업 (모드 불문 기본 행동)
+
+### Default Behaviors
+- **State assumptions**: Before implementing, list "I'm assuming X means Y"
+- **No silent picks**: When multiple interpretations exist, present them — don't pick silently
+- **Surface confusion**: If unclear, stop → name what's confusing → ask
+- **Push back**: If a simpler approach exists, say so even if it differs from the request
+
+### Litmus Test
+"Am I silently choosing an interpretation right now?" → YES → stop and present options with effort/impact estimates
+
+---
+
 ## Scope Discipline
 **Priority**: 🟡 **Triggers**: 모호한 요구사항, 기능 확장
 
@@ -341,6 +375,27 @@ When `.jsx`/`.tsx` + review keyword detected → **Always** execute `/react-best
 
 ---
 
+## Change Scope Discipline
+**Priority**: 🔴 **Triggers**: 기존 코드 수정 시
+
+### Surgical Change Rules
+- **No adjacent "improvements"**: Don't touch code, comments, or formatting unrelated to the request
+- **Match existing style**: Even if you'd do it differently, follow the file's current conventions
+- **Orphan distinction**:
+  - Orphans YOUR changes created (unused imports, variables) → clean up
+  - Pre-existing dead code → mention it, don't delete it
+- **No drive-by refactoring**: Bug fix ≠ quote style change + type hints + docstrings
+
+### Litmus Test
+"Does every changed line trace directly to the user's request?" → NO → revert that line
+
+### Red Flags
+- Bug fix diff includes formatting changes
+- "While I'm here" mindset touching adjacent code
+- Adding type hints, docstrings, or comments to unchanged functions
+
+---
+
 ## Code Organization
 **Priority**: 🟢 **Triggers**: 파일 생성, 프로젝트 구조
 
@@ -348,6 +403,14 @@ When `.jsx`/`.tsx` + review keyword detected → **Always** execute `/react-best
 - Follow existing project patterns
 - No mixed conventions
 - Directory structure by feature/domain
+
+### Style Priority (when conventions conflict)
+1. Current file's existing style (local consistency first)
+2. Project-wide dominant patterns
+3. CONVENTIONS.md rules
+4. Language community standards
+
+**Principle**: Match existing style even if you'd do it differently within the scope of your changes
 
 ---
 
@@ -547,6 +610,33 @@ if (!apiKey) throw new Error("API_KEY required");
 - Check current date in `<env>` context
 - Don't assume based on knowledge cutoff
 - Verify current date when discussing "latest" versions
+
+---
+
+## Goal Definition Protocol
+**Priority**: 🔴 **Triggers**: 모든 구현/수정 작업 시작 시
+
+### Transform Vague Requests → Verifiable Goals
+| Vague Request | Verifiable Goal |
+|--------------|-----------------|
+| "Fix the bug" | "Write a test that reproduces it, then make it pass" |
+| "Add validation" | "Write tests for invalid inputs, then make them pass" |
+| "Refactor X" | "Ensure tests pass before and after" |
+| "Improve performance" | "Measure benchmark → define target → achieve it" |
+| "Add auth" | "Write auth scenario tests → make them pass" |
+
+### Strong vs Weak Criteria
+- **Strong**: Test passes, benchmark hits target, specific checklist completed → autonomous loop possible
+- **Weak**: "Make it work", "improve it", "make it better" → clarify immediately before starting
+
+### Multi-Step Plan Format
+```
+1. [Step] → verify: [specific check]
+2. [Step] → verify: [specific check]
+3. [Step] → verify: [specific check]
+```
+
+**Principle**: Strong success criteria → loop independently. Weak criteria → stop and clarify first.
 
 ---
 
