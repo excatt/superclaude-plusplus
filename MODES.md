@@ -72,160 +72,21 @@
 
 **Purpose**: 최적의 작업 라우팅 및 리소스 효율을 위한 지능적 도구 선택
 
-**Triggers**:
-- 다중 도구 작업 조율
-- 성능 제약 (리소스 >75%)
-- 병렬 실행 기회 (>3 파일)
+**Triggers**: 다중 도구 작업 조율 | 리소스 >75% | 병렬 실행 기회 (>3 파일)
 
-### Orchestration Pipeline
+**Pipeline**: CLARIFY (4×4 AskUserQuestion) → PARALLELIZE (dependency analysis) → EXECUTE (`run_in_background=True`) → SYNTHESIZE (merge results)
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│  Step 1: CLARIFY (AskUserQuestion)                          │
-│  ↓ Clarify requirements - 4×4 strategy                     │
-├─────────────────────────────────────────────────────────────┤
-│  Step 2: PARALLELIZE (dependency analysis)                  │
-│  ↓ Separate independent vs dependent tasks                 │
-├─────────────────────────────────────────────────────────────┤
-│  Step 3: EXECUTE (parallel spawn)                           │
-│  ↓ run_in_background=True                                   │
-├─────────────────────────────────────────────────────────────┤
-│  Step 4: SYNTHESIZE (merge results)                         │
-│  → Integrate agent outputs, deliver to user                 │
-└─────────────────────────────────────────────────────────────┘
-```
+**4×4 Strategy**: 4 questions (max) × 4 options per question. Vague scope → ask. Clear request → execute directly.
 
-### Step 1: Clarify (AskUserQuestion 4×4)
+**Parallelization**: File/data dependency → Sequential | Logical independence → Parallel
 
-On vague requests, **maximize utilization** to define scope:
+**Progress Communication**: Absorb complexity, radiate simplicity
+- Hide: pattern names, agent IDs, retry counts, internal state
+- Show: progress phase, deliverables, next phase, final results
 
-| Dimension | Question Example | Options Example |
-|-----------|----------|-------------|
-| **Scope** | "What scope do you want?" | Production / MVP / Prototype / Design only |
-| **Priority** | "What matters most?" | UX / Performance / Maintainability / Ship speed |
-| **Constraints** | "Any technical constraints?" | Existing patterns / Specific tech / Backward compat / Free |
-| **Edge cases** | "Edge case handling?" | Comprehensive / Happy path / Fail fast / Graceful |
+**Resource Zones**: 🟢 0-75% full | 🟡 75-85% efficiency | 🔴 85%+ essential only
 
-**4×4 Strategy**:
-- **4 questions** (max) - Explore all relevant dimensions
-- **4 options** per question - Provide diverse choices
-- **Rich descriptions** - Explain trade-offs, examples, implications (no char limit)
-- **multiSelect: true** - When multiple selections allowed
-
-**When to ask**: Vague scope, multiple valid paths, user preference matters
-**When NOT to ask**: Clear request, follow-up work, single path obvious → Execute directly
-
-### Step 2: Parallelize (dependency analysis)
-
-Separate tasks based on clarified requirements:
-
-```
-Task Analysis
-├─ Independent tasks (parallel group)
-│   ├─ Task A ──┐
-│   ├─ Task B ──┼── Execute concurrently
-│   └─ Task C ──┘
-│
-└─ Dependent tasks (sequential chain)
-    Task D → Task E → Task F
-```
-
-**Analysis Criteria**:
-- File dependency: Same file modifications → Sequential
-- Data dependency: Output needed as input → Sequential
-- Logical independence: Unrelated work → Parallel
-
-### Step 3: Execute (parallel spawn)
-
-**Required Rules**:
-```python
-# ✅ ALWAYS
-Task(..., run_in_background=True)
-
-# ❌ NEVER (blocking)
-Task(...)  # no run_in_background
-```
-
-**Spawn Patterns**:
-| Complexity | Agent Count | Example |
-|--------|------------|------|
-| Simple query/edit | 1-2 | Typo fix + doc review |
-| Multi-faceted question | 2-3 | Function analysis + usage + tests |
-| Full feature | 4+ | Design + implement + test + docs |
-
-### Step 4: Synthesize (merge results)
-
-On agent completion:
-1. Read output files (for synthesis)
-2. Integrate and verify results
-3. Deliver clear summary to user
-
-### Progress Communication
-
-**Core Principle**: Absorb complexity, radiate simplicity
-
-**Communication Rules**:
-| Rule | Description |
-|------|------|
-| **Celebrate progress** | Visual feedback at each milestone |
-| **Never expose machinery** | Hide internal mechanisms |
-| **Natural language** | Use natural language over technical terms |
-
-**상황별 표현**:
-| 상황 | ❌ 기술적 표현 | ✅ 자연스러운 표현 |
-|------|---------------|---------------|
-| 작업 시작 | "에이전트 3개 스폰 중..." | "시작합니다. 분석해볼게요..." |
-| 병렬 탐색 | "Fan-out 패턴 실행 중..." | "여러 각도에서 살펴보고 있어요..." |
-| 진행 중 | "Agent-2 처리 중..." | "세부 사항 작업하고 있어요..." |
-| 재시도 | "프롬프트 조정 후 재시도..." | "다른 접근법으로 시도해볼게요..." |
-| 결과 전달 | "출력 집계 중..." | 통합된 깔끔한 결과물 |
-
-**Milestone Box** (on phase completion):
-```
-┌────────────────────────────────────────┐
-│  ✓ Phase 1 Complete                    │
-│                                        │
-│  Database schema ready                 │
-│  3 tables created, relationships set   │
-│                                        │
-│  Moving to Phase 2: API Routes         │
-└────────────────────────────────────────┘
-```
-
-**Hide This** (internal machinery):
-- Pattern names (Fan-out, Map-reduce, etc.)
-- Agent count, IDs
-- TaskCreate IDs, internal state
-- Retry counts, failure details
-
-**Show This** (user value):
-- Current progress phase
-- Completed deliverables
-- Next phase preview
-- Final results
-
----
-
-**Tool Selection Matrix**:
-| Task | Best Tool | Alternative |
-|------|-----------|-------------|
-| UI components | Magic | Manual coding |
-| Deep analysis | Sequential | Native |
-| Symbol operations | Serena | Manual search |
-| Pattern editing | Morphllm | Individual edits |
-| Browser testing | Playwright | Unit tests |
-
-**Resource Zones**:
-- 🟢 0-75%: Full capabilities
-- 🟡 75-85%: Efficiency mode, abbreviate
-- 🔴 85%+: Essential tasks only, minimal output
-
-**Agent Chaining**:
-| Workflow | Chain |
-|----------|-------|
-| Feature | planner → tdd-guide → code-reviewer → security |
-| Bugfix | root-cause → tdd-guide → code-reviewer |
-| Refactor | architect → code-reviewer → tdd-guide |
+**Agent Chaining**: Feature (planner→tdd→reviewer→security) | Bugfix (root-cause→tdd→reviewer) | Refactor (architect→reviewer→tdd)
 
 ---
 
@@ -318,83 +179,21 @@ End: think_about_whether_you_are_done() → session_summary
 
 ## Harness Mode
 
-**Purpose**: 에이전트가 전체 구현을 주도하고, 엔지니어는 의도 명시/환경 설계/피드백에 집중하는 모드
+**Purpose**: 에이전트가 전체 구현을 주도하고, 엔지니어는 의도 명시/환경 설계/피드백에 집중
 
-**Triggers**:
-- 명시적: `--harness`, "에이전트한테 맡겨", "전부 자동으로"
-- 대규모 구현 위임: "이 기능 전체 구현해", "처음부터 끝까지"
-- 반복 작업 위임: "이 패턴으로 나머지도 다 만들어"
+**Triggers**: `--harness` | "에이전트한테 맡겨", "전부 자동으로" | 대규모/반복 구현 위임
 
-### Role Division
+**Workflow**: INTENT (엔지니어) → SCAFFOLD (에이전트, **Phase Gate: 사용자 확인 필수**) → IMPLEMENT (에이전트 자율) → VERIFY (Two-Stage Review) → DELIVER (합류)
 
-| 역할 | 엔지니어 (사용자) | 에이전트 |
-|------|------------------|---------|
-| **의도** | 요구사항, 성공 기준 정의 | 요구사항 해석, 명확화 질문 |
-| **환경** | 아키텍처 결정, 제약 조건 | 코드 생성, 테스트, 반복 |
-| **피드백** | 리뷰, 방향 조정 | PR 생성, 자동 검증 |
-| **품질** | 최종 승인 | 린트, 타입체크, 테스트 자동 실행 |
+**Safety**: Scope Lock | Struggle Escalation (3회 실패 → Report) | No Silent Decisions | Incremental Delivery
 
-### Harness Workflow
+**Dependency Flow**: `Types → Config → Domain → Service → Runtime → UI` (역방향 import 경고)
 
-```
-┌─────────────────────────────────────────────────────────┐
-│  Phase 1: INTENT (엔지니어 주도)                          │
-│  ↓ 요구사항 + 성공 기준 + 제약 조건 정의                     │
-├─────────────────────────────────────────────────────────┤
-│  Phase 2: SCAFFOLD (에이전트 주도)                        │
-│  ↓ 구조 설계, 타입 정의, 모듈 경계 설정                      │
-│  ↓ 사용자 확인 후 진행                                     │
-├─────────────────────────────────────────────────────────┤
-│  Phase 3: IMPLEMENT (에이전트 자율)                       │
-│  ↓ 코드 생성 → 테스트 → 린트 → 반복                        │
-│  ↓ 병렬 에이전트 활용 (독립 모듈)                           │
-├─────────────────────────────────────────────────────────┤
-│  Phase 4: VERIFY (에이전트 → 엔지니어)                     │
-│  ↓ 전체 테스트 + Two-Stage Review                        │
-│  ↓ Agent Struggle Report (실패 시)                       │
-├─────────────────────────────────────────────────────────┤
-│  Phase 5: DELIVER (합류)                                 │
-│  → 커밋/PR + 엔지니어 최종 승인                             │
-└─────────────────────────────────────────────────────────┘
-```
+**GC**: 세션 종료 시 `codebase-gc` 제안 (dead code, import, doc-code sync, test gaps)
 
-### Safety Guardrails
+**결합**: `--orchestrate` (병렬) | `--safe-mode` (전 Phase 확인) | `--think-hard` (깊은 분석) | `--uc` (압축)
 
-| 규칙 | 설명 |
-|------|------|
-| **Phase Gate** | Phase 2 완료 후 반드시 사용자 확인 (스캐폴드 승인) |
-| **Scope Lock** | INTENT에서 정의한 범위 밖 변경 금지 |
-| **Struggle Escalation** | 3회 실패 시 Agent Struggle Report → 사용자 판단 |
-| **No Silent Decisions** | 아키텍처 결정은 항상 사용자에게 제시 |
-| **Incremental Delivery** | 큰 작업은 모듈 단위로 나눠 중간 검증 |
-
-### Dependency Flow Enforcement
-
-Harness Mode에서는 의존성 방향을 엄격히 준수:
-```
-Types → Config → Domain → Service → Runtime → UI
-```
-
-- **위반 감지**: import 방향이 역방향이면 경고
-- **검증 시점**: Phase 2 (Scaffold) 완료 시 + Phase 4 (Verify) 시
-- **위반 처리**: 위반 발견 시 사용자에게 보고, 자동 수정 안 함
-
-### Codebase Garbage Collection
-
-Harness Mode 세션 종료 시 `codebase-gc` 에이전트 실행 제안:
-- Dead code 탐지 (미사용 export, 고아 파일)
-- Import 정리 (미사용, 중복)
-- 문서 일관성 검증 (코드 변경 후 문서 미반영)
-- 테스트 커버리지 갭 보고
-
-### Integration with Existing Modes
-
-| 결합 모드 | 효과 |
-|-----------|------|
-| `--harness --orchestrate` | 병렬 에이전트 최대 활용 |
-| `--harness --safe-mode` | 모든 Phase에서 사용자 확인 |
-| `--harness --think-hard` | 스캐폴드 단계에서 깊은 분석 |
-| `--harness --uc` | 보고 압축, 토큰 절약 |
+Details: `optional/MODE_Harness.md`
 
 ---
 

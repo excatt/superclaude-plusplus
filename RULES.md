@@ -40,71 +40,7 @@ These rules bias toward **caution over speed**. For trivial tasks (typo fixes, c
 **Orchestrator Tools**: `Read`(1-2), `TaskCreate/Update/Get/List`, `AskUserQuestion`, `Task`
 **Worker Tools**: `Write`, `Edit`, `Glob`, `Grep`, `Bash`, `WebFetch`, `WebSearch`
 
-**Worker Prompt Templates** (role-specific):
-
-### Implementer Template
-```
-You are implementing Task N: [task name]
-
-## Task Description
-[FULL TEXT - provide entire spec here, don't make them read files]
-
-## Context
-[Scene-setting: location, dependencies, architecture context]
-
-## Before You Begin
-If you have questions about requirements, approach, or dependencies, **ask now**.
-
-## Your Job
-1. Implement exactly what's specified (YAGNI)
-2. Write tests (TDD recommended)
-3. Verify implementation
-4. Commit
-5. Self-review and report
-
-## Report Format
-- What: What you implemented
-- Test: Test results
-- Files: Changed files (absolute paths)
-- Issues: Problems discovered
-```
-
-### Spec Reviewer Template
-```
-You are reviewing spec compliance for Task N.
-
-## What Was Requested
-[Full requirements text]
-
-## CRITICAL: Do Not Trust the Report
-Don't trust implementer's report. Read code directly and verify.
-
-## Your Job
-- **Missing**: What was requested but not implemented?
-- **Extra**: What was added that wasn't requested?
-- **Misunderstood**: What was interpreted differently?
-
-## Output
-✅ Spec compliant | ❌ Issues: [specific list with file:line references]
-```
-
-### Quality Reviewer Template
-```
-You are reviewing code quality (only after spec compliance passes).
-
-## Changes
-BASE_SHA: [before task start]
-HEAD_SHA: [current]
-
-## Review Focus
-SOLID principles, error handling, test quality, security, performance
-
-## Output
-**Strengths**: [what was done well]
-**Issues**: Critical / Important / Minor
-**Assessment**: Ready / Needs work
-```
-
+**Worker Prompt Templates**: See `optional/WORKER_TEMPLATES.md` (Implementer, Spec Reviewer, Quality Reviewer)
 **Required**: Always include `run_in_background=True`
 
 ---
@@ -160,80 +96,13 @@ For bug fix level retry limits, see `3+ Fixes Architecture Rule`.
 
 ---
 
-## Auto-Skill Invocation
-**Priority**: 🔴 **사용자 확인 없이 자동 실행**
+## Auto-Skill & Proactive Suggestion
+**Priority**: 🔴 (Auto-Skill) / 🟡 (Proactive)
 
-| 상황 | 자동 실행 스킬 | 트리거 키워드 |
-|------|---------------|--------------|
-| 구현 시작 전 | `/confidence-check` | 구현, 만들어, 추가, implement, create, add, build |
-| 기능 완료 후 | `/verify` | 완료, 끝, done, finished, PR, commit |
-| 빌드 에러 | `/build-fix` | error TS, Build failed, TypeError |
-| React 리뷰 | `/react-best-practices` | .tsx 파일 + 리뷰/검토 키워드 |
-| UI 리뷰 | `/web-design-guidelines` | UI 리뷰, 접근성, a11y, 디자인 검토 |
-| Python 리뷰 | `/python-best-practices` | .py 파일 + 리뷰/검토 키워드 |
-| Python 테스트 | `/pytest-runner` | pytest, 테스트 돌려, coverage |
-| Python 패키지 | `/uv-package` | ModuleNotFoundError, uv sync |
-| 위험 작업 전 | `/checkpoint` | 리팩토링, 마이그레이션, 삭제, refactor, delete |
-| 문제 해결 후 | `/learn` (제안) | 해결, 찾았다, solved, root cause |
-| 긴 세션 | `/note` (제안) | 메시지 50+, 컨텍스트 70%+, 기억해 |
-| PDCA Check | Gap Analysis | 맞아?, 확인해, verify, 설계대로야? |
-| **작업/커밋 완료** | **Two-Stage Review** | 커밋, commit, PR, 머지, merge, 리뷰해줘 |
-| **완료 주장 시** | **Verification Gate** | 됐어, 작동해, 고쳤어, fixed, 통과, passes |
-| **수정 3회 실패** | **Architecture Alert + Struggle Report** | (동일 버그 3회 수정 시도 자동 감지) |
-| **에이전트 스폰** | **Worker Template** | Task tool 사용 시 역할별 템플릿 자동 적용 |
-| **테스트 실패** | `/debug` | pytest FAILED, test failed, FAIL:, ❌ |
-| **복잡한 함수 생성** | `/code-smell` | 50줄+ 함수 작성 감지 |
-| **에러 핸들링 누락** | `/error-handling` | async/await + try-catch 없음 감지 |
-| **Next.js 작업** | `/nextjs` | app/page.tsx, layout.tsx, route.ts 생성 |
-| **FastAPI 작업** | `/fastapi` | @router, APIRouter, FastAPI() 사용 |
-| **대규모 변경 예정** | `/checkpoint` | 10+ 파일 수정 계획 감지 |
-| **테스트 없는 함수** | `/testing` (제안) | 새 함수/클래스 + tests/ 디렉토리 없음 |
-| **Harness 세션 종료** | `codebase-gc` (제안) | `--harness` 모드 세션 완료 시 |
+Full trigger tables in `CLAUDE.md` (Auto-Invoke / Proactive Suggestions sections).
 
 **실행 우선순위**: `/confidence-check` → `/checkpoint` → Two-Stage Review → Verification Gate → `/debug` → `/learn`
 **예외**: 오타/주석 수정, `--no-check` 요청 시 스킵
-
----
-
-## Proactive Suggestion
-**Priority**: 🟡 **실행 전 사용자 확인**
-
-### 코드 품질 트리거
-| 상황 | 제안 | 트리거 조건 |
-|------|------|-------------|
-| 함수/파일 읽기 후 | `/code-review`, `/code-smell` | 50줄+ 함수, 복잡한 로직 |
-| 리팩토링 언급 | `/refactoring`, `refactoring-expert` | 리팩토링, 정리, cleanup |
-| 테스트 관련 | `/testing`, `quality-engineer` | test, 테스트, coverage |
-| 중복 코드 발견 | `/refactoring` | 유사 패턴 3회+ 발견 |
-| 에러 핸들링 부재 | `/error-handling` | try-catch 없는 async/await |
-
-### 아키텍처/설계 트리거
-| 상황 | 제안 | 트리거 조건 |
-|------|------|-------------|
-| 새 기능 설계 | `/architecture`, `system-architect` | 설계, design, 구조 |
-| API 작업 | `/api-design`, `backend-architect` | API, endpoint, REST, GraphQL |
-| DB 스키마 | `/db-design` | schema, 테이블, 모델, entity |
-| 인증/보안 | `/auth`, `/security-audit`, `security-engineer` | 로그인, auth, JWT, 보안 |
-
-### MCP Server Auto-Suggest
-| 상황 | 제안 MCP | 트리거 조건 |
-|------|---------|-------------|
-| 프레임워크 구현 | **Context7** | React, Next.js, Vue, NestJS 작업 |
-| 복잡한 분석 | **Sequential** | 디버깅 3회+, 아키텍처 분석 |
-| UI 컴포넌트 | **Magic** | button, form, modal, card, table |
-| 다중 파일 편집 | **Morphllm** | 3+ 파일 동일 패턴 수정 |
-| 최신 정보 필요 | **Tavily** | 2024/2025/2026, latest, recent |
-| 브라우저 테스트 | **Playwright** | E2E, screenshot, form testing |
-
-### Agent Auto-Suggest
-| 상황 | 제안 에이전트 | 트리거 조건 |
-|------|-------------|-------------|
-| 성능 이슈 | `performance-engineer` | 느림, slow, optimize, 성능 |
-| 프론트엔드 | `frontend-architect` | React, CSS, 컴포넌트 설계 |
-| 백엔드 | `backend-architect` | API, DB, 서버, infrastructure |
-| Python | `python-expert` | .py 파일, FastAPI, Django |
-| 문서 작성 | `technical-writer` | docs, 문서, README |
-
 **형식**: `💡 제안: [도구] - 이유: [근거] → 실행? (Y/n)`
 **빈도 제어**: 세션당 스킬 1회, 거절 후 재제안 안 함
 
@@ -533,102 +402,15 @@ Single verification point insufficient for bug fixes. Apply 4-layer verification
 
 ---
 
-## Python Project Rules
-**Priority**: 🔴 **Triggers**: Python project
+## Project Rules
+**Priority**: 🔴
 
-**Package Manager**: uv required (pip, poetry, pipenv forbidden)
+- **Python**: uv required (pip/poetry/pipenv forbidden) | `pyproject.toml` + `uv.lock`
+- **Node.js**: pnpm required (npm/yarn forbidden) | `pnpm-lock.yaml` commit 필수
+- **Safety**: Check deps before using libraries | Plan → Execute → Verify
+- **Security**: Hardcoded credentials 금지 | 보안 사고 시 즉시 중단 → `security-engineer`
 
-| Item | Rule |
-|------|------|
-| Config file | `pyproject.toml` (PEP 621 standard) |
-| Lock file | `uv.lock` (must commit) |
-
-**pyproject.toml structure**:
-```toml
-[project]
-name = "project-name"
-requires-python = ">=3.11"
-dependencies = []
-
-[dependency-groups]
-dev = ["pytest>=8.0"]
-```
-
-**Dockerfile pattern**:
-```dockerfile
-COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
-COPY pyproject.toml uv.lock ./
-RUN uv sync --frozen --no-dev
-```
-
----
-
-## Node.js Project Rules
-**Priority**: 🔴 **Triggers**: React, Next.js, NestJS, Vue, Node.js
-
-**Package Manager**: pnpm required (npm, yarn forbidden)
-
-| Item | Rule |
-|------|------|
-| Lock file | `pnpm-lock.yaml` (must commit) |
-| Workspace | `pnpm-workspace.yaml` (monorepo) |
-| Node version | `.nvmrc` or `package.json engines` |
-
-**Dockerfile pattern**:
-```dockerfile
-FROM node:20-slim
-RUN corepack enable && corepack prepare pnpm@latest --activate
-WORKDIR /app
-COPY package.json pnpm-lock.yaml ./
-RUN pnpm install --frozen-lockfile --prod
-COPY . .
-CMD ["pnpm", "start"]
-```
-
-**CI/CD pattern**:
-```yaml
-- uses: pnpm/action-setup@v2
-  with:
-    version: 9
-- run: pnpm install --frozen-lockfile
-```
-
----
-
-## Safety Rules
-**Priority**: 🔴 **Triggers**: 파일 작업, 라이브러리 사용
-
-- Check package.json/deps before using libraries
-- Follow existing conventions
-- Plan → Execute → Verify
-
----
-
-## Security Incident Response
-**Priority**: 🔴 **Triggers**: 보안 취약점, 민감 정보 노출
-
-1. Stop work immediately
-2. Call `security-engineer`
-3. Fix critical issues
-4. Rotate credentials
-5. Audit codebase
-
-**Pre-Commit Security Checklist**:
-- [ ] No hardcoded credentials
-- [ ] All inputs validated
-- [ ] SQL Injection prevented
-- [ ] XSS attacks prevented
-- [ ] Proper authentication/authorization applied
-- [ ] Rate limiting applied
-- [ ] No sensitive info in error messages
-
-**Secret Management**:
-```typescript
-// ❌ Wrong: const apiKey = "sk-1234567890abcdef";
-// ✅ Right:
-const apiKey = process.env.API_KEY;
-if (!apiKey) throw new Error("API_KEY required");
-```
+Dockerfile/CI 패턴, Security Checklist 상세: `optional/PROJECT_RULES.md`
 
 ---
 
@@ -719,51 +501,14 @@ NO COMPLETION CLAIMS WITHOUT FRESH VERIFICATION EVIDENCE
 
 ---
 
-## Note Protocol
-**Priority**: 🟡 **Triggers**: 긴 세션, 컨텍스트 손실 우려
+## Session Protocols
+**Priority**: 🟡 (Note) / 🟢 (Learning, Memory)
 
-| Section | Purpose | Lifetime |
-|------|------|------|
-| Priority Context | Core info | Permanent (500 chars) |
-| Working Memory | Temp notes | 7 days |
-| MANUAL | Permanent info | Never deleted |
+- **Note**: `/note <content>` | Auto-Suggest at 50+ messages or 70%+ context
+- **Learning**: Save non-Googleable, project-specific insights to `~/.claude/skills/learned/`
+- **Memory**: Auto-record to `~/.claude/projects/<project>/memory/` | "기억해" → explicit save
 
-**Commands**: `/note <content>`, `/note --priority`, `/note --manual`, `/note --show`
-**Auto-Suggest**: 50+ messages, 70%+ context
-
----
-
-## Learning Protocol
-**Priority**: 🟢 **Triggers**: 복잡한 문제 해결 후
-
-**Save Criteria** (must meet all):
-1. Non-Googleable: Not findable in 5 min search
-2. Project-Specific: Specific to this codebase
-3. Hard-Won: Actual debugging effort involved
-4. Actionable: Includes specific files, lines, code
-
-**Storage**: `~/.claude/skills/learned/`
-**Auto-Suggest**: 에러 해결, 3회+ 시도 후 성공, "해결/찾았다/solved" 키워드
-
----
-
-## Memory Management
-**Priority**: 🟢 **Triggers**: 중요 정보 발견, 패턴 학습
-
-### Auto Memory (built-in)
-Claude auto-records to `~/.claude/projects/<project>/memory/`:
-- Project patterns, debugging insights, architecture notes, preferences
-
-### Explicit Save
-- "기억해", "저장해", "remember this" 요청 시 → Auto Memory에 기록
-- `/memory` 명령어로 확인/편집
-
-### CLAUDE.md Hierarchy
-| Purpose | Location |
-|------|------|
-| Team rules | `./CLAUDE.md`, `.claude/rules/` |
-| Personal global | `~/.claude/CLAUDE.md` |
-| Personal project | `./CLAUDE.local.md` |
+Details: `optional/PROTOCOLS.md`
 
 ---
 

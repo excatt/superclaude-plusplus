@@ -5,6 +5,28 @@
 형식은 [Keep a Changelog](https://keepachangelog.com/ko/1.0.0/)를 따르며,
 [Semantic Versioning](https://semver.org/lang/ko/)을 준수합니다.
 
+## [0.9.5] - 2026-02-24
+
+### Changed
+- **Core 파일 토큰 최적화** (~30% 감소):
+  - **RULES.md**: 732 → 540줄 (-26%) - 중복 제거 + optional/ 참조화
+    - Auto-Skill/Proactive Suggestion 테이블 → CLAUDE.md 참조 (중복 제거)
+    - Python/Node.js/Security 규칙 → `optional/PROJECT_RULES.md` 참조
+    - Note/Learning/Memory 프로토콜 → `optional/PROTOCOLS.md` 참조
+    - Worker Templates → `optional/WORKER_TEMPLATES.md` 참조
+  - **MODES.md**: 415 → 213줄 (-49%) - 상세 내용 optional/ 분리
+    - Orchestration Mode: 161줄 → 12줄 요약 (핵심 파이프라인만 유지)
+    - Harness Mode: 82줄 → 14줄 요약 → `optional/MODE_Harness.md` 참조
+
+### Added
+- **optional/ 분리 파일 4개**:
+  - `optional/WORKER_TEMPLATES.md` - Implementer/Spec/Quality Reviewer 프롬프트 템플릿
+  - `optional/PROJECT_RULES.md` - Python/Node.js Dockerfile/CI 패턴, Security Checklist
+  - `optional/PROTOCOLS.md` - Note/Learning/Memory 프로토콜 상세
+  - `optional/MODE_Harness.md` - Harness Mode 5-Phase 워크플로우 상세
+
+---
+
 ## [0.9.4] - 2026-02-24
 
 ### Added
@@ -429,6 +451,7 @@
 
 | 버전 | 날짜 | 주요 변경 |
 |------|------|----------|
+| 0.9.5 | 2026-02-24 | Core 파일 토큰 최적화 (RULES -26%, MODES -49%, optional/ 4파일 분리) |
 | 0.9.4 | 2026-02-24 | Harness Engineering 통합 (Agent Struggle Report, Harness Mode, codebase-gc) |
 | 0.9.3 | 2026-02-23 | Karpathy Guidelines 통합 (미시적 코딩 행동 규칙 7개 섹션) |
 | 0.9.2 | 2026-02-19 | peon-ping 사운드 알림 통합, 포터블 설정 관리, 동기화 스크립트 |
