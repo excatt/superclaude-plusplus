@@ -15,6 +15,7 @@
 | **Task Management** | 계층적 작업 관리 | >3단계 작업, 복잡한 스코프 | `--task-manage` |
 | **Token Efficiency** | 압축된 커뮤니케이션 | 컨텍스트 >75% | `--uc` |
 | **Business Panel** | 전문가 패널 분석 | `/sc:business-panel` | - |
+| **Harness** | 에이전트 주도 구현 | "에이전트한테 맡겨", "전부 자동으로" | `--harness` |
 
 ---
 
@@ -312,6 +313,88 @@ End: think_about_whether_you_are_done() → session_summary
 3. **SOCRATIC**: Question-driven exploration
 
 **Experts**: Christensen, Porter, Drucker, Godin, Kim/Mauborgne, Collins, Taleb, Meadows, Doumont
+
+---
+
+## Harness Mode
+
+**Purpose**: 에이전트가 전체 구현을 주도하고, 엔지니어는 의도 명시/환경 설계/피드백에 집중하는 모드
+
+**Triggers**:
+- 명시적: `--harness`, "에이전트한테 맡겨", "전부 자동으로"
+- 대규모 구현 위임: "이 기능 전체 구현해", "처음부터 끝까지"
+- 반복 작업 위임: "이 패턴으로 나머지도 다 만들어"
+
+### Role Division
+
+| 역할 | 엔지니어 (사용자) | 에이전트 |
+|------|------------------|---------|
+| **의도** | 요구사항, 성공 기준 정의 | 요구사항 해석, 명확화 질문 |
+| **환경** | 아키텍처 결정, 제약 조건 | 코드 생성, 테스트, 반복 |
+| **피드백** | 리뷰, 방향 조정 | PR 생성, 자동 검증 |
+| **품질** | 최종 승인 | 린트, 타입체크, 테스트 자동 실행 |
+
+### Harness Workflow
+
+```
+┌─────────────────────────────────────────────────────────┐
+│  Phase 1: INTENT (엔지니어 주도)                          │
+│  ↓ 요구사항 + 성공 기준 + 제약 조건 정의                     │
+├─────────────────────────────────────────────────────────┤
+│  Phase 2: SCAFFOLD (에이전트 주도)                        │
+│  ↓ 구조 설계, 타입 정의, 모듈 경계 설정                      │
+│  ↓ 사용자 확인 후 진행                                     │
+├─────────────────────────────────────────────────────────┤
+│  Phase 3: IMPLEMENT (에이전트 자율)                       │
+│  ↓ 코드 생성 → 테스트 → 린트 → 반복                        │
+│  ↓ 병렬 에이전트 활용 (독립 모듈)                           │
+├─────────────────────────────────────────────────────────┤
+│  Phase 4: VERIFY (에이전트 → 엔지니어)                     │
+│  ↓ 전체 테스트 + Two-Stage Review                        │
+│  ↓ Agent Struggle Report (실패 시)                       │
+├─────────────────────────────────────────────────────────┤
+│  Phase 5: DELIVER (합류)                                 │
+│  → 커밋/PR + 엔지니어 최종 승인                             │
+└─────────────────────────────────────────────────────────┘
+```
+
+### Safety Guardrails
+
+| 규칙 | 설명 |
+|------|------|
+| **Phase Gate** | Phase 2 완료 후 반드시 사용자 확인 (스캐폴드 승인) |
+| **Scope Lock** | INTENT에서 정의한 범위 밖 변경 금지 |
+| **Struggle Escalation** | 3회 실패 시 Agent Struggle Report → 사용자 판단 |
+| **No Silent Decisions** | 아키텍처 결정은 항상 사용자에게 제시 |
+| **Incremental Delivery** | 큰 작업은 모듈 단위로 나눠 중간 검증 |
+
+### Dependency Flow Enforcement
+
+Harness Mode에서는 의존성 방향을 엄격히 준수:
+```
+Types → Config → Domain → Service → Runtime → UI
+```
+
+- **위반 감지**: import 방향이 역방향이면 경고
+- **검증 시점**: Phase 2 (Scaffold) 완료 시 + Phase 4 (Verify) 시
+- **위반 처리**: 위반 발견 시 사용자에게 보고, 자동 수정 안 함
+
+### Codebase Garbage Collection
+
+Harness Mode 세션 종료 시 `codebase-gc` 에이전트 실행 제안:
+- Dead code 탐지 (미사용 export, 고아 파일)
+- Import 정리 (미사용, 중복)
+- 문서 일관성 검증 (코드 변경 후 문서 미반영)
+- 테스트 커버리지 갭 보고
+
+### Integration with Existing Modes
+
+| 결합 모드 | 효과 |
+|-----------|------|
+| `--harness --orchestrate` | 병렬 에이전트 최대 활용 |
+| `--harness --safe-mode` | 모든 Phase에서 사용자 확인 |
+| `--harness --think-hard` | 스캐폴드 단계에서 깊은 분석 |
+| `--harness --uc` | 보고 압축, 토큰 절약 |
 
 ---
 

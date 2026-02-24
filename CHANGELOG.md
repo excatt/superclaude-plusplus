@@ -5,6 +5,44 @@
 형식은 [Keep a Changelog](https://keepachangelog.com/ko/1.0.0/)를 따르며,
 [Semantic Versioning](https://semver.org/lang/ko/)을 준수합니다.
 
+## [0.9.4] - 2026-02-24
+
+### Added
+- **Harness Engineering 통합** ([source](https://openai.com/index/harness-engineering/)):
+  OpenAI의 Harness Engineering 방법론에서 영감을 받아, 에이전트 주도 개발을 위한 환경 설계 개념을 프레임워크에 통합.
+
+  **RULES.md - Agent Struggle Report**:
+  - 기존 3+ Fixes Architecture Rule 확장: 실패 시 **진단 보고서** 자동 생성
+  - Failure Classification: Repo Gap / Architecture Issue / External Dependency / Requirement Issue / Capability Limit
+  - Safety Rules: 진단만 (자동 수정 금지), 1회 보고 후 종료 (무한루프 방지), 재시도 결정은 사용자
+  - Auto-Skill에 `codebase-gc` 트리거 추가
+
+  **PRINCIPLES.md - Harness Engineering 섹션**:
+  - **Repository as Knowledge Base**: 레포 자체가 에이전트의 도메인 지식 원천
+  - **Dependency Flow Principle**: `Types → Config → Domain → Service → Runtime → UI` 단방향 흐름
+  - **Continuous Harness Improvement**: struggle = signal 철학 (진단만, 자동 수정 금지)
+
+  **MODES.md - Harness Mode**:
+  - 5-Phase 워크플로우: Intent → Scaffold → Implement → Verify → Deliver
+  - Phase Gate: Scaffold 이후 반드시 사용자 확인
+  - Safety Guardrails: Scope Lock, Struggle Escalation, No Silent Decisions
+  - Dependency Flow Enforcement, Codebase GC 연동
+  - 모드 결합: `--harness --orchestrate`, `--harness --safe-mode` 등
+
+  **agents/codebase-gc.md** (신규):
+  - Dead code, 미사용 import, 순환 의존성 탐지
+  - Doc-code 동기화 검증, 테스트 커버리지 갭 보고
+  - Dependency Flow 위반 감지 (`Types → Config → Domain → Service → Runtime → UI`)
+  - Read-only 원칙: 보고만, 수정은 사용자 승인 후
+
+  **FLAGS.md**: `--harness` 플래그 추가
+  **CLAUDE.md**: Architecture Alert에 Struggle Report 추가, `codebase-gc` 에이전트 등록
+
+### Changed
+- **README.md**: Harness Engineering 섹션 추가, What's Added 업데이트, Agents/Auto-Invoke 테이블 업데이트
+
+---
+
 ## [0.9.3] - 2026-02-23
 
 ### Added
@@ -391,6 +429,7 @@
 
 | 버전 | 날짜 | 주요 변경 |
 |------|------|----------|
+| 0.9.4 | 2026-02-24 | Harness Engineering 통합 (Agent Struggle Report, Harness Mode, codebase-gc) |
 | 0.9.3 | 2026-02-23 | Karpathy Guidelines 통합 (미시적 코딩 행동 규칙 7개 섹션) |
 | 0.9.2 | 2026-02-19 | peon-ping 사운드 알림 통합, 포터블 설정 관리, 동기화 스크립트 |
 | 0.9.0 | 2026-02-14 | `/audit` 스킬 추가 (프로젝트 고유 규칙 검증) |

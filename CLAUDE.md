@@ -29,7 +29,7 @@
 | 위험 작업 | `/checkpoint` | 리팩토링, 삭제, refactor, delete |
 | **커밋/PR** | **Two-Stage Review** | 커밋, PR, 머지, 리뷰해줘, commit, merge, review |
 | **완료 주장** | **Verification Gate** | 됐어, 작동해, 통과, fixed, works, passes |
-| **수정 3회 실패** | **Architecture Alert** | (자동 감지) |
+| **수정 3회 실패** | **Architecture Alert + Struggle Report** | (자동 감지) |
 | **에이전트 스폰** | **Worker Template** | Task tool 사용 시 |
 | 테스트 실패 | `/debug` | pytest FAILED, test failed |
 | 복잡한 함수 | `/code-smell` | 50줄+ 함수 생성 |
@@ -38,6 +38,7 @@
 | FastAPI 작업 | `/fastapi` | @router, APIRouter |
 | 대규모 변경 | `/checkpoint` | 10+ 파일 수정 예정 |
 | 프로젝트 규칙 검증 | `/audit` | commit, PR + `.claude/audit-rules/` 존재 시 |
+| Harness 세션 종료 | `codebase-gc` (제안) | `--harness` 모드 세션 완료 시 |
 
 ### Proactive Suggestions (Confirm before run)
 **💡 적극 제안 모드**: 관련 도구를 자동 감지하여 제안 (실행 전 확인)
@@ -80,6 +81,7 @@
 | 문서 작성 | `technical-writer` |
 | 문제 분석 | `root-cause-analyst` |
 | 리팩토링 | `refactoring-expert` |
+| 코드베이스 정리 | `codebase-gc` |
 
 ## Memory Management
 

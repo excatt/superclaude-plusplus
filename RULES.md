@@ -179,7 +179,7 @@ For bug fix level retry limits, see `3+ Fixes Architecture Rule`.
 | PDCA Check | Gap Analysis | 맞아?, 확인해, verify, 설계대로야? |
 | **작업/커밋 완료** | **Two-Stage Review** | 커밋, commit, PR, 머지, merge, 리뷰해줘 |
 | **완료 주장 시** | **Verification Gate** | 됐어, 작동해, 고쳤어, fixed, 통과, passes |
-| **수정 3회 실패** | **Architecture Alert** | (동일 버그 3회 수정 시도 자동 감지) |
+| **수정 3회 실패** | **Architecture Alert + Struggle Report** | (동일 버그 3회 수정 시도 자동 감지) |
 | **에이전트 스폰** | **Worker Template** | Task tool 사용 시 역할별 템플릿 자동 적용 |
 | **테스트 실패** | `/debug` | pytest FAILED, test failed, FAIL:, ❌ |
 | **복잡한 함수 생성** | `/code-smell` | 50줄+ 함수 작성 감지 |
@@ -188,6 +188,7 @@ For bug fix level retry limits, see `3+ Fixes Architecture Rule`.
 | **FastAPI 작업** | `/fastapi` | @router, APIRouter, FastAPI() 사용 |
 | **대규모 변경 예정** | `/checkpoint` | 10+ 파일 수정 계획 감지 |
 | **테스트 없는 함수** | `/testing` (제안) | 새 함수/클래스 + tests/ 디렉토리 없음 |
+| **Harness 세션 종료** | `codebase-gc` (제안) | `--harness` 모드 세션 완료 시 |
 
 **실행 우선순위**: `/confidence-check` → `/checkpoint` → Two-Stage Review → Verification Gate → `/debug` → `/learn`
 **예외**: 오타/주석 수정, `--no-check` 요청 시 스킵
@@ -438,7 +439,8 @@ Good practices applied at the wrong time become bad practices. Strategy pattern,
 **🔴 CRITICAL**: After 3 fix attempts still failing:
 1. **Stop immediately** - No more fix attempts
 2. **Architecture review** - "Is this pattern fundamentally correct?"
-3. **User escalation** - Discuss before continuing
+3. **Agent Struggle Report** - Diagnose what's missing (see below)
+4. **User escalation** - Deliver report and discuss before continuing
 
 **Pattern Indicators** (architecture problem signals):
 - Each fix creates new problem elsewhere
@@ -446,6 +448,32 @@ Good practices applied at the wrong time become bad practices. Strategy pattern,
 - Each fix generates symptoms elsewhere
 
 **Red Flag**: "One more try" (after already 2+ failures)
+
+### Agent Struggle Report (Harness Engineering)
+**🔴 CRITICAL**: When 3+ Fixes Rule triggers, produce a **diagnosis-only report** before escalation.
+
+**Purpose**: "에이전트가 막히면 레포에 뭐가 부족한지 진단한다" (struggle = signal)
+
+**Report Template**:
+```
+## Agent Struggle Report
+- Task: [실패한 작업 설명]
+- Attempts: [시도 횟수 및 각 접근법 요약]
+- Failure Classification:
+  [ ] Repo Gap - 문서/타입/가드레일 부족
+  [ ] Architecture Issue - 패턴/구조적 문제
+  [ ] External Dependency - 외부 요인 (API, 버전, 환경)
+  [ ] Requirement Issue - 요구사항 모순/불명확
+  [ ] Capability Limit - 현재 모델/도구 한계
+- Repo Improvement Suggestions: [부족한 것이 있다면 구체적 제안]
+- Recommended Action: [사용자에게 권장하는 다음 단계]
+```
+
+**Safety Rules**:
+- **진단만, 자동 수정 금지**: 레포 수정은 사용자 승인 후에만
+- **1회 보고 후 종료**: 보고 → 재시도 → 또 보고 루프 금지
+- **재시도 결정은 사용자**: 에이전트가 자율 재시도하지 않음
+- **Failure Classification 필수**: "레포 문제"가 아닐 수 있음을 항상 고려
 
 ### Defense-in-Depth
 Single verification point insufficient for bug fixes. Apply 4-layer verification:

@@ -15,7 +15,7 @@ SuperClaude++는 [SuperClaude Framework](https://github.com/SuperClaude-Org/Supe
 |------|------|
 | **CLAUDE.md** | 엔트리 포인트 및 언어 설정 (한국어) |
 | **FLAGS.md** | 행동 플래그 시스템 (`--think`, `--ultrathink`, `--uc` 등) |
-| **RULES.md** | 개발 규칙 및 자동화 트리거 (Karpathy Guidelines 통합) |
+| **RULES.md** | 개발 규칙 및 자동화 트리거 (Karpathy Guidelines + Harness Engineering 통합) |
 | **PRINCIPLES.md** | SOLID, DRY, KISS, Complexity Timing 등 엔지니어링 원칙 |
 | **MODES.md** | 상황별 행동 모드 (Brainstorming, Orchestration, Token Efficiency 등) |
 | **MCP_SERVERS.md** | MCP 서버 통합 가이드 (Context7, Magic, Serena 등) |
@@ -33,6 +33,7 @@ SuperClaude++는 [SuperClaude Framework](https://github.com/SuperClaude-Org/Supe
 | `performance-engineer` | 성능 최적화 |
 | `deep-research-agent` | 심층 리서치 |
 | `business-panel-experts` | 비즈니스 전략 분석 (9명의 전문가 패널) |
+| `codebase-gc` | 코드베이스 정리 (dead code, import 정리, doc-code 동기화) |
 | 그 외 10+ agents | system-architect, quality-engineer, pm-agent 등 |
 
 ### 📚 Skills (40+)
@@ -76,7 +77,7 @@ SuperClaude++는 [SuperClaude Framework](https://github.com/SuperClaude-Org/Supe
 
 ### 🔧 Automation
 
-#### Auto-Invoked Skills (25개)
+#### Auto-Invoked Skills (26개)
 | 트리거 | 스킬 | 키워드 |
 |--------|------|--------|
 | 구현 시작 전 | `/confidence-check` | 구현, 만들어, implement |
@@ -89,13 +90,14 @@ SuperClaude++는 [SuperClaude Framework](https://github.com/SuperClaude-Org/Supe
 | PDCA Check | `/gap-analysis` | 맞아?, 확인해, 설계대로야? |
 | 커밋/PR | Two-Stage Review | commit, PR, 머지 |
 | 완료 주장 | Verification Gate | 됐어, 작동해, fixed |
-| 수정 3회 실패 | Architecture Alert | (자동 감지) |
+| 수정 3회 실패 | Architecture Alert + Struggle Report | (자동 감지) |
 | 테스트 실패 | `/debug` | pytest FAILED, test failed |
 | 복잡한 함수 | `/code-smell` | 50줄+ 함수 생성 |
 | 에러 핸들링 누락 | `/error-handling` | async/await + no try-catch |
 | Next.js 작업 | `/nextjs` | page.tsx, layout.tsx |
 | FastAPI 작업 | `/fastapi` | @router, APIRouter |
 | 프로젝트 규칙 검증 | `/audit` | commit, PR + `.claude/audit-rules/` 존재 시 |
+| Harness 세션 종료 | `codebase-gc` (제안) | `--harness` 모드 세션 완료 시 |
 
 #### Proactive Suggestions
 작업 컨텍스트에 맞는 스킬/에이전트/MCP 서버를 **적극 제안** (확인 후 실행):
@@ -171,6 +173,13 @@ peon packs use glados # 팩 변경
 | `--ctx dev` | 개발 | 작동 > 완벽, 코드 먼저 |
 | `--ctx review` | 리뷰 | 심층 분석, 심각도별 정리 |
 | `--ctx research` | 리서치 | 완전성 > 속도, 증거 기반 |
+
+#### Harness Mode
+| Flag | 용도 |
+|------|------|
+| `--harness` | 에이전트 주도 구현 (5-Phase: Intent → Scaffold → Implement → Verify → Deliver) |
+| `--harness --orchestrate` | 병렬 에이전트 최대 활용 |
+| `--harness --safe-mode` | 모든 Phase에서 사용자 확인 |
 
 #### Proactive Suggestion Flags
 | Flag | 설명 |
@@ -383,12 +392,34 @@ Claude Code의 내장 Auto Memory를 활용한 세션 간 연속성:
 | 기능 완료 | 각 요구사항 체크리스트 |
 | 버그 수정 | 재현 테스트 결과 |
 
-### 3+ Fixes Architecture Rule
+### 3+ Fixes Architecture Rule + Agent Struggle Report
 동일 버그 3회 수정 실패 시:
 1. 즉시 코딩 중단
 2. 아키텍처/설계 재검토
-3. 근본 원인 재분석
-4. 사용자에게 방향 확인 (AskUserQuestion)
+3. **Agent Struggle Report 생성** (Failure Classification + Repo 개선 제안)
+4. 사용자에게 보고서와 함께 방향 확인
+
+**Failure Classification**: Repo Gap / Architecture Issue / External Dependency / Requirement Issue / Capability Limit
+**Safety**: 진단만 (자동 수정 금지), 1회 보고 후 종료 (무한루프 방지)
+
+### Harness Engineering
+[OpenAI의 Harness Engineering](https://openai.com/index/harness-engineering/) 방법론에서 영감을 받은 에이전트 주도 개발 환경:
+
+**핵심 원칙**:
+- **Repository as Knowledge Base**: 레포 자체가 에이전트의 도메인 지식 원천
+- **Dependency Flow**: `Types → Config → Domain → Service → Runtime → UI` 단방향 강제
+- **Struggle = Signal**: 에이전트 실패 시 레포에 부족한 것을 진단 (자동 수정 금지)
+- **Codebase GC**: 주기적 dead code/import/doc 일관성 점검
+
+**Harness Mode** (`--harness`):
+```
+Intent → Scaffold → Implement → Verify → Deliver
+  (사용자)   (에이전트+확인)  (에이전트 자율)  (자동검증)   (합류)
+```
+
+- Phase Gate: Scaffold 완료 후 반드시 사용자 확인
+- Scope Lock: 정의된 범위 밖 변경 금지
+- Struggle Escalation: 3회 실패 시 Agent Struggle Report → 사용자 판단
 
 ### Package Management Rules
 프로젝트별 패키지 매니저 강제:
@@ -460,6 +491,7 @@ rm -rf ~/.claude
 
 - **[SuperClaude Framework](https://github.com/SuperClaude-Org/SuperClaude_Framework)** - 핵심 프레임워크 구조 및 모드 시스템
 - **[Karpathy Guidelines](https://github.com/forrestchang/andrej-karpathy-skills)** - LLM 코딩 행동 규칙 (Think Before Coding, Simplicity First, Surgical Changes, Goal-Driven Execution). [Andrej Karpathy의 관찰](https://x.com/karpathy/status/2015883857489522876)에서 파생
+- **[Harness Engineering](https://openai.com/index/harness-engineering/)** - OpenAI의 에이전트 주도 개발 방법론 (Repository as Knowledge Base, Dependency Flow, Struggle = Signal, Codebase GC). [Martin Fowler의 분석](https://martinfowler.com/articles/exploring-gen-ai/harness-engineering.html) 참조
 - **[oh-my-claudecode](https://github.com/Yeachan-Heo/oh-my-claudecode)** - 자동화 훅 및 워크플로우 아이디어
 - **[cc-statusline](https://www.npmjs.com/package/@chongdashu/cc-statusline)** - 상태바 구현 참고
 - **Business Panel** - 클래식 비즈니스 문헌 기반 전문가 패널 방법론 (Christensen, Porter, Drucker 등)
@@ -473,9 +505,10 @@ SuperClaude++ = SuperClaude + 다음 요소들의 통합:
 - 🧠 Auto Memory 활용 가이드 (Claude Code 내장 기능)
 - ⚡ Superpowers 통합 (Two-Stage Review, Verification Iron Law, 3+ Fixes Rule)
 - 🔬 Karpathy Guidelines 통합 (가정 투명성, 수술적 변경, 코드 단순성, 목표 정의 프로토콜)
+- 🏗️ Harness Engineering 통합 (Agent Struggle Report, Harness Mode, Dependency Flow, codebase-gc)
 - 📝 Note 시스템 (컴팩션 대응)
 - 🎯 40+ 도메인별 Skills
-- 🔧 자동 스킬 호출 시스템 (25개 Auto-Invoke 트리거)
+- 🔧 자동 스킬 호출 시스템 (26개 Auto-Invoke 트리거)
 - 📦 패키지 관리 규칙 강제 (uv/pnpm)
 - 🔔 peon-ping 사운드 알림 (게임 캐릭터 보이스 + MCP 서버)
 - 🌐 한국어 응답 지원 (config/skill 파일은 영어 - 토큰 효율 30-40% 향상)

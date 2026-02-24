@@ -68,3 +68,23 @@
 - **Preventive Measures**: Catch issues early when cheaper to fix
 - **Human-Centered Design**: Prioritize user welfare and autonomy
 
+## Harness Engineering
+
+### Repository as Knowledge Base
+- **Self-documenting Repo**: The repository itself is the single source of domain knowledge for agents
+- **Code as Context**: Directory structure, naming, type system, and module boundaries convey domain intent — not just comments or docs
+- **Agent Readability**: "Can an agent understand the full business domain from the repo alone?" → NO → improve the repo
+- **Machine-readable Constraints**: Architectural rules enforced via linters, CI, and structural tests — not just prose
+
+### Dependency Flow Principle
+- **Unidirectional Flow**: Dependencies flow in one controlled direction
+- **Layer Enforcement**: `Types → Config → Domain → Service → Runtime → UI`
+- **Violation = Signal**: Import direction violations indicate architectural debt, not just style issues
+- **Automated Validation**: Prefer mechanical enforcement (linters, `/audit`) over manual review
+
+### Continuous Harness Improvement
+- **Struggle = Signal**: When agents fail, diagnose what's missing in the repo (tools, guardrails, docs, types)
+- **Feedback Loop**: Agent failure → diagnosis → repo improvement → better agent outcomes
+- **No Autonomous Fix**: Repo improvements require human approval (prevent infinite loops)
+- **Entropy Resistance**: Periodic codebase hygiene to maintain agent-readability over time
+
