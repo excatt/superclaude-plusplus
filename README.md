@@ -242,8 +242,8 @@ cd superclaude-plusplus
 │       └── scripts/        # 이벤트 핸들러
 ├── optional/               # 선택적 로딩 문서
 │   ├── MCP_*.md            # MCP 서버별 상세 가이드 (7개)
-│   ├── MODE_*.md           # MODE별 상세 가이드 (7개)
-│   └── *.md                # 기타 참조 문서 (6개)
+│   ├── MODE_*.md           # MODE별 상세 가이드 (8개)
+│   └── *.md                # 기타 참조 문서 (WORKER_TEMPLATES, PROJECT_RULES, PROTOCOLS)
 ├── skills/
 │   ├── confidence-check/SKILL.md
 │   ├── verify/SKILL.md

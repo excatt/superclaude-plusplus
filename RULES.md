@@ -62,26 +62,11 @@ These rules bias toward **caution over speed**. For trivial tasks (typo fixes, c
 ## Agent Error Recovery
 **Priority**: 🟡 **Triggers**: 에이전트 실패, Timeout, 부분 완료
 
-| Failure Type | Recovery Strategy |
-|----------|----------|
-| Timeout | Split task and retry |
-| Incomplete | Retry only remaining portion |
-| Wrong Approach | Add explicit constraints and retry |
-| Blocked | Resolve blocking element first |
-| Conflict | Ask user to choose |
+**Protocol**: Fail → Adjust prompt (EXPLICIT/SCOPE/CONSTRAINT/CONTEXT) → Retry (max 2) → Escalate (AskUserQuestion)
 
-**Prompt Adjustment Strategy**:
-| Failure Cause | Adjustment |
-|----------|----------|
-| Ambiguous instruction | `EXPLICIT: You MUST do X, Y, Z in order` |
-| Scope exceeded | `SCOPE: Only modify files in src/auth/` |
-| Wrong technique | `CONSTRAINT: Use React hooks, NOT class components` |
-| Missing context | `CONTEXT: The database uses PostgreSQL 14` |
+Recovery: Timeout→split | Incomplete→retry remaining | Wrong Approach→add constraints | Blocked→resolve first | Conflict→ask user
 
-**Protocol**: Fail → Adjust prompt → Retry (max 2) → Escalate (AskUserQuestion)
-
-**Note**: This rule is for agent spawn/execution level retries.
-For bug fix level retry limits, see `3+ Fixes Architecture Rule`.
+**Note**: Agent spawn/execution retries only. Bug fix retries: see `3+ Fixes Architecture Rule`.
 
 ---
 
@@ -211,13 +196,9 @@ When `.jsx`/`.tsx` + review keyword detected → **Always** execute `/react-best
 ## Code Simplicity Guard
 **Priority**: 🟡 **Triggers**: 구현 완료 시점
 
-- **Abstraction timing**: No abstractions for single-use code. Abstract at the second use, not the first
-- **Defense scope**: Defense-in-Depth applies only to actually possible scenarios, not theoretical ones
-- **Volume check**: After implementing, ask "Could this be half the lines?" → YES → rewrite
-- **Senior Engineer Test**: "Would a senior engineer call this overcomplicated?" → YES → simplify
-
-### The Timing Principle
-Good practices applied at the wrong time become bad practices. Strategy pattern, ABC, Protocol for a single-use function is "correct but premature." Complexity is justified only when complexity actually exists.
+Apply KISS/YAGNI/Complexity Timing per PRINCIPLES.md. Mandatory checks:
+- **Volume check**: "Could this be half the lines?" → YES → rewrite
+- **Senior Engineer Test**: "Would they call this overcomplicated?" → YES → simplify
 
 ---
 
@@ -319,45 +300,15 @@ Good practices applied at the wrong time become bad practices. Strategy pattern,
 **Red Flag**: "One more try" (after already 2+ failures)
 
 ### Agent Struggle Report (Harness Engineering)
-**🔴 CRITICAL**: When 3+ Fixes Rule triggers, produce a **diagnosis-only report** before escalation.
-
-**Purpose**: "에이전트가 막히면 레포에 뭐가 부족한지 진단한다" (struggle = signal)
-
-**Report Template**:
-```
-## Agent Struggle Report
-- Task: [실패한 작업 설명]
-- Attempts: [시도 횟수 및 각 접근법 요약]
-- Failure Classification:
-  [ ] Repo Gap - 문서/타입/가드레일 부족
-  [ ] Architecture Issue - 패턴/구조적 문제
-  [ ] External Dependency - 외부 요인 (API, 버전, 환경)
-  [ ] Requirement Issue - 요구사항 모순/불명확
-  [ ] Capability Limit - 현재 모델/도구 한계
-- Repo Improvement Suggestions: [부족한 것이 있다면 구체적 제안]
-- Recommended Action: [사용자에게 권장하는 다음 단계]
-```
-
-**Safety Rules**:
-- **진단만, 자동 수정 금지**: 레포 수정은 사용자 승인 후에만
-- **1회 보고 후 종료**: 보고 → 재시도 → 또 보고 루프 금지
-- **재시도 결정은 사용자**: 에이전트가 자율 재시도하지 않음
-- **Failure Classification 필수**: "레포 문제"가 아닐 수 있음을 항상 고려
-
-### Defense-in-Depth
-Single verification point insufficient for bug fixes. Apply 4-layer verification:
-
-| Layer | Purpose | Example |
-|-------|---------|---------|
-| **1. Entry Point** | Reject invalid input at API boundary | `if (!dir) throw Error` |
-| **2. Business Logic** | Is data valid for this operation | `if (!projectDir) throw` |
-| **3. Environment Guard** | Prevent dangerous operations in specific envs | `if (NODE_ENV==='test')` |
-| **4. Debug Instrumentation** | Capture context for forensics | `logger.debug({dir, stack})` |
+When 3+ Fixes Rule triggers → produce **diagnosis-only report** (struggle = signal):
+- **Report**: Task + Attempts + Failure Classification (Repo Gap | Architecture | External | Requirement | Capability) + Recommended Action
+- **Safety**: 진단만 (자동 수정 금지) | 1회 보고 후 종료 | 재시도 결정은 사용자
 
 ### Core Principles
 - **Root Cause**: Investigate why it failed (no simple retries)
 - **Never Skip**: Never skip tests/verification
 - **Fix > Workaround**: Resolve root cause
+- **Defense-in-Depth**: 4-layer verification (Entry Point → Business Logic → Environment Guard → Debug Instrumentation)
 
 ---
 
@@ -374,6 +325,7 @@ Single verification point insufficient for bug fixes. Apply 4-layer verification
 ## Git Workflow
 **Priority**: 🔴 **Triggers**: 세션 시작, 변경 전
 
+- **Read before Write**: Always read a file before modifying it
 - Session start: `git status && git branch`
 - Feature branches only (no direct work on main)
 - Check `git diff` before commit
@@ -481,14 +433,6 @@ NO COMPLETION CLAIMS WITHOUT FRESH VERIFICATION EVIDENCE
 - Attempt commit/PR without verification
 - Judge whole by partial verification
 
-### Rationalization Prevention
-| Excuse | Reality |
-|------|------|
-| "It will work now" | Execute verification |
-| "I'm confident" | Confidence ≠ evidence |
-| "Linter passed" | Linter ≠ tests |
-| "I'm tired" | Fatigue ≠ excuse |
-
 ---
 
 ## Persistence Enforcement
@@ -510,31 +454,3 @@ NO COMPLETION CLAIMS WITHOUT FRESH VERIFICATION EVIDENCE
 
 Details: `optional/PROTOCOLS.md`
 
----
-
-## Quick Reference
-
-### 🔴 CRITICAL
-- `git status && git branch` first
-- Read → Write/Edit
-- Feature branches only
-- React review → `/react-best-practices`
-- Root cause analysis, never skip verification
-- **3+ fix failures → suspect architecture (stop immediately)**
-- **Pass Verification Gate before completion claims**
-- **2-stage review: Spec → Quality (order required)**
-
-### 🟡 IMPORTANT
-- >3 steps → TodoWrite
-- Start = Finish
-- MVP first
-- PDCA: Plan/Design → implementation
-- matchRate <90% → Act iteration (max 5)
-- Use Worker templates by role (Implementer/Spec/Quality)
-
-### 🟢 RECOMMENDED
-- Parallel > sequential
-- MCP > Native
-- Use batch operations
-- Descriptive naming
-- Defense-in-Depth 4-layer verification

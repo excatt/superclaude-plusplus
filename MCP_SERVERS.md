@@ -16,118 +16,24 @@
 
 ---
 
-## Context7
-**Purpose**: 공식 라이브러리 문서 조회 및 프레임워크 패턴 가이드
+## Server Details
 
-**Triggers**: `import`, `require`, `from` | 프레임워크 키워드 | 버전별 구현 필요
-
-**Examples**:
-- "implement React useEffect" → Context7
-- "add Auth0 authentication" → Context7
-- "just explain this function" → Native Claude
-
----
-
-## Magic
-**Purpose**: 21st.dev 패턴 기반 모던 UI 컴포넌트 생성
-
-**Triggers**: `/ui`, `/21` 명령 | button, form, modal, card, table, nav
-
-**Examples**:
-- "create a login form" → Magic
-- "build responsive navbar" → Magic
-- "write a REST API" → Native Claude
-
----
-
-## Morphllm
-**Purpose**: 토큰 최적화된 패턴 기반 코드 편집 엔진
-
-**Triggers**: 다중 파일 편집 | 스타일 적용 | 벌크 텍스트 치환
-
-**Examples**:
-- "update all class components to hooks" → Morphllm
-- "replace console.log with logger" → Morphllm
-- "rename getUserData everywhere" → Serena (심볼 작업)
-
----
-
-## Playwright
-**Purpose**: 실제 브라우저 상호작용 및 E2E 테스트
-
-**Triggers**: 브라우저 테스트 | 스크린샷 | 폼 제출 테스트 | 접근성 검증
-
-**Examples**:
-- "test the login flow" → Playwright
-- "take responsive screenshots" → Playwright
-- "review function logic" → Native Claude
-
----
-
-## Sequential
-**Purpose**: 복잡한 분석과 체계적 문제 해결을 위한 다단계 추론
-
-**Triggers**: `--think`, `--think-hard`, `--ultrathink` | 다층 디버깅 | 아키텍처 분석
-
-**Examples**:
-- "why is this API slow?" → Sequential
-- "design microservices architecture" → Sequential
-- "explain this function" → Native Claude
-
----
-
-## Serena
-**Purpose**: 프로젝트 메모리와 세션 영속성을 갖춘 시맨틱 코드 이해
-
-**Triggers**: 심볼 작업 (rename, extract, move) | `/sc:load`, `/sc:save` | LSP 통합
-
-**Examples**:
-- "rename getUserData everywhere" → Serena
-- "find all references to this class" → Serena
-- "load my project context" → Serena
-
----
-
-## Tavily
-**Purpose**: 리서치 및 최신 정보를 위한 웹 검색
-
-**Triggers**: `/sc:research` | 지식 컷오프 이후 정보 | 팩트체킹 | 경쟁 분석
-
-**Config**: Requires `TAVILY_API_KEY` environment variable
-
-**Search Types**: Web | News | Academic | Domain-filtered
-
-**Examples**:
-- "latest TypeScript features 2024" → Tavily
-- "OpenAI updates this week" → Tavily
-- "explain recursion" → Native Claude
-
-**Fallback**: Native WebSearch
-
----
+| Server | Triggers | Key Examples |
+|--------|----------|-------------|
+| **Context7** | `import`, `require`, `from`, 프레임워크 키워드, 버전별 구현 | React useEffect → C7, Auth0 → C7 |
+| **Magic** | `/ui`, `/21`, button, form, modal, card, table, nav | login form → Magic, navbar → Magic |
+| **Morphllm** | 다중 파일 편집, 스타일 적용, 벌크 치환 | class→hooks → Morph, console.log→logger → Morph |
+| **Playwright** | 브라우저 테스트, 스크린샷, 폼 제출, 접근성 | login flow test → Play, screenshots → Play |
+| **Sequential** | `--think*`, 다층 디버깅, 아키텍처 | API slow → Seq, microservices → Seq |
+| **Serena** | 심볼 작업, LSP, `/sc:load`, `/sc:save` | rename everywhere → Serena, find refs → Serena |
+| **Tavily** | `/sc:research`, 최신 정보, 팩트체킹, 경쟁 분석. Requires `TAVILY_API_KEY` | latest TS features → Tavily. **Fallback**: WebSearch |
 
 ## Server Combinations
 
 | Task | Primary | Secondary |
 |------|---------|-----------|
-| Framework UI implementation | Magic | Context7 |
+| Framework UI | Magic | Context7 |
 | Complex refactoring | Serena | Morphllm |
 | Research + analysis | Tavily | Sequential |
 | E2E test design | Sequential | Playwright |
 | Doc-based coding | Context7 | Sequential |
-
----
-
-## Flag Reference
-
-```
---c7, --context7    → Enable Context7
---magic             → Enable Magic
---morph, --morphllm → Enable Morphllm
---play, --playwright → Enable Playwright
---seq, --sequential → Enable Sequential
---serena            → Enable Serena
---tavily            → Enable Tavily
---all-mcp           → Enable all MCP
---no-mcp            → Disable MCP (native only)
-```

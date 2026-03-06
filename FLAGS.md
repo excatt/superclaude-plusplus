@@ -6,14 +6,9 @@
 
 ## Mode Activation
 
-| Flag | Trigger | Behavior |
-|------|---------|----------|
-| `--brainstorm` | "maybe", "생각중인데" | 협업적 요구사항 탐색 |
-| `--introspect` | 에러 복구, 자기 분석 | 메타인지 분석, 마커 사용 |
-| `--task-manage` | >3단계, >2디렉토리 | 계층적 작업 조직 |
-| `--orchestrate` | 다중 도구, 병렬 기회 | 도구 최적화, 병렬 사고 |
-| `--token-efficient` | 컨텍스트 >75%, `--uc` | 심볼 커뮤니케이션, 30-50% 감소 |
-| `--harness` | "에이전트한테 맡겨", "전부 자동으로" | 에이전트 주도 구현, Phase Gate 적용 |
+상세 내용은 MODES.md Mode Quick Reference 참조.
+
+`--brainstorm` | `--introspect` | `--task-manage` | `--orchestrate` | `--token-efficient` (`--uc`) | `--harness`
 
 ---
 
@@ -21,17 +16,7 @@
 
 상세 내용은 MCP_SERVERS.md 참조.
 
-| Flag | Server | Use Case |
-|------|--------|----------|
-| `--c7`, `--context7` | Context7 | 공식 문서, 프레임워크 패턴 |
-| `--seq`, `--sequential` | Sequential | 복잡한 디버깅, 시스템 설계 |
-| `--magic` | Magic | UI 컴포넌트 (/ui, /21) |
-| `--morph`, `--morphllm` | Morphllm | 벌크 변환, 패턴 편집 |
-| `--serena` | Serena | 심볼 작업, 프로젝트 메모리 |
-| `--play`, `--playwright` | Playwright | 브라우저 테스트, E2E |
-| `--tavily` | Tavily | 웹 검색, 리서치 |
-| `--all-mcp` | All | 최대 복잡도 시나리오 |
-| `--no-mcp` | None | 네이티브만, 성능 우선 |
+`--c7`/`--context7` Context7 | `--seq`/`--sequential` Sequential | `--magic` Magic | `--morph`/`--morphllm` Morphllm | `--serena` Serena | `--play`/`--playwright` Playwright | `--tavily` Tavily | `--all-mcp` All | `--no-mcp` None
 
 ---
 

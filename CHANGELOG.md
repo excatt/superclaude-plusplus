@@ -5,6 +5,19 @@
 형식은 [Keep a Changelog](https://keepachangelog.com/ko/1.0.0/)를 따르며,
 [Semantic Versioning](https://semver.org/lang/ko/)을 준수합니다.
 
+## [0.9.7] - 2026-03-06
+
+### Changed
+- **optional/ 중복 파일 6개 삭제**: CONTEXTS.md, KNOWLEDGE.md, PATTERNS.md, RESEARCH_CONFIG.md, BUSINESS_PANEL_EXAMPLES.md, BUSINESS_SYMBOLS.md (루트가 원본, ~6,700 토큰 분량 중복 제거)
+- **코어 파일 교차 중복 제거 (~900 단어, -13% 절감)**:
+  - RULES.md (540→456줄): Quick Reference 제거, Struggle Report/Error Recovery/Simplicity Guard/Defense-in-Depth 압축, Rationalization Prevention 제거
+  - FLAGS.md (115→99줄): Mode Activation 테이블 → MODES.md 참조, MCP 테이블 인라인화
+  - MCP_SERVERS.md (133→39줄): 7개 서버 개별 섹션 → 통합 테이블, Flag Reference 제거
+  - CONVENTIONS.md (164→143줄): uv/pnpm 기본 명령어 코드 블록 제거 (Claude가 이미 아는 내용)
+- **README.md**: 디렉토리 구조에서 삭제 파일 반영
+
+---
+
 ## [0.9.6] - 2026-03-06
 
 ### Added
@@ -474,6 +487,7 @@
 
 | 버전 | 날짜 | 주요 변경 |
 |------|------|----------|
+| 0.9.7 | 2026-03-06 | 레포 경량화 (optional/ 중복 6파일 삭제, 코어 파일 교차 중복 제거 -13%) |
 | 0.9.5 | 2026-02-24 | Core 파일 토큰 최적화 (RULES -26%, MODES -49%, optional/ 4파일 분리) |
 | 0.9.4 | 2026-02-24 | Harness Engineering 통합 (Agent Struggle Report, Harness Mode, codebase-gc) |
 | 0.9.3 | 2026-02-23 | Karpathy Guidelines 통합 (미시적 코딩 행동 규칙 7개 섹션) |

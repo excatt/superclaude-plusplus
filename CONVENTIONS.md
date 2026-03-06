@@ -33,16 +33,6 @@
 | 가상환경 | uv 자동 관리 |
 | Docker | `uv sync --frozen --no-dev` |
 
-**uv 기본 명령어**:
-```bash
-uv init              # 프로젝트 초기화
-uv sync              # 의존성 설치
-uv add <pkg>         # 패키지 추가
-uv add --dev <pkg>   # 개발 의존성 추가
-uv lock              # lock 파일 생성
-uv run <cmd>         # 가상환경에서 실행
-```
-
 **pyproject.toml 필수 구조**:
 ```toml
 [project]
@@ -91,17 +81,6 @@ RUN uv sync --frozen --no-dev
 | Workspace | `pnpm-workspace.yaml` (monorepo) |
 
 **지원 프레임워크**: React, Next.js, NestJS, Vue, Angular, Node.js
-
-**pnpm 기본 명령어**:
-```bash
-pnpm init              # 프로젝트 초기화
-pnpm install           # 의존성 설치
-pnpm add <pkg>         # 패키지 추가
-pnpm add -D <pkg>      # 개발 의존성 추가
-pnpm remove <pkg>      # 패키지 제거
-pnpm run <script>      # 스크립트 실행
-pnpm dlx <cmd>         # npx 대체
-```
 
 **Dockerfile 패턴**:
 ```dockerfile
