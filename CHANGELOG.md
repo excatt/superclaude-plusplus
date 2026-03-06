@@ -5,6 +5,29 @@
 형식은 [Keep a Changelog](https://keepachangelog.com/ko/1.0.0/)를 따르며,
 [Semantic Versioning](https://semver.org/lang/ko/)을 준수합니다.
 
+## [0.9.6] - 2026-03-06
+
+### Added
+- **UI UX Pro Max 통합** ([source](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill)):
+  BM25 검색 엔진 기반 UI/UX 디자인 인텔리전스를 스킬 래퍼 방식으로 통합.
+
+  **`/ui-ux-pro-max` 스킬** (`skills/ui-ux-pro-max/`):
+  - 67개 UI 스타일, 96개 컬러 팔레트, 57개 폰트 페어링, 100개 추론 규칙
+  - 13개 기술 스택 가이드라인 (React, Next.js, Vue, Svelte, Flutter 등)
+  - BM25 검색 엔진 (Python, 외부 의존성 없음)
+  - 디자인 시스템 자동 생성 (`--design-system`) 및 영속화 (`--persist`)
+  - 도메인별 검색: style, color, typography, product, landing, chart, ux, icons, react, web
+
+  **기존 스킬과의 파이프라인**:
+  - `/ui-ux-pro-max` (디자인 결정) → `/frontend-design` (구현) → `/web-design-guidelines` (리뷰)
+
+  **CLAUDE.md 업데이트**:
+  - Proactive Suggestions에 UI/UX 디자인 트리거 추가
+  - Frontend 도메인 스킬 목록에 추가
+  - Workflow Integration에 Design 파이프라인 추가
+
+---
+
 ## [0.9.5] - 2026-02-24
 
 ### Changed

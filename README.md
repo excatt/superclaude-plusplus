@@ -59,6 +59,7 @@ SuperClaude++는 [SuperClaude Framework](https://github.com/SuperClaude-Org/Supe
 | `/uv-package` | uv 패키지 관리 |
 | `/feature-planner` | 기능 구현 계획 수립 |
 | `/gap-analysis` | 설계-구현 비교, Match Rate 계산 |
+| `/ui-ux-pro-max` | AI 디자인 인텔리전스 (67 스타일, 96 팔레트, 57 폰트) |
 
 #### Document Skills
 | Skill | 설명 |
@@ -113,6 +114,7 @@ SuperClaude++는 [SuperClaude Framework](https://github.com/SuperClaude-Org/Supe
 | 복잡한 분석 | **Sequential** MCP | 디버깅 3회+, 설계 |
 | 프로젝트 규칙 검증 | `/audit` | commit, PR + `.claude/audit-rules/` 존재 시 |
 | 새 패턴 도입 | `/audit manage` | 새 컨벤션, 아키텍처 패턴 정립 |
+| UI/UX 디자인 | `/ui-ux-pro-max` | landing page, 디자인 시스템, 스타일 |
 
 **제안 강도 플래그**: `--suggest-all` (기본) | `--suggest-minimal` | `--suggest-off`
 
@@ -247,6 +249,7 @@ cd superclaude-plusplus
 │   ├── verify/SKILL.md
 │   ├── gap-analysis/SKILL.md      # 설계-구현 비교
 │   ├── web-design-guidelines/     # UI/UX 리뷰
+│   ├── ui-ux-pro-max/            # AI 디자인 인텔리전스 (BM25 검색)
 │   ├── composition-patterns/      # React 패턴
 │   ├── document-skills/   # docx, pdf, pptx, xlsx
 │   └── ...                # 40+ skills
@@ -492,6 +495,7 @@ rm -rf ~/.claude
 - **[SuperClaude Framework](https://github.com/SuperClaude-Org/SuperClaude_Framework)** - 핵심 프레임워크 구조 및 모드 시스템
 - **[Karpathy Guidelines](https://github.com/forrestchang/andrej-karpathy-skills)** - LLM 코딩 행동 규칙 (Think Before Coding, Simplicity First, Surgical Changes, Goal-Driven Execution). [Andrej Karpathy의 관찰](https://x.com/karpathy/status/2015883857489522876)에서 파생
 - **[Harness Engineering](https://openai.com/index/harness-engineering/)** - OpenAI의 에이전트 주도 개발 방법론 (Repository as Knowledge Base, Dependency Flow, Struggle = Signal, Codebase GC). [Martin Fowler의 분석](https://martinfowler.com/articles/exploring-gen-ai/harness-engineering.html) 참조
+- **[UI UX Pro Max](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill)** - BM25 기반 UI/UX 디자인 인텔리전스 (67 스타일, 96 팔레트, 57 폰트, 100 추론 규칙, 13 스택). MIT License
 - **[oh-my-claudecode](https://github.com/Yeachan-Heo/oh-my-claudecode)** - 자동화 훅 및 워크플로우 아이디어
 - **[cc-statusline](https://www.npmjs.com/package/@chongdashu/cc-statusline)** - 상태바 구현 참고
 - **Business Panel** - 클래식 비즈니스 문헌 기반 전문가 패널 방법론 (Christensen, Porter, Drucker 등)
@@ -507,6 +511,7 @@ SuperClaude++ = SuperClaude + 다음 요소들의 통합:
 - 🔬 Karpathy Guidelines 통합 (가정 투명성, 수술적 변경, 코드 단순성, 목표 정의 프로토콜)
 - 🏗️ Harness Engineering 통합 (Agent Struggle Report, Harness Mode, Dependency Flow, codebase-gc)
 - 📝 Note 시스템 (컴팩션 대응)
+- 🎨 UI/UX Pro Max 디자인 인텔리전스 (67 스타일, 96 팔레트, 57 폰트, 13 스택)
 - 🎯 40+ 도메인별 Skills
 - 🔧 자동 스킬 호출 시스템 (26개 Auto-Invoke 트리거)
 - 📦 패키지 관리 규칙 강제 (uv/pnpm)
