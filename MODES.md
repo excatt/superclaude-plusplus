@@ -199,15 +199,21 @@ Details: `optional/MODE_Harness.md`
 
 ## Progressive Context Loading
 
-요청 복잡도에 따른 점진적 컨텍스트 로딩:
+난이도 평가(Step 0)와 연동하여 컨텍스트를 점진적으로 로딩:
 
-| Layer | Tokens | Triggers | Use Case |
-|-------|--------|----------|----------|
-| 0 | 150 | 항상 | Bootstrap |
-| 1 | 500-800 | 진행상황, 상태 | 상태 확인 |
-| 2 | 500-1K | 오타, 이름변경 | 소규모 변경 |
-| 3 | 3-4.5K | 버그, 수정, 리팩토링 | 관련 파일 분석 |
-| 4 | 8-12K | 기능, 아키텍처 | 시스템 이해 |
-| 5 | 20-50K | 재설계, 마이그레이션 | 외부 참조 |
+| Layer | Tokens | Difficulty | Triggers | Use Case |
+|-------|--------|------------|----------|----------|
+| 0 | 150 | — | 항상 | Bootstrap |
+| 1 | 500-800 | — | 진행상황, 상태 | 상태 확인 |
+| 2 | 500-1K | Simple | 오타, 이름변경 | 소규모 변경 |
+| 3 | 3-4.5K | Medium | 버그, 수정, 리팩토링 | 관련 파일 분석 |
+| 4 | 8-12K | Complex | 기능, 아키텍처 | 시스템 이해 |
+| 5 | 20-50K | Complex+ | 재설계, 마이그레이션 | 외부 참조 |
+
+**난이도별 리소스 로딩**:
+- **Simple**: RULES.md 핵심만 참조, optional/ 로딩 불필요
+- **Medium**: RULES.md + 관련 optional/ 1-2개 선택적 로딩
+- **Complex**: RULES.md + REASONING_TEMPLATES.md + CONTEXT_BUDGET.md 로딩
 
 **핵심**: 예방(confidence check)이 최적화보다 토큰을 더 절약함
+**상세**: `optional/CONTEXT_BUDGET.md` 참조

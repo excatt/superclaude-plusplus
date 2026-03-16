@@ -5,6 +5,36 @@
 형식은 [Keep a Changelog](https://keepachangelog.com/ko/1.0.0/)를 따르며,
 [Semantic Versioning](https://semver.org/lang/ko/)을 준수합니다.
 
+## [0.9.8] - 2026-03-17
+
+### Added
+- **oh-my-agent 프로토콜 적응** ([source](https://github.com/first-fluke/oh-my-agent), MIT License):
+  [oh-my-agent](https://github.com/first-fluke/oh-my-agent)의 `_shared/` 공유 프로토콜에서 7개 개념을 선별하여 SC++ 맥락에 맞게 적응.
+
+  **RULES.md**:
+  - **Difficulty Assessment & Protocol Branching** (from `difficulty-guide.md`): Simple/Medium/Complex 3단계 난이도 평가 + 프로토콜 분기. 원본은 파일 수 기반이나 SC++에서는 패턴 매치, 크로스모듈, 변경 성격 등 다차원 평가로 확장
+  - **Two-Stage Review Auto-pass** (from `phase-gates.md`): Stage 1/2에 자동통과 조건 추가 (Simple + diff <50줄 등). 원본 IMPL_GATE/VERIFY_GATE 개념을 기존 Two-Stage Review에 통합
+  - **Stage 3: Cascade Impact Review** (from `multi-review-protocol.md` Step 16): 11단계 리뷰 중 SC++에 가장 필요한 "다른 모듈 영향 검증" 1개를 선별 적용
+  - **Direction Correction Rule** (from `session-metrics.md` Clarification Debt): 점수 기반 CD 시스템을 CLI 없이 동작하는 횟수 기반 규칙으로 단순화 (correct 2+→재확인, redo 2+→중단)
+
+  **optional/REASONING_TEMPLATES.md** (신규, from `reasoning-templates.md`):
+  - Debugging Hypothesis Loop, Architecture Decision Matrix, Cause-Effect Chain, Refactoring Judgment, Performance Bottleneck Analysis 5개 템플릿 적응
+  - Requirement Decomposition 1개 추가 (oh-my-agent `prompt-structure.md` 4요소 + SC++ Goal Definition Protocol 결합)
+
+  **optional/CONTEXT_BUDGET.md** (신규, from `context-budget.md` + `context-loading.md`):
+  - 원본은 Serena MCP(find_symbol) 기반이나 SC++에서는 Read offset/limit + Grep 기반으로 재설계
+  - 난이도별 토큰 예산, 파일 읽기 전략, 오버플로우 증상 대응표
+
+  **optional/WORKER_TEMPLATES.md** (개편, from `prompt-structure.md` + `phase-gates.md`):
+  - 기존 3개 템플릿에 4요소 구조(Goal/Context/Constraints/Done When) 적용
+  - Cascade Impact Reviewer 템플릿 추가
+  - 난이도 연동 리뷰 분기
+
+  **MODES.md**: Progressive Context Loading에 난이도 컬럼 추가, 리소스 로딩 가이드
+  **CLAUDE.md**: Workflow Integration에 Step 0 반영, Optional References 섹션 추가
+
+---
+
 ## [0.9.7] - 2026-03-06
 
 ### Changed

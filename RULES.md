@@ -16,6 +16,53 @@ These rules bias toward **caution over speed**. For trivial tasks (typo fixes, c
 
 ---
 
+## Difficulty Assessment & Protocol Branching
+**Priority**: 🔴 **Triggers**: 모든 구현/수정 작업 시작 시 (Step 0)
+
+모든 작업은 시작 전 난이도를 평가하고, 난이도에 따라 프로토콜 깊이를 분기한다.
+
+### Assessment Criteria
+
+| Signal | Simple | Medium | Complex |
+|--------|--------|--------|---------|
+| 파일 수 | 1개 | 2-3개 | 4개+ |
+| 패턴 매치 | 기존 패턴 반복 | 기존 패턴 적용 (새 도메인) | 새 패턴 도입 |
+| 설계 결정 | 없음 | 일부 필요 | 아키텍처 결정 필요 |
+| 크로스모듈 | 단일 모듈 내 | 2-3 모듈 | 시스템 전반 |
+| 변경 성격 | 추가/수정 (additive) | 수정 + 일부 리팩토링 | 구조 변경 |
+| 예상 diff | <50줄 | 50-200줄 | 200줄+ |
+
+**판정**: 과반수 기준. 불확실하면 한 단계 높게 평가.
+
+### Protocol Branching
+
+**Simple → Fast Track**:
+- `/confidence-check`: 스킵
+- 분석/계획: 스킵 → 즉시 구현
+- 검증: 최소 (빌드/테스트 통과 확인만)
+- Two-Stage Review: Stage 1만 (변경 diff 확인)
+- Reasoning Templates: 불필요
+
+**Medium → Standard Protocol**:
+- `/confidence-check`: 실행
+- 분석: 간략 → 계획: 간략 → 구현 → 전체 검증
+- Two-Stage Review: Stage 1 + Stage 2
+- Reasoning Templates: 선택적 (디버깅/아키텍처 결정 시)
+
+**Complex → Extended Protocol**:
+- `/confidence-check`: 필수
+- 분석: 전체 → 계획: 전체 + 체크포인트 → 구현 → 중간점검(50%) → 전체 검증
+- Two-Stage Review: Stage 1 + Stage 2 + Cascade Impact Review
+- Reasoning Templates: 필수 (관련 템플릿 적용)
+- 추가 참조: `optional/REASONING_TEMPLATES.md`, `optional/CONTEXT_BUDGET.md`
+
+### Difficulty Misjudgment Recovery
+- Simple로 시작했으나 복잡해짐 → Medium으로 업그레이드, 진행 상황 기록
+- Medium으로 시작했으나 아키텍처 결정 필요 → Complex로 업그레이드
+- Complex로 시작했으나 실제로 간단 → 빠르게 완료 (오버헤드 최소)
+
+---
+
 ## Agent Orchestration
 **Priority**: 🔴 **Triggers**: 작업 실행, 구현 후
 
@@ -86,7 +133,8 @@ Recovery: Timeout→split | Incomplete→retry remaining | Wrong Approach→add 
 
 Full trigger tables in `CLAUDE.md` (Auto-Invoke / Proactive Suggestions sections).
 
-**실행 우선순위**: `/confidence-check` → `/checkpoint` → Two-Stage Review → Verification Gate → `/debug` → `/learn`
+**실행 우선순위**: 난이도 평가(Step 0) → `/confidence-check` → `/checkpoint` → Two-Stage Review → Verification Gate → `/debug` → `/learn`
+**난이도 게이트**: Simple → confidence-check 스킵, Stage 2 스킵 가능 | Medium → Standard | Complex → Full + Cascade Impact
 **예외**: 오타/주석 수정, `--no-check` 요청 시 스킵
 **형식**: `💡 제안: [도구] - 이유: [근거] → 실행? (Y/n)`
 **빈도 제어**: 세션당 스킬 1회, 거절 후 재제안 안 함
@@ -107,6 +155,10 @@ Full trigger tables in `CLAUDE.md` (Auto-Invoke / Proactive Suggestions sections
 
 **Output**: ✅ Spec compliant | ❌ Issues: [list of omissions/excess]
 
+**Auto-pass Conditions** (모두 충족 시 간소화 검증):
+- 난이도 Simple + diff < 50줄 + 단일 파일 + 새 의존성 없음
+- 간소화 = diff 읽기만으로 확인 (전체 코드 리뷰 불필요)
+
 ### Stage 2: Code Quality Review
 **Purpose**: Verify implementation quality (only after Stage 1 passes)
 
@@ -118,10 +170,26 @@ Full trigger tables in `CLAUDE.md` (Auto-Invoke / Proactive Suggestions sections
 
 **Output**: Strengths + Issues (by severity) + Assessment
 
+**Auto-pass Conditions** (모두 충족 시 스킵 가능):
+- 난이도 Simple + 테스트 올 그린 + lint/typecheck 통과
+
+### Stage 3: Cascade Impact Review (Complex 난이도 전용)
+**Purpose**: 변경이 다른 모듈/기능을 깨뜨리지 않았는지 확인
+
+**핵심 질문**: "이 변경이 다른 곳에 영향을 미쳤는가?"
+- Grep으로 변경된 함수/타입/변수의 참조처 확인
+- 참조처의 호환성 검증
+- 기존 테스트 전체 실행 (변경 파일 외 테스트 포함)
+
+**Output**: ✅ No cascade impact | ⚠️ Impact found: [affected files + status]
+
+**트리거 조건**: Complex 난이도 OR 4개+ 모듈 변경 OR public API 변경
+
 ### Review Loop
 ```
 Implement → Spec Review → [Fail: Fix → Re-review] →
 Quality Review → [Fail: Fix → Re-review] →
+Cascade Impact (Complex only) → [Fail: Fix → Re-review] →
 /verify → /audit → Complete
 ```
 
@@ -129,6 +197,7 @@ Quality Review → [Fail: Fix → Re-review] →
 - Skip Stage 1 and proceed to Quality Review
 - Proceed to next task with review issues
 - Claim fix complete without re-review
+- Complex 작업에서 Cascade Impact Review 스킵
 
 ---
 
@@ -211,6 +280,17 @@ Apply KISS/YAGNI/Complexity Timing per PRINCIPLES.md. Mandatory checks:
 - **Surface confusion**: If unclear, stop → name what's confusing → ask
 - **Push back**: If a simpler approach exists, say so even if it differs from the request
 
+### Direction Correction Rule
+사용자가 방향을 수정(correct)하거나 작업을 재시작(redo) 요청한 횟수를 추적:
+- **correct 1회**: 수정 반영 후 계속 진행
+- **correct 2회+**: 전체 스코프 재확인 — "제가 이해한 전체 요구사항을 정리하겠습니다" 후 사용자 확인
+- **redo 1회**: 원인 분석 후 재시작
+- **redo 2회**: 즉시 중단 → 사용자에게 요구사항 재명세 요청
+
+**correct vs redo 구분**:
+- correct: 부분 수정 ("그게 아니라 이렇게 해줘")
+- redo: 전면 재시작 ("아예 다시 해줘", "이 방향 아니야")
+
 ### Litmus Test
 "Am I silently choosing an interpretation right now?" → YES → stop and present options with effort/impact estimates
 
@@ -278,12 +358,14 @@ Apply KISS/YAGNI/Complexity Timing per PRINCIPLES.md. Mandatory checks:
 **Priority**: 🔴 **Triggers**: 에러, 테스트 실패
 
 ### The Four Phases
-| Phase | Activity | Completion Criteria |
-|-------|------|----------|
-| **1. Root Cause** | Read error, reproduce, check changes, collect evidence | Understand WHAT/WHY |
-| **2. Pattern** | Find working examples, compare differences | Identify difference |
-| **3. Hypothesis** | Single hypothesis → minimal test | Confirm or new hypothesis |
-| **4. Implementation** | Write failing test → single fix → verify | Bug resolved, tests pass |
+| Phase | Activity | Template | Completion Criteria |
+|-------|------|----------|----------|
+| **1. Root Cause** | Read error, reproduce, check changes, collect evidence | Cause-Effect Chain | Understand WHAT/WHY |
+| **2. Pattern** | Find working examples, compare differences | — | Identify difference |
+| **3. Hypothesis** | Single hypothesis → minimal test | Debugging Hypothesis Loop | Confirm or new hypothesis |
+| **4. Implementation** | Write failing test → single fix → verify | — | Bug resolved, tests pass |
+
+**Reasoning Templates**: Medium+난이도에서 `optional/REASONING_TEMPLATES.md`의 해당 템플릿 사용 권장.
 
 ### 3+ Fixes Architecture Rule
 **🔴 CRITICAL**: After 3 fix attempts still failing:

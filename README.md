@@ -496,6 +496,7 @@ rm -rf ~/.claude
 - **[Karpathy Guidelines](https://github.com/forrestchang/andrej-karpathy-skills)** - LLM 코딩 행동 규칙 (Think Before Coding, Simplicity First, Surgical Changes, Goal-Driven Execution). [Andrej Karpathy의 관찰](https://x.com/karpathy/status/2015883857489522876)에서 파생
 - **[Harness Engineering](https://openai.com/index/harness-engineering/)** - OpenAI의 에이전트 주도 개발 방법론 (Repository as Knowledge Base, Dependency Flow, Struggle = Signal, Codebase GC). [Martin Fowler의 분석](https://martinfowler.com/articles/exploring-gen-ai/harness-engineering.html) 참조
 - **[UI UX Pro Max](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill)** - BM25 기반 UI/UX 디자인 인텔리전스 (67 스타일, 96 팔레트, 57 폰트, 100 추론 규칙, 13 스택). MIT License
+- **[oh-my-agent](https://github.com/first-fluke/oh-my-agent)** - 멀티 에이전트 하네스의 공유 프로토콜 (`_shared/`). 난이도 분기(difficulty-guide), 추론 템플릿(reasoning-templates), 컨텍스트 예산(context-budget/loading), 4요소 프롬프트(prompt-structure), Phase Gate 자동통과(phase-gates), Cascade Impact Review(multi-review-protocol), Clarification Debt(session-metrics). MIT License
 - **[oh-my-claudecode](https://github.com/Yeachan-Heo/oh-my-claudecode)** - 자동화 훅 및 워크플로우 아이디어
 - **[cc-statusline](https://www.npmjs.com/package/@chongdashu/cc-statusline)** - 상태바 구현 참고
 - **Business Panel** - 클래식 비즈니스 문헌 기반 전문가 패널 방법론 (Christensen, Porter, Drucker 등)
@@ -507,7 +508,8 @@ SuperClaude++ = SuperClaude + 다음 요소들의 통합:
 - 🤖 Orchestrator/Worker 패턴 및 에이전트 에러 복구
 - 💡 Proactive Suggestion (스킬/에이전트/MCP 적극 제안)
 - 🧠 Auto Memory 활용 가이드 (Claude Code 내장 기능)
-- ⚡ Superpowers 통합 (Two-Stage Review, Verification Iron Law, 3+ Fixes Rule)
+- ⚡ Superpowers 통합 (Two-Stage Review, Verification Iron Law, 3+ Fixes Rule, Cascade Impact Review)
+- 📐 oh-my-agent 프로토콜 적응 (난이도 분기, 추론 템플릿, 컨텍스트 예산, 4요소 프롬프트, Direction Correction)
 - 🔬 Karpathy Guidelines 통합 (가정 투명성, 수술적 변경, 코드 단순성, 목표 정의 프로토콜)
 - 🏗️ Harness Engineering 통합 (Agent Struggle Report, Harness Mode, Dependency Flow, codebase-gc)
 - 📝 Note 시스템 (컴팩션 대응)
