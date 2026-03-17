@@ -33,6 +33,11 @@
 - 📝 인사이트를 구조화된 요구사항 브리프로 합성
 - ✅ 가정 없이 사용자가 방향 결정하도록 유도
 
+**Questioning Principles**:
+- **Questions Reveal Consequences**: 단순 정보 수집이 아닌, 아키텍처/비용/복잡도 결정을 드러내는 질문
+- **Trade-off 명시**: 선택지마다 장단점 표로 제시 (Option A: +속도 -복잡도 형식)
+- **Default 제공**: 사용자 미응답 시 진행 가능한 합리적 기본값과 근거 제시
+
 ---
 
 ## Deep Research Mode

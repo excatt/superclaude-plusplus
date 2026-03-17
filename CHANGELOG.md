@@ -5,6 +5,31 @@
 형식은 [Keep a Changelog](https://keepachangelog.com/ko/1.0.0/)를 따르며,
 [Semantic Versioning](https://semver.org/lang/ko/)을 준수합니다.
 
+## [0.9.9] - 2026-03-18
+
+### Added
+- **Antigravity Kit 체리피킹** ([source](https://github.com/vudovn/antigravity-kit), MIT License):
+  [Antigravity Kit](https://github.com/vudovn/antigravity-kit) (20 에이전트, 36 스킬, 11 워크플로우) 분석 후 SuperClaude++에 보완적인 2개 요소를 선별 적용.
+
+  **MODES.md - Brainstorming Mode 강화** (from `dynamic-questioning.md`):
+  - **Questioning Principles** 3개 추가: Questions Reveal Consequences, Trade-off 명시, Default 제공
+  - AG Kit의 800줄 Dynamic Questioning 방법론에서 핵심 원칙만 추출 (5줄)
+  - 기존 소크라틱 대화 + Orchestration Mode 4x4 Strategy와 보완적으로 동작
+
+  **scripts/checklist.sh** (신규, inspired by AG Kit `checklist.py`):
+  - 우선순위 기반 프로젝트 검증 스크립트: P0(보안) → P1(린트) → P2(테스트) → P3(빌드) → P4(의존성)
+  - 프로젝트 도구 자동 감지 (TypeScript, ESLint, ruff, mypy, pytest, vitest 등)
+  - `--quick` 모드 (P0-P1만 실행)
+  - MCP 서버 없는 환경에서 `/verify`, `/audit`의 fallback으로 사용
+
+  **비채택 항목 (분석만)**:
+  - UI/UX Pro Max 데이터: 동일 원본 (`nextlevelbuilder/ui-ux-pro-max-skill`), SC++가 이미 상위호환 (13 스택 vs 12)
+  - 지능적 라우팅 매트릭스: 키워드→에이전트 고정 매핑은 Opus/Sonnet 급에서 문맥 추론 대비 유연성 저하
+  - 에이전트 페르소나/경계 규칙: SC++ Orchestrator/Worker 패턴과 철학 충돌
+  - 앱 빌더 템플릿: 실행 코드가 아닌 가이드 문서, SC++ 스코프 밖
+
+---
+
 ## [0.9.8] - 2026-03-17
 
 ### Added
