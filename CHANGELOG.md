@@ -22,12 +22,6 @@
   - `--quick` 모드 (P0-P1만 실행)
   - MCP 서버 없는 환경에서 `/verify`, `/audit`의 fallback으로 사용
 
-  **비채택 항목 (분석만)**:
-  - UI/UX Pro Max 데이터: 동일 원본 (`nextlevelbuilder/ui-ux-pro-max-skill`), SC++가 이미 상위호환 (13 스택 vs 12)
-  - 지능적 라우팅 매트릭스: 키워드→에이전트 고정 매핑은 Opus/Sonnet 급에서 문맥 추론 대비 유연성 저하
-  - 에이전트 페르소나/경계 규칙: SC++ Orchestrator/Worker 패턴과 철학 충돌
-  - 앱 빌더 템플릿: 실행 코드가 아닌 가이드 문서, SC++ 스코프 밖
-
 ---
 
 ## [0.9.8] - 2026-03-17
