@@ -161,7 +161,7 @@ fi
 echo -e "\n${BOLD}P3: Build${NC}"
 
 if [[ -f package.json ]] && grep -q '"build"' package.json 2>/dev/null; then
-  run_check "P3" "Build" "npm run build 2>&1"
+  run_check "P3" "Build" "pnpm run build 2>&1"
 else
   skip_check "P3" "Build" "build 스크립트 없음"
 fi
