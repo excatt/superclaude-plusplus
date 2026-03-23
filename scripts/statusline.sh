@@ -403,7 +403,7 @@ fi
   fi
 } >> "$LOG_FILE" 2>/dev/null
 
-# ---- Claude Code update check (cache once, use forever) ----
+# ---- Claude Code update check (native install) ----
 check_cc_update() {
   local current_version="$1"
   local cache_file="$HOME/.claude/.cc_version_cache"
@@ -411,25 +411,25 @@ check_cc_update() {
   # Return empty if no current version
   [ -z "$current_version" ] && return
 
-  # If cache exists, use it
+  # If cache exists and fresh (< 24h), use it
   if [ -f "$cache_file" ]; then
-    local cached_latest=$(cat "$cache_file" 2>/dev/null)
-    if [ -n "$cached_latest" ] && [ "$cached_latest" != "$current_version" ]; then
-      echo "⬆️ $cached_latest"
+    local cache_age=$(( $(date +%s) - $(stat -f %m "$cache_file" 2>/dev/null || echo 0) ))
+    if [ "$cache_age" -lt 86400 ]; then
+      local cached_latest=$(cat "$cache_file" 2>/dev/null)
+      if [ -n "$cached_latest" ] && [ "$cached_latest" != "$current_version" ]; then
+        echo "⬆️ $cached_latest"
+      fi
+      return
     fi
-    return
   fi
 
-  # Cache doesn't exist, check npm once (background, non-blocking)
-  if command -v npm >/dev/null 2>&1; then
-    (
-      # Run in subshell to avoid blocking
-      latest_version=$(npm view @anthropic-ai/claude-code version 2>/dev/null | head -1)
-      if [ -n "$latest_version" ]; then
-        echo "$latest_version" > "$cache_file" 2>/dev/null
-      fi
-    ) &
-  fi
+  # Check latest version via claude --version (background, non-blocking)
+  (
+    latest_version=$(claude --version 2>/dev/null | head -1 | sed 's/ .*//')
+    if [ -n "$latest_version" ]; then
+      echo "$latest_version" > "$cache_file" 2>/dev/null
+    fi
+  ) &
 }
 
 # ---- language version detection ----
