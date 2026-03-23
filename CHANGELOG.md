@@ -5,6 +5,15 @@
 형식은 [Keep a Changelog](https://keepachangelog.com/ko/1.0.0/)를 따르며,
 [Semantic Versioning](https://semver.org/lang/ko/)을 준수합니다.
 
+## [0.9.10] - 2026-03-24
+
+### Fixed
+- **statusline 업데이트 체크 개선** (`scripts/statusline.sh`):
+  - 버전 확인 방식을 `npm view` → `claude --version`으로 변경 (native install 대응)
+  - 캐시 만료 정책 추가: 영구 캐시 → 24시간 만료 후 자동 갱신
+
+---
+
 ## [0.9.9] - 2026-03-18
 
 ### Added
