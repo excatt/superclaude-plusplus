@@ -48,7 +48,7 @@
 | 복잡한 함수 | `/code-review`, `/code-smell` | 50줄+ 함수 |
 | API 설계 | `/api-design`, `backend-architect` | endpoint, REST |
 | 성능 이슈 | `performance-engineer` | 느림, slow, optimize |
-| 보안 관련 | `security-engineer`, `/auth` | 로그인, JWT, 보안 |
+| 보안 관련 | `security-engineer`, `/security-audit`, `/auth` | 로그인, JWT, 보안, LLM 보안 |
 | 프레임워크 | **Context7** MCP | React, Next.js, Vue |
 | UI 컴포넌트 | **Magic** MCP | button, form, modal |
 | 복잡한 분석 | **Sequential** MCP | 디버깅 3회+, 설계 |

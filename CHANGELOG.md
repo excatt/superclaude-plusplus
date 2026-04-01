@@ -5,6 +5,30 @@
 형식은 [Keep a Changelog](https://keepachangelog.com/ko/1.0.0/)를 따르며,
 [Semantic Versioning](https://semver.org/lang/ko/)을 준수합니다.
 
+## [0.9.11] - 2026-04-01
+
+### Added
+- **gstack 분석 후 3개 요소 선별 적용** ([source](https://github.com/garrytan/gstack), MIT License):
+  gstack (Garry Tan, 31 skills, Playwright 데몬, 스프린트 워크플로우) 분석 후 SuperClaude++에 보완적인 3개 요소를 선별 적용.
+
+  **PRINCIPLES.md - Search Before Building 원칙 추가** (from ETHOS.md):
+  - Core Patterns에 3-Layer 조사 프레임워크 추가: Tried-and-true → New-and-popular → First-principles
+  - Eureka gate: 기존 솔루션이 증명 가능하게 틀리거나 없을 때만 직접 구현 허용
+  - 기존 KISS/YAGNI와 보완적으로 동작 ("구현 전에 검색부터")
+
+  **skills/web-design-guidelines - AI Slop Detection 추가** (from `/plan-design-review`):
+  - Visual Anti-patterns 10개: purple gradient, 3-column icon grid, cookie-cutter layout 등
+  - Hard Rejection Criteria 7개: 템플릿과 구별 불가, 기본 Tailwind 색상, 브랜드 정체성 부재 등
+  - AI 생성 generic UI를 자동 감별하여 재작업 요구
+
+  **skills/security-audit (신규)** (from `/cso`):
+  - 7-Phase 보안 감사: Architecture Census → Secrets → Dependencies → OWASP Top 10 → STRIDE → LLM Security → False Positive Filtering
+  - Phase 6 LLM & AI Security: 프롬프트 인젝션 벡터, 도구 호출 검증, API 키/비용 노출, 출력 보안, 스킬 서플라이 체인
+  - 발견사항별 Confidence 1-10 스코어링 (6+ 만 보고, 5이하 정보 제공만)
+  - gstack의 14단계에서 핵심 7단계로 압축, LLM Security Phase는 거의 전량 반영
+
+---
+
 ## [0.9.10] - 2026-03-24
 
 ### Fixed

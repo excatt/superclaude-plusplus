@@ -181,6 +181,31 @@ Review UI code according to Vercel Web Interface Guidelines.
 - Hardcoded date/number format (must use `Intl.*`)
 - `autoFocus` without clear justification
 
+## AI Slop Detection - Hard Reject
+
+AI-generated UI that looks generic must be flagged and reworked. These patterns indicate low-effort AI output:
+
+### Visual Anti-patterns (flag any occurrence)
+- Purple-to-blue gradient as primary accent with no brand justification
+- 3-column icon grid layout (icon + heading + paragraph x3)
+- Icons inside colored circles as section markers
+- "Hero image + 3 feature cards" cookie-cutter layout
+- Generic stock photo placeholders or AI-generated hero images
+- Overly uniform border-radius on everything (all-8px syndrome)
+- Gradient CTA buttons floating in white space
+- Cookie-cutter testimonial carousel (avatar + quote + name)
+- Decorative blobs/mesh gradients as background filler
+- "Dashboard" UI with identical stat cards in a row
+
+### Hard Rejection Criteria (immediate rework required)
+- Layout is indistinguishable from a SaaS landing page template
+- Color palette matches default Tailwind purple/indigo/violet without customization
+- Every section follows identical padding/spacing rhythm with no visual hierarchy
+- Illustrations or icons are all from the same generic set without style adaptation
+- Typography uses only one weight with no clear heading/body distinction
+- No brand-specific design tokens — all values are framework defaults
+- Page could belong to any product — zero domain-specific visual identity
+
 ## Output Format
 
 Group by file. Use `file:line` format (VS Code clickable). Concise findings.

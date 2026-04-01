@@ -31,6 +31,11 @@
   - Self-check: "Could 200 lines be 50?" → YES → rewrite
   - Senior Engineer Test: "Would they call this overcomplicated?" → YES → simplify
 - **YAGNI**: Implement current requirements only, avoid speculation
+- **Search Before Building**: Always search before implementing from scratch
+  - **Layer 1 — Tried-and-true**: Well-maintained library or built-in API that solves this? Use it
+  - **Layer 2 — New-and-popular**: Recent, community-validated approach? Evaluate and adopt
+  - **Layer 3 — First-principles**: Only build from scratch when Layer 1-2 genuinely don't fit
+  - **Eureka gate**: First-principles is justified only when existing solutions are provably wrong or missing — not when they're merely unfamiliar
 
 ### Systems Thinking
 - **Ripple Effects**: Consider architecture-wide impact of decisions

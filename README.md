@@ -16,7 +16,7 @@ SuperClaude++는 [SuperClaude Framework](https://github.com/SuperClaude-Org/Supe
 | **CLAUDE.md** | 엔트리 포인트 및 언어 설정 (한국어) |
 | **FLAGS.md** | 행동 플래그 시스템 (`--think`, `--ultrathink`, `--uc` 등) |
 | **RULES.md** | 개발 규칙 및 자동화 트리거 (Karpathy Guidelines + Harness Engineering 통합) |
-| **PRINCIPLES.md** | SOLID, DRY, KISS, Complexity Timing 등 엔지니어링 원칙 |
+| **PRINCIPLES.md** | SOLID, DRY, KISS, YAGNI, Search Before Building 등 엔지니어링 원칙 |
 | **MODES.md** | 상황별 행동 모드 (Brainstorming, Orchestration, Token Efficiency 등) |
 | **MCP_SERVERS.md** | MCP 서버 통합 가이드 (Context7, Magic, Serena 등) |
 | **CONTEXTS.md** | DEV/REVIEW/RESEARCH/PLANNING 컨텍스트 모드 |
@@ -52,7 +52,7 @@ SuperClaude++는 [SuperClaude Framework](https://github.com/SuperClaude-Org/Supe
 | Skill | 설명 |
 |-------|------|
 | `/react-best-practices` | React/Next.js 코드 리뷰 (40+ 규칙) |
-| `/web-design-guidelines` | Vercel UI/UX 리뷰 (100+ 규칙) |
+| `/web-design-guidelines` | Vercel UI/UX 리뷰 (100+ 규칙) + AI Slop Detection |
 | `/composition-patterns` | React Compound Components 패턴 |
 | `/python-best-practices` | Python 코드 리뷰 및 베스트 프랙티스 |
 | `/pytest-runner` | pytest 실행, 커버리지 분석 |
@@ -71,7 +71,7 @@ SuperClaude++는 [SuperClaude Framework](https://github.com/SuperClaude-Org/Supe
 
 #### Domain Skills
 - **Architecture**: `/architecture`, `/api-design`, `/db-design`, `/design-patterns`
-- **Security**: `/security-audit`, `/auth`, `/error-handling`
+- **Security**: `/security-audit` (OWASP + STRIDE + LLM Security), `/auth`, `/error-handling`
 - **Performance**: `/perf-optimize`, `/caching`, `/scaling`
 - **DevOps**: `/docker`, `/cicd`, `/monitoring`, `/env`
 - **Quality**: `/clean-code`, `/refactoring`, `/testing`, `/code-review`, `/audit`
@@ -108,7 +108,7 @@ SuperClaude++는 [SuperClaude Framework](https://github.com/SuperClaude-Org/Supe
 | 복잡한 함수 | `/code-review`, `/code-smell` | 50줄+ 함수 |
 | API 설계 | `/api-design`, `backend-architect` | endpoint, REST |
 | 성능 이슈 | `performance-engineer` | 느림, slow, optimize |
-| 보안 관련 | `security-engineer`, `/auth` | 로그인, JWT, 보안 |
+| 보안 관련 | `security-engineer`, `/security-audit`, `/auth` | 로그인, JWT, 보안, LLM 보안 |
 | 프레임워크 | **Context7** MCP | React, Next.js, Vue |
 | UI 컴포넌트 | **Magic** MCP | button, form, modal |
 | 복잡한 분석 | **Sequential** MCP | 디버깅 3회+, 설계 |
@@ -501,6 +501,7 @@ rm -rf ~/.claude
 - **[oh-my-agent](https://github.com/first-fluke/oh-my-agent)** - 멀티 에이전트 하네스의 공유 프로토콜 (`_shared/`). 난이도 분기(difficulty-guide), 추론 템플릿(reasoning-templates), 컨텍스트 예산(context-budget/loading), 4요소 프롬프트(prompt-structure), Phase Gate 자동통과(phase-gates), Cascade Impact Review(multi-review-protocol), Clarification Debt(session-metrics). MIT License
 - **[oh-my-claudecode](https://github.com/Yeachan-Heo/oh-my-claudecode)** - 자동화 훅 및 워크플로우 아이디어
 - **[cc-statusline](https://www.npmjs.com/package/@chongdashu/cc-statusline)** - 상태바 구현 참고
+- **[gstack](https://github.com/garrytan/gstack)** - Garry Tan의 Claude Code 스킬팩. Search Before Building 원칙, AI Slop Detection 체크리스트, LLM Security Audit Phase (프롬프트 인젝션, 스킬 서플라이 체인). MIT License
 - **Business Panel** - 클래식 비즈니스 문헌 기반 전문가 패널 방법론 (Christensen, Porter, Drucker 등)
 
 ### What's Added
@@ -516,6 +517,7 @@ SuperClaude++ = SuperClaude + 다음 요소들의 통합:
 - 🏗️ Harness Engineering 통합 (Agent Struggle Report, Harness Mode, Dependency Flow, codebase-gc)
 - 📝 Note 시스템 (컴팩션 대응)
 - 🎨 UI/UX Pro Max 디자인 인텔리전스 (67 스타일, 96 팔레트, 57 폰트, 13 스택)
+- 🔐 gstack 선별 통합 (Search Before Building, AI Slop Detection, LLM Security Audit)
 - 🎯 40+ 도메인별 Skills
 - 🔧 자동 스킬 호출 시스템 (26개 Auto-Invoke 트리거)
 - 📦 패키지 관리 규칙 강제 (uv/pnpm)
