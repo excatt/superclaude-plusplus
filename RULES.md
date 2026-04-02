@@ -463,13 +463,15 @@ Dockerfile/CI 패턴, Security Checklist 상세: `optional/PROJECT_RULES.md`
 **Priority**: 🔴 **Triggers**: 모든 구현/수정 작업 시작 시
 
 ### Transform Vague Requests → Verifiable Goals
-| Vague Request | Verifiable Goal |
-|--------------|-----------------|
-| "Fix the bug" | "Write a test that reproduces it, then make it pass" |
-| "Add validation" | "Write tests for invalid inputs, then make them pass" |
-| "Refactor X" | "Ensure tests pass before and after" |
-| "Improve performance" | "Measure benchmark → define target → achieve it" |
-| "Add auth" | "Write auth scenario tests → make them pass" |
+| Vague Request | Verifiable Goal | TDD 적합 |
+|--------------|-----------------|-----------|
+| "Fix the bug" | "Write a test that reproduces it, then make it pass" | ✅ → `/tdd` 제안 |
+| "Add validation" | "Write tests for invalid inputs, then make them pass" | ✅ → `/tdd` 제안 |
+| "Refactor X" | "Ensure tests pass before and after" | - |
+| "Improve performance" | "Measure benchmark → define target → achieve it" | - |
+| "Add auth" | "Write auth scenario tests → make them pass" | ✅ → `/tdd` 제안 |
+
+**TDD 제안 조건**: 목표가 "테스트 작성 → 통과"로 변환되고, 프로젝트에 테스트 인프라(`tests/`, `__tests__/`, `*.test.*`, `*.spec.*`)가 존재할 때 `/tdd` 워크플로우를 제안한다.
 
 ### Strong vs Weak Criteria
 - **Strong**: Test passes, benchmark hits target, specific checklist completed → autonomous loop possible

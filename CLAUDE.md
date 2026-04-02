@@ -37,7 +37,7 @@
 | Next.js 작업 | `/nextjs` | page.tsx, layout.tsx, route.ts |
 | FastAPI 작업 | `/fastapi` | @router, APIRouter |
 | 대규모 변경 | `/checkpoint` | 10+ 파일 수정 예정 |
-| TDD 요청 | `/tdd` | TDD, test first, test-driven, 테스트 먼저 |
+| TDD 적합 작업 | `/tdd` (제안) | 버그 수정, 새 기능 + 테스트 존재, fix, 고쳐, 수정해 + tests/ 존재 |
 | 프로젝트 규칙 검증 | `/audit` | commit, PR + `.claude/audit-rules/` 존재 시 |
 | Harness 세션 종료 | `codebase-gc` (제안) | `--harness` 모드 세션 완료 시 |
 
@@ -54,6 +54,7 @@
 | UI 컴포넌트 | **Magic** MCP | button, form, modal |
 | 복잡한 분석 | **Sequential** MCP | 디버깅 3회+, 설계 |
 | 새 패턴 도입 | `/audit manage` | 새 컨벤션, 아키텍처 패턴 |
+| 테스트 가능 기능 | `/tdd` | 새 기능 + tests/ 존재, 버그 수정 |
 | UI/UX 디자인 | `/ui-ux-pro-max` | landing page, 디자인 시스템, 스타일 |
 
 **제안 강도**: `--suggest-all` (기본) | `--suggest-minimal` | `--suggest-off`
