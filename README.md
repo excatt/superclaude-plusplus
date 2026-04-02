@@ -59,6 +59,7 @@ SuperClaude++는 [SuperClaude Framework](https://github.com/SuperClaude-Org/Supe
 | `/uv-package` | uv 패키지 관리 |
 | `/feature-planner` | 기능 구현 계획 수립 |
 | `/gap-analysis` | 설계-구현 비교, Match Rate 계산 |
+| `/tdd` | RED-GREEN-REFACTOR 주기 강제 + Git checkpoint |
 | `/ui-ux-pro-max` | AI 디자인 인텔리전스 (67 스타일, 96 팔레트, 57 폰트) |
 
 #### Document Skills
@@ -97,6 +98,7 @@ SuperClaude++는 [SuperClaude Framework](https://github.com/SuperClaude-Org/Supe
 | 에러 핸들링 누락 | `/error-handling` | async/await + no try-catch |
 | Next.js 작업 | `/nextjs` | page.tsx, layout.tsx |
 | FastAPI 작업 | `/fastapi` | @router, APIRouter |
+| TDD 요청 | `/tdd` | TDD, test first, 테스트 먼저 |
 | 프로젝트 규칙 검증 | `/audit` | commit, PR + `.claude/audit-rules/` 존재 시 |
 | Harness 세션 종료 | `codebase-gc` (제안) | `--harness` 모드 세션 완료 시 |
 
@@ -502,6 +504,7 @@ rm -rf ~/.claude
 - **[oh-my-claudecode](https://github.com/Yeachan-Heo/oh-my-claudecode)** - 자동화 훅 및 워크플로우 아이디어
 - **[cc-statusline](https://www.npmjs.com/package/@chongdashu/cc-statusline)** - 상태바 구현 참고
 - **[gstack](https://github.com/garrytan/gstack)** - Garry Tan의 Claude Code 스킬팩. Search Before Building 원칙, AI Slop Detection 체크리스트, LLM Security Audit Phase (프롬프트 인젝션, 스킬 서플라이 체인). MIT License
+- **[everything-claude-code](https://github.com/affaan-m/everything-claude-code)** - Affaan Mustafa의 에이전트 하네스 시스템. TDD RED/GREEN Gate 워크플로우, 구조화된 Session Save (What Did NOT Work), Confidence-Based Review Filtering. MIT License
 - **Business Panel** - 클래식 비즈니스 문헌 기반 전문가 패널 방법론 (Christensen, Porter, Drucker 등)
 
 ### What's Added
@@ -518,6 +521,7 @@ SuperClaude++ = SuperClaude + 다음 요소들의 통합:
 - 📝 Note 시스템 (컴팩션 대응)
 - 🎨 UI/UX Pro Max 디자인 인텔리전스 (67 스타일, 96 팔레트, 57 폰트, 13 스택)
 - 🔐 gstack 선별 통합 (Search Before Building, AI Slop Detection, LLM Security Audit)
+- 🧪 ECC 선별 통합 (TDD RED/GREEN Gate, Session Save, Confidence-Based Review Filtering)
 - 🎯 40+ 도메인별 Skills
 - 🔧 자동 스킬 호출 시스템 (26개 Auto-Invoke 트리거)
 - 📦 패키지 관리 규칙 강제 (uv/pnpm)

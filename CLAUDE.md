@@ -37,6 +37,7 @@
 | Next.js 작업 | `/nextjs` | page.tsx, layout.tsx, route.ts |
 | FastAPI 작업 | `/fastapi` | @router, APIRouter |
 | 대규모 변경 | `/checkpoint` | 10+ 파일 수정 예정 |
+| TDD 요청 | `/tdd` | TDD, test first, test-driven, 테스트 먼저 |
 | 프로젝트 규칙 검증 | `/audit` | commit, PR + `.claude/audit-rules/` 존재 시 |
 | Harness 세션 종료 | `codebase-gc` (제안) | `--harness` 모드 세션 완료 시 |
 

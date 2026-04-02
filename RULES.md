@@ -168,7 +168,9 @@ Full trigger tables in `CLAUDE.md` (Auto-Invoke / Proactive Suggestions sections
 | Important | Fix before proceeding |
 | Minor | Can handle later |
 
-**Output**: Strengths + Issues (by severity) + Assessment
+**Confidence Filter**: Only report issues with ≥80% confidence. Below 80% → classify as Minor (informational). Prevents review noise from speculative findings.
+
+**Output**: Strengths + Issues (by severity, confidence-filtered) + Assessment
 
 **Auto-pass Conditions** (모두 충족 시 스킵 가능):
 - 난이도 Simple + 테스트 올 그린 + lint/typecheck 통과
@@ -533,6 +535,22 @@ NO COMPLETION CLAIMS WITHOUT FRESH VERIFICATION EVIDENCE
 - **Note**: `/note <content>` | Auto-Suggest at 50+ messages or 70%+ context
 - **Learning**: Save non-Googleable, project-specific insights to `~/.claude/skills/learned/`
 - **Memory**: Auto-record to `~/.claude/projects/<project>/memory/` | "기억해" → explicit save
+
+### Session Save (장시간 작업/디버깅 시)
+사용자 요청 또는 컨텍스트 70%+ 시 구조화된 세션 스냅샷 저장:
+
+```
+## Session: [task summary]
+### What We Are Building: [목표]
+### What WORKED: [성공한 접근법]
+### What Did NOT Work: [실패한 접근법 — 재시도 방지]
+### What Has NOT Been Tried Yet: [남은 옵션]
+### Current State: [파일 상태, 빌드/테스트 결과]
+### Exact Next Step: [다음에 할 일 1가지]
+```
+
+저장 위치: `.claude/state/session-YYYY-MM-DD.md`
+**핵심**: "What Did NOT Work" 섹션이 wheel-spinning 방지의 핵심
 
 Details: `optional/PROTOCOLS.md`
 

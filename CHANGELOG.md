@@ -5,6 +5,29 @@
 형식은 [Keep a Changelog](https://keepachangelog.com/ko/1.0.0/)를 따르며,
 [Semantic Versioning](https://semver.org/lang/ko/)을 준수합니다.
 
+## [0.9.12] - 2026-04-02
+
+### Added
+- **ECC 분석 후 3개 요소 선별 적용** ([source](https://github.com/affaan-m/everything-claude-code), MIT License):
+  everything-claude-code (36 agents, 147 skills) 분석 후 SuperClaude++에 보완적인 3개 요소를 선별 적용.
+
+  **skills/tdd (신규)** (from `tdd-workflow` skill):
+  - RED-GREEN-REFACTOR 주기 강제 + Git checkpoint 의무화
+  - RED Gate: "production code 수정 전 반드시 RED 상태 확인" — Verification Iron Law의 구체적 실행 프로토콜
+  - 각 Phase별 commit 규칙 (`red:`, `green:`, `refactor:` prefix)
+  - Anti-patterns 7개 (테스트 전 구현, 이미 통과하는 테스트, REFACTOR 스킵 등)
+
+  **RULES.md - 구조화된 Session Save** (from `save-session`/`resume-session` commands):
+  - 장시간 작업/디버깅 시 구조화된 세션 스냅샷 저장 프로토콜 추가
+  - 핵심 구조: What WORKED / What Did NOT Work / What Has NOT Been Tried Yet / Exact Next Step
+  - "What Did NOT Work" 섹션이 wheel-spinning(같은 실패 반복) 방지의 핵심
+
+  **RULES.md - Confidence-Based Review Filtering** (from `code-reviewer` agent):
+  - Two-Stage Review Stage 2에 "80% 이상 확신 이슈만 보고" 필터 추가
+  - 80% 미만 → Minor(informational)로 분류하여 리뷰 노이즈 감소
+
+---
+
 ## [0.9.11] - 2026-04-01
 
 ### Added
