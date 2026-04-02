@@ -26,6 +26,12 @@
   - Two-Stage Review Stage 2에 "80% 이상 확신 이슈만 보고" 필터 추가
   - 80% 미만 → Minor(informational)로 분류하여 리뷰 노이즈 감소
 
+### Changed
+- **`/tdd` 자연스러운 트리거 연결**:
+  - Auto-Invoke: 명시적 "TDD" 키워드 → 버그 수정/새 기능 + `tests/` 존재 시 **제안**으로 변경
+  - Proactive Suggestions: `/tdd` 항목 추가 (테스트 가능 기능 + tests/ 존재)
+  - Goal Definition Protocol: "테스트 작성 → 통과" 목표 변환 시 + 테스트 인프라 존재 → `/tdd` 자동 제안 조건 명시
+
 ---
 
 ## [0.9.11] - 2026-04-01
