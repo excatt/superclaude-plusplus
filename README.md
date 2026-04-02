@@ -98,7 +98,7 @@ SuperClaude++는 [SuperClaude Framework](https://github.com/SuperClaude-Org/Supe
 | 에러 핸들링 누락 | `/error-handling` | async/await + no try-catch |
 | Next.js 작업 | `/nextjs` | page.tsx, layout.tsx |
 | FastAPI 작업 | `/fastapi` | @router, APIRouter |
-| TDD 요청 | `/tdd` | TDD, test first, 테스트 먼저 |
+| TDD 적합 작업 | `/tdd` (제안) | 버그 수정, 새 기능 + tests/ 존재 |
 | 프로젝트 규칙 검증 | `/audit` | commit, PR + `.claude/audit-rules/` 존재 시 |
 | Harness 세션 종료 | `codebase-gc` (제안) | `--harness` 모드 세션 완료 시 |
 
@@ -116,6 +116,7 @@ SuperClaude++는 [SuperClaude Framework](https://github.com/SuperClaude-Org/Supe
 | 복잡한 분석 | **Sequential** MCP | 디버깅 3회+, 설계 |
 | 프로젝트 규칙 검증 | `/audit` | commit, PR + `.claude/audit-rules/` 존재 시 |
 | 새 패턴 도입 | `/audit manage` | 새 컨벤션, 아키텍처 패턴 정립 |
+| 테스트 가능 기능 | `/tdd` | 새 기능 + tests/ 존재, 버그 수정 |
 | UI/UX 디자인 | `/ui-ux-pro-max` | landing page, 디자인 시스템, 스타일 |
 
 **제안 강도 플래그**: `--suggest-all` (기본) | `--suggest-minimal` | `--suggest-off`
