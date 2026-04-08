@@ -12,6 +12,8 @@
 @MODES.md
 @MCP_SERVERS.md
 @CONVENTIONS.md
+@CONTEXTS.md
+@KNOWLEDGE.md
 
 ## Skill System (v2.0)
 
