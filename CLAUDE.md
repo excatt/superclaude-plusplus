@@ -49,6 +49,7 @@
 - **DevOps**: `/docker`, `/cicd`, `/monitoring`, `/env`
 - **Git**: `/git-workflow`, `/commit-msg`, `/versioning`, `/git`
 - **Quality**: `/clean-code`, `/refactoring`, `/testing`, `/audit`
+- **Critical Review**: `/devils-advocate` (decisions, plans, architecture challenge)
 - **Workflow**: `/brainstorm`, `/implement`, `/improve`, `/explain`, `/estimate`, `/research`
 
 ### Agent System (18 agents, AGENT.md frontmatter)

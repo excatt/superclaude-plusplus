@@ -586,6 +586,18 @@
         ]
       },
       "message": "💡 /queue — 메시지 큐 가이드? (Y/n)"
+    },
+    {
+      "skill": "devils-advocate",
+      "mode": "suggest",
+      "triggers": {
+        "prompt_patterns": [
+          "challenge", "devil's advocate", "stress test", "poke holes",
+          "도전해", "반박해", "허점 찾아", "스트레스 테스트", "이게 맞을까",
+          "괜찮을까", "문제 없을까", "빠진 거 없어", "놓친 거 없어"
+        ]
+      },
+      "message": "💡 /devils-advocate — 결정/설계 비판적 리뷰? (Y/n)"
     }
   ],
   "settings": {
