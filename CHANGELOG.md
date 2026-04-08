@@ -5,6 +5,36 @@
 형식은 [Keep a Changelog](https://keepachangelog.com/ko/1.0.0/)를 따르며,
 [Semantic Versioning](https://semver.org/lang/ko/)을 준수합니다.
 
+## [2.0.1] - 2026-04-08
+
+### Added
+- **devils-advocate 스킬 통합** ([source](https://github.com/notmanas/claude-code-skills/tree/main/skills/devils-advocate)):
+  AI/사람의 결정, 계획, 코드, 설계를 구조화된 프레임워크로 도전하는 비판적 리뷰 레이어.
+
+  **skills/devils-advocate (신규)**:
+  - Steel-manning → Structured Frameworks → Blind Spot Check → Verdict 4단계 프로세스
+  - 6개 질문 프레임워크: Pre-mortem (Gary Klein), Inversion (Charlie Munger), Socratic Questioning (6 types), Steel-manning, Six Thinking Hats (de Bono), Five Whys (Reverse)
+  - 11개 엔지니어링 블라인드 스팟: Security, Scalability, Data Lifecycle, Integration Points, Failure Modes, Concurrency, Environment Gaps, Observability, Deployment, Multi-Tenancy, Edge Cases
+  - 12개 AI 특유 약점: Happy Path Bias, Scope Acceptance, Confidence Without Correctness, Test Rewriting, Pattern Attraction, Reactive Patching, Context Rot, Library Hallucination, Architectural Inconsistency, XY Problem Blindness, Over-Abstraction, Security as Afterthought
+  - Genuine vs Performed Thoroughness 판별 기준
+  - 최대 7개 concern, severity 순 정렬, "so what?" + actionability 테스트 필수
+  - Verdict: Ship it / Ship with changes / Rethink this
+
+  **기존 워크플로우 보완점**:
+  - `/code-review`는 체크리스트 기반 → `/devils-advocate`는 사고 프레임워크 기반
+  - `/confidence-check`은 "시작 전" → `/devils-advocate`는 "완료 후"
+  - Two-Stage Review는 "요구사항 충족?" → `/devils-advocate`는 "이 결정 자체가 맞아?"
+
+  **통합 내역**:
+  - `CLAUDE.md` Domain Skills에 Critical Review 카테고리 추가
+  - `.claude/skill-rules.json`에 suggest 트리거 추가 (한국어 7개 + 영어 4개 패턴)
+  - 레퍼런스 3파일 on-demand 로딩 (idle 시 0-token)
+
+### Sources & Inspiration
+- [notmanas/claude-code-skills](https://github.com/notmanas/claude-code-skills) — Devil's Advocate skill, reference knowledge base (~1,100 lines)
+
+---
+
 ## [2.0.0] - 2026-04-08
 
 **패러다임 전환**: prompt-dependent → system-enforced
