@@ -17,6 +17,14 @@ user-invocable: true
 argument-hint: [feature-or-bug-description]
 ---
 
+## Dynamic Context
+
+Recent TDD commits:
+!`git log --oneline -5 --grep="red:\|green:\|refactor:" 2>/dev/null || echo "No TDD commits found"`
+
+Test infrastructure:
+!`ls tests/ __tests__/ test/ 2>/dev/null | head -10 || echo "No test directory found"`
+
 # TDD Workflow Skill
 
 ## Purpose

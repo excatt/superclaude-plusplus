@@ -1,7 +1,11 @@
 ---
 name: learning-guide
 description: Teach programming concepts and explain code with focus on understanding through progressive learning and practical examples
-category: communication
+model: haiku
+tools: Read, Grep, Glob
+disallowedTools: Write, Edit, Bash, Agent
+maxTurns: 10
+effort: low
 ---
 
 # Learning Guide

@@ -70,95 +70,95 @@
 
 ## Agent Chaining Workflows
 
-에이전트를 순차적으로 연결하여 복잡한 작업을 체계적으로 처리합니다.
+Chain agents sequentially to handle complex tasks systematically.
 
 ### Predefined Workflows
 
 | Workflow | Agent Chain | Use Case |
 |----------|-------------|----------|
-| **Feature** | planner → tdd-guide → code-reviewer → security-reviewer | 새 기능 개발 |
-| **Bugfix** | root-cause-analyst → tdd-guide → code-reviewer | 버그 수정 |
-| **Refactor** | system-architect → code-reviewer → tdd-guide | 리팩토링 |
-| **Security** | security-engineer → code-reviewer → system-architect | 보안 검토 |
+| **Feature** | planner → tdd-guide → code-reviewer → security-reviewer | New feature development |
+| **Bugfix** | root-cause-analyst → tdd-guide → code-reviewer | Bug fix |
+| **Refactor** | system-architect → code-reviewer → tdd-guide | Refactoring |
+| **Security** | security-engineer → code-reviewer → system-architect | Security review |
 
 ### Handoff Document Template
 
-에이전트 간 전달 문서:
+Inter-agent handoff document:
 ```markdown
 ## Handoff: [Source Agent] → [Target Agent]
 
 ### Context
-- Task: [작업 설명]
-- Progress: [완료된 작업]
+- Task: [task description]
+- Progress: [completed work]
 
 ### Findings
-- [발견 사항 1]
-- [발견 사항 2]
+- [finding 1]
+- [finding 2]
 
 ### Modified Files
-- `path/to/file.ts` - [변경 내용]
+- `path/to/file.ts` - [change description]
 
 ### Open Questions
-- [해결되지 않은 질문]
+- [unresolved questions]
 
 ### Recommendations
-- [다음 에이전트를 위한 권장사항]
+- [recommendations for the next agent]
 ```
 
 ### Workflow Invocation
 ```
-/sc:orchestrate feature "사용자 인증 시스템 구현"
-/sc:orchestrate bugfix "로그인 실패 시 무한 로딩"
-/sc:orchestrate refactor "API 레이어 분리"
-/sc:orchestrate security "결제 모듈 보안 검토"
+/sc:orchestrate feature "implement user auth system"
+/sc:orchestrate bugfix "infinite loading on login failure"
+/sc:orchestrate refactor "separate API layer"
+/sc:orchestrate security "payment module security review"
 ```
 
 ---
 
 ## Model Selection Guide
 
-작업 복잡도와 요구사항에 따른 모델 선택:
+Model selection based on task complexity and requirements:
 
 ### Model Matrix
 
-| Model | 강점 | 사용 시점 | 비용 효율 |
-|-------|------|----------|----------|
-| **Haiku** | 빠른 응답, 경량 작업 | 페어 프로그래밍, worker 에이전트, 간단한 편집 | ⭐⭐⭐⭐⭐ |
-| **Sonnet** | 균형잡힌 성능, 코딩 최적화 | 주 개발 작업, 워크플로우 오케스트레이션 | ⭐⭐⭐⭐ |
-| **Opus** | 최고 추론력, 아키텍처 분석 | 아키텍처 결정, 딥 리서치, 복잡한 디버깅 | ⭐⭐⭐ |
+| Model | Strengths | When to Use | Cost Efficiency |
+|-------|-----------|-------------|-----------------|
+| **Haiku** | Fast response, lightweight tasks | Pair programming, worker agents, simple edits | ⭐⭐⭐⭐⭐ |
+| **Sonnet** | Balanced performance, coding-optimized | Primary dev work, workflow orchestration | ⭐⭐⭐⭐ |
+| **Opus** | Best reasoning, architecture analysis | Architecture decisions, deep research, complex debugging | ⭐⭐⭐ |
 
 ### Selection Decision Tree
 ```
-작업 복잡도?
-├─ 단순 (단일 파일, 명확한 변경) → Haiku
-├─ 중간 (다중 파일, 로직 변경) → Sonnet (기본값)
-└─ 복잡 (아키텍처, 시스템 설계) → Opus
+Task complexity?
+├─ Simple (single file, clear change) → Haiku
+├─ Medium (multi-file, logic changes) → Sonnet (default)
+└─ Complex (architecture, system design) → Opus
 
-추론 깊이 필요?
+Reasoning depth needed?
 ├─ --think → Sonnet
-├─ --think-hard → Sonnet + 확장 컨텍스트
+├─ --think-hard → Sonnet + extended context
 └─ --ultrathink → Opus
 ```
 
 ### Context Window Strategy
 
-**High-Sensitivity Operations** (컨텍스트 80% 이상 사용 시 피해야 할 작업):
-- 대규모 리팩토링
-- 다중 파일 기능 추가
-- 복잡한 상호작용 디버깅
+**High-Sensitivity Operations** (avoid when context usage exceeds 80%):
+- Large-scale refactoring
+- Multi-file feature additions
+- Complex interaction debugging
 
-**Low-Sensitivity Operations** (컨텍스트 부족 시 안전한 작업):
-- 단일 파일 편집
-- 유틸리티 함수 생성
-- 문서 작성
-- 간단한 버그 수정
+**Low-Sensitivity Operations** (safe when context is limited):
+- Single file edits
+- Utility function creation
+- Documentation writing
+- Simple bug fixes
 
 ### Cost Optimization
 ```
-일반 개발 세션:
-├─ Haiku: 탐색, 간단한 질문, worker 작업
-├─ Sonnet: 구현, 코드 작성, 리뷰
-└─ Opus: 아키텍처 결정, 복잡한 분석 (필요 시에만)
+Typical dev session:
+├─ Haiku: exploration, simple questions, worker tasks
+├─ Sonnet: implementation, code writing, review
+└─ Opus: architecture decisions, complex analysis (only when needed)
 
-권장 비율: Haiku 30% / Sonnet 60% / Opus 10%
+Recommended ratio: Haiku 30% / Sonnet 60% / Opus 10%
 ```

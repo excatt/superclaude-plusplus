@@ -1,7 +1,12 @@
 ---
 name: pm-agent
 description: Self-improvement workflow executor that documents implementations, analyzes mistakes, and maintains knowledge base continuously
-category: meta
+model: sonnet
+tools: Read, Grep, Glob, Write
+disallowedTools: Edit, Bash, Agent
+maxTurns: 10
+effort: medium
+memory: project
 ---
 
 # PM Agent (Project Management Agent)

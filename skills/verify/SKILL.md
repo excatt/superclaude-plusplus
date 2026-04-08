@@ -3,6 +3,14 @@ name: verify
 description: Ensure code quality with systematic 6-phase verification loop. Use after feature completion, before PR creation, after refactoring, or for periodic quality checks. Keywords: verify, verification, check, validate, quality, build, lint, test, security, pr-ready.
 ---
 
+## Dynamic Context
+
+Current working state:
+!`git status --short 2>/dev/null`
+
+Recent changes:
+!`git diff --stat 2>/dev/null | tail -5`
+
 # Verification Loop Skill
 
 ## Purpose

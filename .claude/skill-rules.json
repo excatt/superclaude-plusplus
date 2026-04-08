@@ -1,0 +1,597 @@
+{
+  "version": "2.0",
+  "rules": [
+    {
+      "skill": "build-fix",
+      "mode": "auto",
+      "triggers": {
+        "prompt_patterns": [
+          "error TS\\d+", "Build failed", "compile error",
+          "빌드 에러", "빌드 실패", "컴파일 에러", "에러 났어", "안 돌아가", "빌드 안 돼"
+        ],
+        "exit_codes": [1]
+      },
+      "cooldown": 300
+    },
+    {
+      "skill": "confidence-check",
+      "mode": "auto",
+      "triggers": {
+        "prompt_patterns": [
+          "implement", "create", "build",
+          "구현", "만들어", "개발해", "시작하기 전에", "착수"
+        ],
+        "conditions": ["difficulty >= medium"]
+      },
+      "cooldown": 0
+    },
+    {
+      "skill": "verify",
+      "mode": "auto",
+      "triggers": {
+        "prompt_patterns": [
+          "done", "finished", "PR", "commit",
+          "완료", "끝났", "다 됐", "커밋", "검증해", "확인해줘", "체크해", "PR 올려"
+        ]
+      },
+      "cooldown": 300
+    },
+    {
+      "skill": "checkpoint",
+      "mode": "auto",
+      "triggers": {
+        "prompt_patterns": [
+          "refactor", "delete", "large change",
+          "리팩토링", "삭제", "대규모 변경", "백업해", "저장해", "위험한 작업"
+        ]
+      },
+      "cooldown": 0
+    },
+    {
+      "skill": "react-best-practices",
+      "mode": "auto",
+      "triggers": {
+        "prompt_patterns": ["리뷰", "review", "검토해"],
+        "file_patterns": ["*.jsx", "*.tsx"]
+      },
+      "cooldown": 600
+    },
+    {
+      "skill": "python-best-practices",
+      "mode": "auto",
+      "triggers": {
+        "prompt_patterns": ["리뷰", "review", "검토해"],
+        "file_patterns": ["*.py"]
+      },
+      "cooldown": 600
+    },
+    {
+      "skill": "web-design-guidelines",
+      "mode": "auto",
+      "triggers": {
+        "prompt_patterns": [
+          "UI review", "a11y",
+          "UI 리뷰", "접근성", "웹 접근성", "UI 검토"
+        ]
+      },
+      "cooldown": 600
+    },
+    {
+      "skill": "tdd",
+      "mode": "suggest",
+      "triggers": {
+        "prompt_patterns": [
+          "fix", "test first", "TDD",
+          "버그", "고쳐", "수정해", "테스트 먼저", "테스트부터", "재현해"
+        ],
+        "conditions": ["tests_dir_exists"]
+      },
+      "message": "💡 /tdd — TDD 워크플로우로 진행할까요? (Y/n)"
+    },
+    {
+      "skill": "debug",
+      "mode": "auto",
+      "triggers": {
+        "prompt_patterns": [
+          "pytest FAILED", "test failed", "AssertionError", "Error:", "Traceback",
+          "테스트 실패", "왜 안 돼", "에러 났어", "안 돌아가", "문제 있어", "원인 찾아"
+        ]
+      },
+      "cooldown": 0
+    },
+    {
+      "skill": "code-smell",
+      "mode": "suggest",
+      "triggers": {
+        "conditions": ["function_lines >= 50"]
+      },
+      "message": "💡 /code-smell — 50줄+ 함수 감지 (Y/n)"
+    },
+    {
+      "skill": "error-handling",
+      "mode": "suggest",
+      "triggers": {
+        "prompt_patterns": ["async", "await", "에러 처리", "예외 처리"],
+        "conditions": ["no_try_catch"]
+      },
+      "message": "💡 /error-handling — 에러 핸들링 누락 감지 (Y/n)"
+    },
+    {
+      "skill": "nextjs",
+      "mode": "auto",
+      "triggers": {
+        "file_patterns": ["**/page.tsx", "**/layout.tsx", "**/route.ts"]
+      },
+      "cooldown": 600
+    },
+    {
+      "skill": "fastapi",
+      "mode": "auto",
+      "triggers": {
+        "prompt_patterns": ["@router", "APIRouter", "FastAPI"]
+      },
+      "cooldown": 600
+    },
+    {
+      "skill": "security-audit",
+      "mode": "suggest",
+      "triggers": {
+        "prompt_patterns": [
+          "security", "JWT", "auth", "OWASP", "vulnerability",
+          "보안", "로그인", "LLM 보안", "취약점", "보안 감사", "보안 검토"
+        ]
+      },
+      "message": "💡 /security-audit — 보안 감사 실행? (Y/n)"
+    },
+    {
+      "skill": "audit",
+      "mode": "auto",
+      "triggers": {
+        "prompt_patterns": ["commit", "PR", "커밋", "PR 올려"],
+        "conditions": ["audit_rules_dir_exists"]
+      },
+      "cooldown": 0
+    },
+    {
+      "skill": "api-design",
+      "mode": "suggest",
+      "triggers": {
+        "prompt_patterns": [
+          "endpoint", "REST", "API design",
+          "API 설계", "API 만들어", "엔드포인트"
+        ]
+      },
+      "message": "💡 /api-design — API 설계 가이드? (Y/n)"
+    },
+    {
+      "skill": "perf-optimize",
+      "mode": "suggest",
+      "triggers": {
+        "prompt_patterns": [
+          "slow", "optimize", "performance", "bottleneck",
+          "느림", "느려", "성능", "최적화", "병목"
+        ]
+      },
+      "message": "💡 /perf-optimize — 성능 최적화? (Y/n)"
+    },
+    {
+      "skill": "docker",
+      "mode": "suggest",
+      "triggers": {
+        "prompt_patterns": ["도커", "컨테이너", "Docker", "container"],
+        "file_patterns": ["Dockerfile", "docker-compose*.yml"]
+      },
+      "message": "💡 /docker — Docker 가이드? (Y/n)"
+    },
+    {
+      "skill": "analyze",
+      "mode": "suggest",
+      "triggers": {
+        "prompt_patterns": [
+          "analyze", "analysis",
+          "분석해", "분석해줘", "코드 분석", "품질 분석"
+        ]
+      },
+      "message": "💡 /analyze — 코드 분석? (Y/n)"
+    },
+    {
+      "skill": "explain",
+      "mode": "auto",
+      "triggers": {
+        "prompt_patterns": [
+          "explain", "what does this do",
+          "설명해", "설명해줘", "이해가 안 돼", "이게 뭐야", "어떻게 동작"
+        ]
+      },
+      "cooldown": 0
+    },
+    {
+      "skill": "brainstorm",
+      "mode": "auto",
+      "triggers": {
+        "prompt_patterns": [
+          "brainstorm", "ideas",
+          "브레인스토밍", "아이디어", "생각중인데", "고민", "어떻게 하면"
+        ]
+      },
+      "cooldown": 0
+    },
+    {
+      "skill": "implement",
+      "mode": "auto",
+      "triggers": {
+        "prompt_patterns": [
+          "implement",
+          "구현해", "구현해줘", "만들어줘", "개발해줘", "코딩해"
+        ]
+      },
+      "cooldown": 0
+    },
+    {
+      "skill": "improve",
+      "mode": "suggest",
+      "triggers": {
+        "prompt_patterns": [
+          "improve", "polish", "refine",
+          "개선해", "다듬어", "정리해", "더 좋게", "깔끔하게"
+        ]
+      },
+      "message": "💡 /improve — 코드 개선? (Y/n)"
+    },
+    {
+      "skill": "research",
+      "mode": "auto",
+      "triggers": {
+        "prompt_patterns": [
+          "research", "investigate",
+          "조사해", "알아봐", "찾아봐", "조사해줘", "리서치"
+        ]
+      },
+      "cooldown": 0
+    },
+    {
+      "skill": "estimate",
+      "mode": "suggest",
+      "triggers": {
+        "prompt_patterns": [
+          "estimate", "how long",
+          "얼마나 걸려", "추정해", "시간 얼마나", "공수 산정"
+        ]
+      },
+      "message": "💡 /estimate — 작업 추정? (Y/n)"
+    },
+    {
+      "skill": "design",
+      "mode": "suggest",
+      "triggers": {
+        "prompt_patterns": [
+          "design", "architect",
+          "설계해", "설계해줘", "디자인", "구조 잡아"
+        ]
+      },
+      "message": "💡 /design — 아키텍처 설계? (Y/n)"
+    },
+    {
+      "skill": "cleanup",
+      "mode": "suggest",
+      "triggers": {
+        "prompt_patterns": [
+          "cleanup", "clean up",
+          "정리해줘", "청소해", "클린업", "쓸모없는 코드"
+        ]
+      },
+      "message": "💡 /cleanup — 코드 정리? (Y/n)"
+    },
+    {
+      "skill": "git",
+      "mode": "auto",
+      "triggers": {
+        "prompt_patterns": [
+          "커밋해", "브랜치", "머지해", "푸시해", "PR 만들어", "PR 생성"
+        ]
+      },
+      "cooldown": 0
+    },
+    {
+      "skill": "feature-planner",
+      "mode": "suggest",
+      "triggers": {
+        "prompt_patterns": [
+          "feature plan", "roadmap",
+          "기능 추가", "새 기능", "기능 계획", "로드맵"
+        ]
+      },
+      "message": "💡 /feature-planner — 기능 계획? (Y/n)"
+    },
+    {
+      "skill": "code-review",
+      "mode": "suggest",
+      "triggers": {
+        "prompt_patterns": [
+          "code review",
+          "코드 리뷰", "검토해", "리뷰해줘", "봐줘"
+        ]
+      },
+      "message": "💡 /code-review — 코드 리뷰? (Y/n)"
+    },
+    {
+      "skill": "architecture",
+      "mode": "suggest",
+      "triggers": {
+        "prompt_patterns": [
+          "architecture",
+          "아키텍처", "구조 설계", "시스템 설계", "전체 구조"
+        ]
+      },
+      "message": "💡 /architecture — 아키텍처 가이드? (Y/n)"
+    },
+    {
+      "skill": "db-design",
+      "mode": "suggest",
+      "triggers": {
+        "prompt_patterns": [
+          "database", "schema", "migration",
+          "DB 설계", "데이터베이스", "스키마", "테이블 설계"
+        ]
+      },
+      "message": "💡 /db-design — DB 설계 가이드? (Y/n)"
+    },
+    {
+      "skill": "testing",
+      "mode": "suggest",
+      "triggers": {
+        "prompt_patterns": [
+          "test strategy", "test plan",
+          "테스트 전략", "테스트 계획", "테스트해", "테스트 돌려"
+        ]
+      },
+      "message": "💡 /testing — 테스트 전략? (Y/n)"
+    },
+    {
+      "skill": "refactoring",
+      "mode": "suggest",
+      "triggers": {
+        "prompt_patterns": [
+          "refactor",
+          "리팩토링해", "리팩터링", "구조 개선", "코드 정리"
+        ]
+      },
+      "message": "💡 /refactoring — 리팩토링 가이드? (Y/n)"
+    },
+    {
+      "skill": "cicd",
+      "mode": "suggest",
+      "triggers": {
+        "prompt_patterns": [
+          "CI/CD", "pipeline", "GitHub Actions",
+          "파이프라인", "배포", "배포 자동화"
+        ]
+      },
+      "message": "💡 /cicd — CI/CD 가이드? (Y/n)"
+    },
+    {
+      "skill": "caching",
+      "mode": "suggest",
+      "triggers": {
+        "prompt_patterns": ["cache", "Redis", "캐싱", "캐시"]
+      },
+      "message": "💡 /caching — 캐싱 전략? (Y/n)"
+    },
+    {
+      "skill": "scaling",
+      "mode": "suggest",
+      "triggers": {
+        "prompt_patterns": ["scale", "scaling", "확장", "스케일링", "트래픽"]
+      },
+      "message": "💡 /scaling — 확장 전략? (Y/n)"
+    },
+    {
+      "skill": "auth",
+      "mode": "suggest",
+      "triggers": {
+        "prompt_patterns": [
+          "authentication", "authorization", "login", "OAuth",
+          "인증", "로그인 구현", "권한", "회원가입"
+        ]
+      },
+      "message": "💡 /auth — 인증/인가 가이드? (Y/n)"
+    },
+    {
+      "skill": "responsive",
+      "mode": "suggest",
+      "triggers": {
+        "prompt_patterns": ["responsive", "mobile", "반응형", "모바일"]
+      },
+      "message": "💡 /responsive — 반응형 가이드? (Y/n)"
+    },
+    {
+      "skill": "monitoring",
+      "mode": "suggest",
+      "triggers": {
+        "prompt_patterns": [
+          "monitoring", "observability", "alerting",
+          "모니터링", "관찰", "알림 설정"
+        ]
+      },
+      "message": "💡 /monitoring — 모니터링 가이드? (Y/n)"
+    },
+    {
+      "skill": "env",
+      "mode": "suggest",
+      "triggers": {
+        "prompt_patterns": ["env", "environment variable", "환경 변수", "환경 설정"],
+        "file_patterns": [".env*"]
+      },
+      "message": "💡 /env — 환경 설정 가이드? (Y/n)"
+    },
+    {
+      "skill": "logging",
+      "mode": "suggest",
+      "triggers": {
+        "prompt_patterns": ["logging", "logger", "로깅", "로그"]
+      },
+      "message": "💡 /logging — 로깅 가이드? (Y/n)"
+    },
+    {
+      "skill": "migration",
+      "mode": "suggest",
+      "triggers": {
+        "prompt_patterns": ["migration", "migrate", "마이그레이션", "이전", "이관"]
+      },
+      "message": "💡 /migration — 마이그레이션 가이드? (Y/n)"
+    },
+    {
+      "skill": "websocket",
+      "mode": "suggest",
+      "triggers": {
+        "prompt_patterns": ["WebSocket", "실시간", "real-time", "웹소켓"]
+      },
+      "message": "💡 /websocket — WebSocket 가이드? (Y/n)"
+    },
+    {
+      "skill": "graphql",
+      "mode": "suggest",
+      "triggers": {
+        "prompt_patterns": ["GraphQL", "query", "mutation", "resolver"]
+      },
+      "message": "💡 /graphql — GraphQL 가이드? (Y/n)"
+    },
+    {
+      "skill": "fix-pr",
+      "mode": "suggest",
+      "triggers": {
+        "prompt_patterns": [
+          "fix PR", "PR comments", "review feedback",
+          "PR 수정", "PR 코멘트", "리뷰 반영", "리뷰 수정"
+        ]
+      },
+      "message": "💡 /fix-pr — PR 리뷰 코멘트 자동 수정? (Y/n)"
+    },
+    {
+      "skill": "config-doctor",
+      "mode": "suggest",
+      "triggers": {
+        "prompt_patterns": [
+          "config check", "health check",
+          "설정 검사", "설정 체크", "프레임워크 진단"
+        ]
+      },
+      "message": "💡 /config-doctor — 설정 진단? (Y/n)"
+    },
+    {
+      "skill": "learn",
+      "mode": "suggest",
+      "triggers": {
+        "prompt_patterns": [
+          "save pattern", "extract pattern",
+          "패턴 저장", "학습해", "기억해둬", "패턴 추출"
+        ]
+      },
+      "message": "💡 /learn — 패턴 저장? (Y/n)"
+    },
+    {
+      "skill": "gap-analysis",
+      "mode": "suggest",
+      "triggers": {
+        "prompt_patterns": [
+          "gap analysis", "design comparison",
+          "갭 분석", "차이 분석", "설계 비교", "매치율"
+        ]
+      },
+      "message": "💡 /gap-analysis — 설계-구현 갭 분석? (Y/n)"
+    },
+    {
+      "skill": "ui-ux-pro-max",
+      "mode": "suggest",
+      "triggers": {
+        "prompt_patterns": [
+          "landing page", "design system",
+          "랜딩 페이지", "디자인 시스템", "스타일", "UI 만들어", "예쁘게"
+        ]
+      },
+      "message": "💡 /ui-ux-pro-max — UI/UX 디자인? (Y/n)"
+    },
+    {
+      "skill": "composition-patterns",
+      "mode": "suggest",
+      "triggers": {
+        "prompt_patterns": [
+          "compound component", "composition",
+          "컴포넌트 패턴", "컴포지션", "합성 패턴"
+        ]
+      },
+      "message": "💡 /composition-patterns — 컴포넌트 합성 패턴? (Y/n)"
+    },
+    {
+      "skill": "pytest-runner",
+      "mode": "auto",
+      "triggers": {
+        "prompt_patterns": [
+          "pytest", "run tests",
+          "테스트 실행", "파이테스트", "테스트 돌려"
+        ],
+        "file_patterns": ["*.py"]
+      },
+      "cooldown": 0
+    },
+    {
+      "skill": "uv-package",
+      "mode": "suggest",
+      "triggers": {
+        "prompt_patterns": [
+          "uv add", "uv sync", "uv init",
+          "패키지 추가", "의존성", "패키지 설치"
+        ],
+        "file_patterns": ["pyproject.toml"]
+      },
+      "message": "💡 /uv-package — uv 패키지 관리? (Y/n)"
+    },
+    {
+      "skill": "state",
+      "mode": "suggest",
+      "triggers": {
+        "prompt_patterns": [
+          "state management", "Redux", "Zustand", "Jotai",
+          "상태 관리", "전역 상태"
+        ]
+      },
+      "message": "💡 /state — 상태 관리 가이드? (Y/n)"
+    },
+    {
+      "skill": "seo",
+      "mode": "suggest",
+      "triggers": {
+        "prompt_patterns": ["SEO", "meta tag", "검색 엔진", "검색 최적화"]
+      },
+      "message": "💡 /seo — SEO 가이드? (Y/n)"
+    },
+    {
+      "skill": "microservices",
+      "mode": "suggest",
+      "triggers": {
+        "prompt_patterns": [
+          "microservice", "service mesh",
+          "마이크로서비스", "서비스 분리"
+        ]
+      },
+      "message": "💡 /microservices — 마이크로서비스 가이드? (Y/n)"
+    },
+    {
+      "skill": "queue",
+      "mode": "suggest",
+      "triggers": {
+        "prompt_patterns": [
+          "message queue", "RabbitMQ", "Kafka", "SQS",
+          "큐", "메시지 큐", "비동기 처리"
+        ]
+      },
+      "message": "💡 /queue — 메시지 큐 가이드? (Y/n)"
+    }
+  ],
+  "settings": {
+    "suggestion_level": "all",
+    "max_auto_per_session": 15,
+    "rejected_skills_cooldown": -1,
+    "log_file": ".claude/state/skill-activation.log"
+  }
+}

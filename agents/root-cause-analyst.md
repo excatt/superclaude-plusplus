@@ -1,7 +1,13 @@
 ---
 name: root-cause-analyst
 description: Systematically investigate complex problems to identify underlying causes through evidence-based analysis and hypothesis testing
-category: analysis
+model: opus
+tools: Read, Grep, Glob, Bash
+disallowedTools: Write, Edit, Agent
+maxTurns: 15
+effort: high
+memory: project
+skills: [debug]
 ---
 
 # Root Cause Analyst

@@ -1,43 +1,43 @@
 # Context Budget Management
 
-컨텍스트 윈도우는 유한하다. 불필요한 파일 로딩은 성능을 직접 저하시킨다.
+The context window is finite. Unnecessary file loading directly degrades performance.
 
 ---
 
 ## Core Principles
 
-1. **전체 파일 읽기 최소화** — 필요한 함수/클래스만 읽기
-2. **중복 읽기 금지** — 이미 읽은 파일 재읽기 하지 않기
-3. **지연 로딩** — 리소스는 필요할 때만 로드
-4. **읽기 추적** — 읽은 파일과 심볼을 머릿속에 기록
+1. **Minimize full-file reads** -- Read only the needed functions/classes
+2. **No duplicate reads** -- Never re-read a file already in context
+3. **Lazy loading** -- Load resources only when needed
+4. **Read tracking** -- Mentally track which files and symbols have been read
 
 ---
 
 ## File Reading Strategy
 
-### 대형 파일 (500줄+)
+### Large files (500+ lines)
 ```
-BAD:  Read("app/services/user_service.py")              ← 전체 파일 800줄
-GOOD: Read("app/services/user_service.py", offset=45, limit=30)  ← 해당 함수만
-GOOD: Grep("def create_user", path="app/services/")     ← 위치 먼저 찾기
-```
-
-### 표준 파일 (100-500줄)
-```
-OK:   Read 전체 (한 번만)
-GOOD: Grep으로 대상 위치 확인 → Read offset/limit
+BAD:  Read("app/services/user_service.py")              ← entire 800-line file
+GOOD: Read("app/services/user_service.py", offset=45, limit=30)  ← target function only
+GOOD: Grep("def create_user", path="app/services/")     ← locate first
 ```
 
-### 소형 파일 (<100줄)
+### Standard files (100-500 lines)
 ```
-OK:   Read 전체 (효율적)
+OK:   Read entire file (once only)
+GOOD: Grep to find target location → Read with offset/limit
 ```
 
-### 탐색 순서
-1. **Glob** — 파일 위치 파악
-2. **Grep** — 대상 심볼/패턴 위치 찾기
-3. **Read** (offset/limit) — 필요한 부분만 읽기
-4. **Read** (전체) — 소형 파일이거나 전체 이해 필요 시만
+### Small files (<100 lines)
+```
+OK:   Read entire file (efficient)
+```
+
+### Exploration order
+1. **Glob** -- Locate files
+2. **Grep** -- Find target symbols/patterns
+3. **Read** (offset/limit) -- Read only the needed portion
+4. **Read** (full) -- Only for small files or when full understanding required
 
 ---
 
@@ -46,75 +46,75 @@ OK:   Read 전체 (효율적)
 ### Simple Tasks
 | Category | Budget | Notes |
 |----------|--------|-------|
-| 파일 읽기 | 1-2개 전체 | 대상 파일만 |
-| 탐색 | Grep 1-2회 | 최소 탐색 |
-| **총 컨텍스트** | **~2K tokens** | |
+| File reads | 1-2 full | Target files only |
+| Exploration | 1-2 Grep calls | Minimal exploration |
+| **Total context** | **~2K tokens** | |
 
 ### Medium Tasks
 | Category | Budget | Notes |
 |----------|--------|-------|
-| 파일 읽기 | 3-5개 | 대상 + 관련 파일 |
-| 탐색 | Grep/Glob 3-5회 | 패턴 확인 |
-| 참조 문서 | optional/ 1-2개 | 필요 시 |
-| **총 컨텍스트** | **~5-10K tokens** | |
+| File reads | 3-5 | Target + related files |
+| Exploration | 3-5 Grep/Glob calls | Pattern verification |
+| Reference docs | 1-2 from optional/ | As needed |
+| **Total context** | **~5-10K tokens** | |
 
 ### Complex Tasks
 | Category | Budget | Notes |
 |----------|--------|-------|
-| 파일 읽기 | 제한 없음 (중복 주의) | 심볼 단위 선호 |
-| 탐색 | 필요한 만큼 | 체계적 탐색 |
-| 참조 문서 | optional/ 필요한 만큼 | |
-| **총 컨텍스트** | **~15-30K tokens** | 효율 유지 |
+| File reads | No limit (avoid duplicates) | Prefer symbol-level reads |
+| Exploration | As needed | Systematic exploration |
+| Reference docs | As needed from optional/ | |
+| **Total context** | **~15-30K tokens** | Maintain efficiency |
 
 ---
 
 ## Read Tracking (Mental Model)
 
-대규모 작업 시, 읽은 파일을 머릿속에 추적:
+Track files read during large tasks:
 
 ```
 ## Read Files
 - app/api/todos.py:23-55 (create_todo, update_todo)
-- app/models/todo.py (전체, 40줄 소형 파일)
-- app/schemas/todo.py:1-20 (TodoCreate 스키마만)
+- app/models/todo.py (full, 40-line small file)
+- app/schemas/todo.py:1-20 (TodoCreate schema only)
 
-## Not Yet Read (다음 단계)
-- app/services/todo_service.py (구현 시 읽기)
-- tests/test_todos.py (테스트 작성 시 참조)
+## Not Yet Read (next steps)
+- app/services/todo_service.py (read during implementation)
+- tests/test_todos.py (reference during test writing)
 ```
 
-**목적**:
-- 같은 파일 두 번 읽기 방지
-- 다음에 할 일 명확화
-- 에이전트 스폰 시 컨텍스트 전달 효율화
+**Purpose**:
+- Prevent reading the same file twice
+- Clarify next steps
+- Efficient context transfer when spawning agents
 
 ---
 
 ## Context Overflow Symptoms & Response
 
-| 증상 | 원인 | 대응 |
-|------|------|------|
-| 이전에 읽은 코드를 잊음 | 컨텍스트 윈도우 포화 | 핵심 정보 메모, 재참조 가능하게 |
-| 같은 파일을 다시 읽음 | 추적 미흡 | Read Tracking 확인 |
-| 출력이 갑자기 짧아짐 | 출력 토큰 부족 | 핵심만 작성, 부가 설명 생략 |
-| 지시사항을 무시함 | 규칙 파일 내용 잊음 | 핵심 규칙만 재참조 |
-| 중간 작업 결과가 사라짐 | 컨텍스트 압축 발생 | `/note` 활용, 상태 저장 |
+| Symptom | Cause | Response |
+|---------|-------|----------|
+| Forgetting previously read code | Context window saturation | Take notes on key info; keep re-referable |
+| Re-reading the same file | Insufficient tracking | Check Read Tracking log |
+| Output suddenly becomes terse | Output token shortage | Write essentials only; skip supplementary explanations |
+| Ignoring instructions | Rule file content forgotten | Re-reference only core rules |
+| Intermediate work results vanish | Context compression triggered | Use `/note`; persist state |
 
-**예방**: `--uc` 모드 활성화, 에이전트 위임으로 컨텍스트 분산
+**Prevention**: Enable `--uc` mode; distribute context via agent delegation
 
 ---
 
 ## Agent Spawn Context Efficiency
 
-워커 에이전트 스폰 시 컨텍스트 최적화:
+Optimize context when spawning worker agents:
 
 ```
-GOOD: "app/api/todos.py의 create_todo() 함수(line 23-55)를 수정해줘.
-       현재 TodoCreate 스키마(app/schemas/todo.py:5-15)에 priority 필드를 추가하고,
-       create_todo에서 이를 처리하도록 변경."
+GOOD: "Modify the create_todo() function in app/api/todos.py (lines 23-55).
+       Add a priority field to the TodoCreate schema (app/schemas/todo.py:5-15),
+       and update create_todo to handle it."
 
-BAD:  "todos 관련 코드를 수정해줘." (에이전트가 전체 탐색 필요)
+BAD:  "Modify the todos-related code." (agent must explore entire codebase)
 ```
 
-**원칙**: 워커에게 파일 경로 + 라인 번호 + 구체적 변경 사항을 전달.
-탐색 비용을 오케스트레이터가 부담하고, 워커는 실행에 집중.
+**Principle**: Pass file paths + line numbers + specific changes to workers.
+The orchestrator bears the exploration cost so workers can focus on execution.

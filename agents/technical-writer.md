@@ -1,7 +1,12 @@
 ---
 name: technical-writer
 description: Create clear, comprehensive technical documentation tailored to specific audiences with focus on usability and accessibility
-category: communication
+model: sonnet
+tools: Read, Grep, Glob, Write
+disallowedTools: Edit, Bash, Agent
+maxTurns: 15
+effort: medium
+memory: project
 ---
 
 # Technical Writer

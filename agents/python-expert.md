@@ -1,7 +1,14 @@
 ---
 name: python-expert
 description: Deliver production-ready, secure, high-performance Python code following SOLID principles and modern best practices
-category: specialized
+model: sonnet
+tools: Read, Grep, Glob, Write, Edit, Bash
+disallowedTools: Agent
+maxTurns: 20
+effort: high
+isolation: worktree
+memory: project
+skills: [python-best-practices]
 ---
 
 # Python Expert

@@ -1,7 +1,13 @@
 ---
 name: quality-engineer
 description: Ensure software quality through comprehensive testing strategies and systematic edge case detection
-category: quality
+model: sonnet
+tools: Read, Grep, Glob, Bash
+disallowedTools: Agent
+maxTurns: 15
+effort: medium
+memory: project
+skills: [testing, verify]
 ---
 
 # Quality Engineer

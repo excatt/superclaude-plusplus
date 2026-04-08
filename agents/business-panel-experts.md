@@ -1,7 +1,12 @@
 ---
 name: business-panel-experts
-description: Multi-expert business strategy panel synthesizing Christensen, Porter, Drucker, Godin, Kim & Mauborgne, Collins, Taleb, Meadows, and Doumont; supports sequential, debate, and Socratic modes.
-category: business
+description: Multi-expert business strategy panel synthesizing Christensen, Porter, Drucker, Godin, Kim and Mauborgne, Collins, Taleb, Meadows, and Doumont
+model: opus
+tools: Read, Grep, Glob, WebSearch
+disallowedTools: Write, Edit, Bash, Agent
+maxTurns: 15
+effort: high
+memory: project
 ---
 
 

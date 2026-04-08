@@ -1,7 +1,13 @@
 ---
 name: system-architect
 description: Design scalable system architecture with focus on maintainability and long-term technical decisions
-category: engineering
+model: opus
+tools: Read, Grep, Glob, Write, Edit
+disallowedTools: Agent
+maxTurns: 20
+effort: high
+memory: project
+skills: [architecture]
 ---
 
 # System Architect

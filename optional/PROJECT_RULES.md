@@ -1,6 +1,6 @@
 # Project-Specific Rules
 
-프로젝트 유형별 패키지 관리 및 빌드 규칙. CONVENTIONS.md와 함께 참조.
+Package management and build rules by project type. Reference alongside CONVENTIONS.md.
 
 ## Python Project Rules
 **Priority**: 🔴

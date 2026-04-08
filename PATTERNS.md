@@ -1,10 +1,10 @@
 # Common Code Patterns
 
-재사용 가능한 코드 패턴과 아키텍처 접근법 모음.
+Collection of reusable code patterns and architectural approaches.
 
 ## API Response Format
 
-표준화된 API 응답 구조:
+Standardized API response structure:
 
 ```typescript
 interface ApiResponse<T> {
@@ -44,7 +44,7 @@ function createErrorResponse(code: string, message: string): ApiResponse<never> 
 
 ## Repository Pattern
 
-데이터 액세스 추상화:
+Data access abstraction:
 
 ```typescript
 interface Repository<T, ID = string> {
@@ -92,7 +92,7 @@ class UserRepository implements Repository<User> {
 
 ## Custom Hooks Pattern (React)
 
-재사용 가능한 React 훅:
+Reusable React hooks:
 
 ### useDebounce
 ```typescript
@@ -184,7 +184,7 @@ function useAsync<T>(asyncFn: () => Promise<T>, deps: unknown[] = []) {
 
 ## Error Boundary Pattern
 
-React 에러 경계:
+React error boundary:
 
 ```typescript
 interface ErrorBoundaryState {
@@ -225,7 +225,7 @@ class ErrorBoundary extends Component<
 
 ## Service Layer Pattern
 
-비즈니스 로직 분리:
+Business logic separation:
 
 ```typescript
 // Service interface
@@ -268,7 +268,7 @@ class UserServiceImpl implements UserService {
 
 ## Factory Pattern
 
-객체 생성 추상화:
+Object creation abstraction:
 
 ```typescript
 interface NotificationFactory {
@@ -295,34 +295,34 @@ class NotificationFactoryImpl implements NotificationFactory {
 
 ## Skeleton Project Approach
 
-새 프로젝트 시작 시 권장 접근법:
+Recommended approach when starting a new project:
 
-### 1. 검색 (Search)
+### 1. Search
 ```bash
-# GitHub에서 검증된 스타터 프로젝트 검색
+# Search for validated starter projects on GitHub
 - "next.js starter typescript"
 - "express api boilerplate"
 - "react vite template"
 ```
 
-### 2. 평가 (Evaluate)
-병렬 에이전트로 평가:
-- **보안**: 의존성 취약점, 인증 패턴
-- **확장성**: 아키텍처 유연성, 모듈화
-- **유지보수성**: 코드 품질, 테스트 커버리지
-- **커뮤니티**: 활성도, 문서화 수준
+### 2. Evaluate
+Evaluate with parallel agents:
+- **Security**: Dependency vulnerabilities, authentication patterns
+- **Scalability**: Architecture flexibility, modularity
+- **Maintainability**: Code quality, test coverage
+- **Community**: Activity level, documentation quality
 
-### 3. 채택 (Adopt)
-가장 적합한 스타터 선택
+### 3. Adopt
+Select the most suitable starter
 
-### 4. 커스터마이징 (Customize)
-검증된 기반 위에서 프로젝트 요구사항에 맞게 수정
+### 4. Customize
+Modify to fit project requirements on top of the validated foundation
 
 ---
 
 ## Result Pattern (Error Handling)
 
-예외 대신 Result 타입 사용:
+Use Result type instead of exceptions:
 
 ```typescript
 type Result<T, E = Error> =
@@ -382,13 +382,13 @@ const db = DatabaseConnection.getInstance();
 
 ## Pattern Selection Guide
 
-| 상황 | 권장 패턴 |
-|------|----------|
-| API 응답 표준화 | API Response Format |
-| 데이터 액세스 분리 | Repository Pattern |
-| React 상태 로직 재사용 | Custom Hooks |
-| 에러 복구 UI | Error Boundary |
-| 비즈니스 로직 분리 | Service Layer |
-| 객체 생성 다양화 | Factory Pattern |
-| 안전한 에러 처리 | Result Pattern |
-| 전역 리소스 관리 | Singleton Pattern |
+| Scenario | Recommended Pattern |
+|----------|-------------------|
+| API response standardization | API Response Format |
+| Data access separation | Repository Pattern |
+| React state logic reuse | Custom Hooks |
+| Error recovery UI | Error Boundary |
+| Business logic separation | Service Layer |
+| Diverse object creation | Factory Pattern |
+| Safe error handling | Result Pattern |
+| Global resource management | Singleton Pattern |

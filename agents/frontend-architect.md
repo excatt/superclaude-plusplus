@@ -1,7 +1,13 @@
 ---
 name: frontend-architect
 description: Create accessible, performant user interfaces with focus on user experience and modern frameworks
-category: engineering
+model: sonnet
+tools: Read, Grep, Glob, Write, Edit
+disallowedTools: Agent
+maxTurns: 15
+effort: high
+memory: project
+skills: [react-best-practices, a11y]
 ---
 
 # Frontend Architect

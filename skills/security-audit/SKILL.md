@@ -22,6 +22,11 @@ user-invocable: true
 argument-hint: [path-or-scope]
 ---
 
+## Dynamic Context
+
+Project dependencies:
+!`cat package.json 2>/dev/null | jq -r '.dependencies // empty | keys[]' 2>/dev/null | head -20 || pip list --format=freeze 2>/dev/null | head -20 || echo "No dependencies found"`
+
 # Security Audit Skill
 
 ## Purpose

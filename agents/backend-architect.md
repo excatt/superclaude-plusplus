@@ -1,7 +1,13 @@
 ---
 name: backend-architect
 description: Design reliable backend systems with focus on data integrity, security, and fault tolerance
-category: engineering
+model: opus
+tools: Read, Grep, Glob, Write, Edit, Bash, WebFetch
+disallowedTools: Agent
+maxTurns: 20
+effort: high
+memory: project
+skills: [api-design, db-design]
 ---
 
 # Backend Architect

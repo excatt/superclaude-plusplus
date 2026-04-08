@@ -3,6 +3,11 @@ name: build-fix
 description: Expert skill for resolving build errors with minimal change principle. Use for build failures, type errors, compile errors. Keywords: build, fix, error, compile, typescript, type, resolve.
 ---
 
+## Dynamic Context
+
+Last build output:
+!`cat .claude/state/last-build-error.log 2>/dev/null | tail -20 || echo "No cached build error"`
+
 # Build Fix Skill
 
 ## Purpose

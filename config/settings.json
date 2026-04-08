@@ -27,6 +27,16 @@
             "timeout": 5
           }
         ]
+      },
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 ~/.claude/scripts/skill-matcher.py",
+            "timeout": 3000
+          }
+        ]
       }
     ],
     "PostToolUse": [
@@ -85,6 +95,16 @@
             "command": "~/.claude/hooks/peon-ping/peon.sh",
             "timeout": 10,
             "async": true
+          }
+        ]
+      },
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/scripts/circuit-breaker.sh",
+            "timeout": 3000
           }
         ]
       }
@@ -190,7 +210,69 @@
           }
         ]
       }
+    ],
+    "TaskCompleted": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "Task가 완료되었습니다. Two-Stage Review를 실행하세요: Stage 1(Spec Compliance) → Stage 2(Code Quality). RULES.md의 Two-Stage Review System 절차를 따르세요."
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '📋 서브에이전트 완료. 결과를 검증하세요.'",
+            "timeout": 1000
+          }
+        ]
+      }
+    ],
+    "FileChanged": [
+      {
+        "matcher": ".env*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '⚠️ .env 파일 변경 감지. git에 커밋되지 않도록 .gitignore를 확인하세요.'",
+            "timeout": 1000
+          }
+        ]
+      }
+    ],
+    "ConfigChange": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '🔧 설정 변경 감지. 유효성을 확인하세요.'",
+            "timeout": 1000
+          }
+        ]
+      }
+    ],
+    "InstructionsLoaded": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo 'SuperClaude++ v2.0 loaded'",
+            "timeout": 1000
+          }
+        ]
+      }
     ]
+  },
+  "env": {
+    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
   },
   "statusLine": {
     "type": "command",

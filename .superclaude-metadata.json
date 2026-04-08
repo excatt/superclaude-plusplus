@@ -2,14 +2,15 @@
   "commands": {
     "auto_update": false,
     "enabled": true,
-    "version": "4.1.6"
+    "version": "2.0.0"
   },
   "components": {
     "agents": {
-      "agents_count": 17,
+      "agents_count": 18,
       "agents_list": [
         "backend-architect.md",
         "business-panel-experts.md",
+        "codebase-gc.md",
         "deep-research-agent.md",
         "devops-architect.md",
         "frontend-architect.md",
@@ -28,19 +29,19 @@
       ],
       "category": "agents",
       "installed_at": "2025-10-18T17:55:04.491460",
-      "version": "4.1.6"
+      "version": "2.0.0"
     },
     "commands": {
       "category": "commands",
-      "files_count": 26,
+      "files_count": 0,
       "installed_at": "2025-10-18T17:55:04.502454",
-      "version": "4.1.6"
+      "version": "2.0.0"
     },
     "core": {
       "category": "core",
       "files_count": 6,
       "installed_at": "2025-10-18T17:55:04.483950",
-      "version": "4.1.6"
+      "version": "2.0.0"
     },
     "mcp": {
       "category": "integration",
@@ -56,7 +57,7 @@
         "context7"
       ],
       "servers_count": 8,
-      "version": "4.1.6"
+      "version": "2.0.0"
     },
     "mcp_docs": {
       "files_count": 8,
@@ -71,12 +72,12 @@
         "tavily",
         "context7"
       ],
-      "version": "4.1.6"
+      "version": "2.0.0"
     },
     "modes": {
       "files_count": 7,
       "installed": true,
-      "version": "4.1.6"
+      "version": "2.0.0"
     }
   },
   "framework": {
@@ -86,7 +87,7 @@
     "description": "AI-enhanced development framework for Claude Code",
     "installation_type": "global",
     "name": "superclaude",
-    "version": "4.1.6"
+    "version": "2.0.0"
   },
   "mcp": {
     "auto_update": false,
@@ -106,6 +107,6 @@
     "auto_update": false,
     "enabled": true,
     "profile": "default",
-    "version": "4.1.6"
+    "version": "2.0.0"
   }
 }

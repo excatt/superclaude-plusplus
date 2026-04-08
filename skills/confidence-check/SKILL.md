@@ -3,6 +3,11 @@ name: confidence-check
 description: Pre-implementation confidence assessment (≥90% required). Verifies duplicate check, architecture compliance, official docs, OSS references, root cause understanding. Keywords: confidence, check, verify, before, implement.
 ---
 
+## Dynamic Context
+
+Project dependencies:
+!`cat package.json 2>/dev/null | head -20 || cat pyproject.toml 2>/dev/null | head -20 || echo "No package manifest found"`
+
 # Confidence Check Skill
 
 ## Purpose

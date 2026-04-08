@@ -5,6 +5,89 @@
 형식은 [Keep a Changelog](https://keepachangelog.com/ko/1.0.0/)를 따르며,
 [Semantic Versioning](https://semver.org/lang/ko/)을 준수합니다.
 
+## [2.0.0] - 2026-04-08
+
+**패러다임 전환**: prompt-dependent → system-enforced
+
+### Breaking Changes
+- `commands/` 디렉토리 삭제 → `skills/`로 통합 (82개 command → 120 skills)
+- `install.sh` 삭제 → `plugin.json`으로 대체 (`/plugin install github:excatt/superclaude-plusplus`)
+- `/sc:` 접두사 폐기 → `/analyze`, `/brainstorm` 등으로 직접 호출
+- `BUSINESS_PANEL_EXAMPLES.md`, `BUSINESS_SYMBOLS.md`, `RESEARCH_CONFIG.md` → `optional/`로 이동
+
+### Added
+
+- **AGENT.md Frontmatter (18 agents)**:
+  - 모든 에이전트에 `model`, `tools`, `disallowedTools`, `maxTurns`, `effort` frontmatter 추가
+  - Read-only 에이전트 (security-engineer, codebase-gc 등)에 Write/Edit 비허용 강제
+  - Research 에이전트 (deep-research-agent)에 WebFetch/WebSearch 활성화
+  - Effort Level ↔ 난이도 매핑: Simple→low, Medium→medium, Complex→high, Complex+→max
+
+- **New Agents (+5)**:
+  - `harness-worker` — Harness IMPLEMENT 단계 워커 (worktree 격리)
+  - `generator` — Generator+Validator 쌍의 생성 담당
+  - `validator` — Generator+Validator 쌍의 검증 담당 (Read-only)
+  - `team-implementer` — Agent Teams 구현 담당
+  - `team-reviewer` — Agent Teams 코드 리뷰 담당 (Read-only, opus)
+
+- **Skill Auto-Activation System**:
+  - `.claude/skill-rules.json` — 57개 스킬 규칙, 332개 트리거 패턴 (한국어 200개 + 영어 132개)
+  - `scripts/skill-matcher.py` — UserPromptSubmit hook으로 프롬프트 기계적 매칭 (0.049초)
+  - 키워드 테이블 (Claude 판단) → JSON config + hook (시스템 강제)
+  - 한국어 자연어 트리거: "에러 났어", "설명해줘", "커밋해", "느려", "예쁘게" 등
+
+- **Safety & Security**:
+  - `scripts/circuit-breaker.sh` — 동일 에러 3회 반복 시 자동 중단 (Stop hook)
+  - `scripts/injection-scanner.py` — MCP 응답 prompt injection 스캔 (PostToolUse hook)
+  - `FileChanged` hook — .env 파일 변경 감지 경고
+
+- **Parallel Execution**:
+  - Worktree 격리 — harness-worker, generator, refactoring-expert, python-expert에 `isolation: worktree`
+  - Agent Teams (실험적) — `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` 환경변수 활성화
+  - Harness Mode 워크플로우: INTENT → SCAFFOLD → TEAM → IMPLEMENT → VERIFY → DELIVER
+  - Generator+Validator 루프 패턴
+
+- **New Hooks (+6 types, 16 total)**:
+  - `TaskCompleted` — Two-Stage Review 자동 트리거
+  - `SubagentStop` — 서브에이전트 결과 알림
+  - `FileChanged` — .env 보안 경고
+  - `ConfigChange` — 설정 변경 유효성 검증
+  - `InstructionsLoaded` — 프로젝트 컨텍스트 자동 로딩
+  - `UserPromptSubmit` — skill-matcher.py 추가
+
+- **Dynamic Context Injection**:
+  - 6개 핵심 스킬에 `!` backtick 구문으로 실시간 상태 주입
+  - verify, confidence-check, tdd, build-fix, checkpoint, security-audit
+
+- **New Skills**:
+  - `/config-doctor` — 프레임워크 설정 무결성 진단
+  - `/fix-pr` — PR 리뷰 코멘트 자동 수집 및 수정
+
+- **Distribution**:
+  - `plugin.json` — Claude Code Plugin manifest
+  - `/plugin install github:excatt/superclaude-plusplus`로 설치
+
+### Changed
+- **Documentation**:
+  - 프레임워크 문서 전체 영어 전환 (Claude 토큰 효율 향상). 한국어 트리거 키워드만 유지
+  - `CLAUDE.md` v2.0 구조로 재작성
+  - `RULES.md` Effort Level 매핑 추가, Task tool → Agent tool 용어 변경
+  - `MODES.md` Harness Mode v2.0 + Orchestration Mode 병렬 실행 추가
+  - `README.md` v2.0 전면 재작성 + 참고 출처 (커뮤니티 10개 + 공식 9개)
+  - `docs/PLAN-v2.0.md` 마이그레이션 계획 문서
+
+### Sources & Inspiration
+- [awesome-claude-code](https://github.com/hesreallyhim/awesome-claude-code) — 생태계 분석 출발점
+- [Claude Code Infrastructure Showcase](https://github.com/diet103/claude-code-infrastructure-showcase) — Hook 기반 Skill Auto-Activation 패턴
+- [Trail of Bits Security Skills](https://github.com/trailofbits/skills) — 보안 스킬 + injection 방어
+- [cc-devops-skills](https://github.com/akin-ozer/cc-devops-skills) — Generator+Validator 쌍 패턴
+- [Ralph for Claude Code](https://github.com/frankbria/ralph-claude-code) — Circuit Breaker 패턴
+- [Superpowers](https://github.com/obra/superpowers) — Subagent-Driven Development
+- [parry](https://github.com/vaporif/parry) — Prompt injection scanner
+- Official Claude Code features (2026-04): AGENT.md frontmatter, Agent Teams, Worktree isolation, Dynamic Context Injection, Plugin system, 26 hook types
+
+---
+
 ## [0.9.12] - 2026-04-02
 
 ### Added

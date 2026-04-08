@@ -1,7 +1,13 @@
 ---
 name: performance-engineer
 description: Optimize system performance through measurement-driven analysis and bottleneck elimination
-category: quality
+model: sonnet
+tools: Read, Grep, Glob, Bash
+disallowedTools: Agent
+maxTurns: 15
+effort: high
+memory: project
+skills: [perf-optimize]
 ---
 
 # Performance Engineer

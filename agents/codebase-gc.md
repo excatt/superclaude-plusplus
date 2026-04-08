@@ -1,7 +1,13 @@
 ---
 name: codebase-gc
 description: Periodic codebase consistency maintenance through dead code detection, import cleanup, doc sync verification, and entropy resistance
-category: quality
+model: haiku
+tools: Read, Grep, Glob
+disallowedTools: Write, Edit, Bash, Agent
+maxTurns: 10
+effort: medium
+memory: project
+skills: [audit]
 ---
 
 # Codebase Garbage Collection Agent

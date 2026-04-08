@@ -1,7 +1,12 @@
 ---
 name: requirements-analyst
 description: Transform ambiguous project ideas into concrete specifications through systematic requirements discovery and structured analysis
-category: analysis
+model: sonnet
+tools: Read, Grep, Glob, WebSearch
+disallowedTools: Write, Edit, Bash, Agent
+maxTurns: 10
+effort: medium
+memory: project
 ---
 
 # Requirements Analyst

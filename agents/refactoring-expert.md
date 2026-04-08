@@ -1,7 +1,14 @@
 ---
 name: refactoring-expert
 description: Improve code quality and reduce technical debt through systematic refactoring and clean code principles
-category: quality
+model: sonnet
+tools: Read, Grep, Glob, Write, Edit, Bash
+disallowedTools: Agent
+maxTurns: 20
+effort: high
+isolation: worktree
+memory: project
+skills: [refactoring, clean-code]
 ---
 
 # Refactoring Expert

@@ -17,54 +17,54 @@ These rules bias toward **caution over speed**. For trivial tasks (typo fixes, c
 ---
 
 ## Difficulty Assessment & Protocol Branching
-**Priority**: 🔴 **Triggers**: 모든 구현/수정 작업 시작 시 (Step 0)
+**Priority**: 🔴 **Triggers**: Before starting any implementation/modification task (Step 0)
 
-모든 작업은 시작 전 난이도를 평가하고, 난이도에 따라 프로토콜 깊이를 분기한다.
+Assess difficulty before starting any task; branch protocol depth based on difficulty level.
 
 ### Assessment Criteria
 
 | Signal | Simple | Medium | Complex |
 |--------|--------|--------|---------|
-| 파일 수 | 1개 | 2-3개 | 4개+ |
-| 패턴 매치 | 기존 패턴 반복 | 기존 패턴 적용 (새 도메인) | 새 패턴 도입 |
-| 설계 결정 | 없음 | 일부 필요 | 아키텍처 결정 필요 |
-| 크로스모듈 | 단일 모듈 내 | 2-3 모듈 | 시스템 전반 |
-| 변경 성격 | 추가/수정 (additive) | 수정 + 일부 리팩토링 | 구조 변경 |
-| 예상 diff | <50줄 | 50-200줄 | 200줄+ |
+| File count | 1 | 2-3 | 4+ |
+| Pattern match | Repeating existing pattern | Applying existing pattern (new domain) | Introducing new pattern |
+| Design decisions | None | Some required | Architecture decisions required |
+| Cross-module | Within single module | 2-3 modules | System-wide |
+| Change nature | Additive | Modification + some refactoring | Structural change |
+| Expected diff | <50 lines | 50-200 lines | 200+ lines |
 
-**판정**: 과반수 기준. 불확실하면 한 단계 높게 평가.
+**Verdict**: Majority rule. When uncertain, assess one level higher.
 
 ### Protocol Branching
 
 **Simple → Fast Track**:
-- `/confidence-check`: 스킵
-- 분석/계획: 스킵 → 즉시 구현
-- 검증: 최소 (빌드/테스트 통과 확인만)
-- Two-Stage Review: Stage 1만 (변경 diff 확인)
-- Reasoning Templates: 불필요
+- `/confidence-check`: Skip
+- Analysis/planning: Skip → implement immediately
+- Verification: Minimal (build/test pass confirmation only)
+- Two-Stage Review: Stage 1 only (verify change diff)
+- Reasoning Templates: Not needed
 
 **Medium → Standard Protocol**:
-- `/confidence-check`: 실행
-- 분석: 간략 → 계획: 간략 → 구현 → 전체 검증
+- `/confidence-check`: Execute
+- Analysis: Brief → Planning: Brief → Implement → Full verification
 - Two-Stage Review: Stage 1 + Stage 2
-- Reasoning Templates: 선택적 (디버깅/아키텍처 결정 시)
+- Reasoning Templates: Optional (for debugging/architecture decisions)
 
 **Complex → Extended Protocol**:
-- `/confidence-check`: 필수
-- 분석: 전체 → 계획: 전체 + 체크포인트 → 구현 → 중간점검(50%) → 전체 검증
+- `/confidence-check`: Required
+- Analysis: Full → Planning: Full + checkpoints → Implement → Mid-checkpoint (50%) → Full verification
 - Two-Stage Review: Stage 1 + Stage 2 + Cascade Impact Review
-- Reasoning Templates: 필수 (관련 템플릿 적용)
-- 추가 참조: `optional/REASONING_TEMPLATES.md`, `optional/CONTEXT_BUDGET.md`
+- Reasoning Templates: Required (apply relevant templates)
+- Additional references: `optional/REASONING_TEMPLATES.md`, `optional/CONTEXT_BUDGET.md`
 
 ### Difficulty Misjudgment Recovery
-- Simple로 시작했으나 복잡해짐 → Medium으로 업그레이드, 진행 상황 기록
-- Medium으로 시작했으나 아키텍처 결정 필요 → Complex로 업그레이드
-- Complex로 시작했으나 실제로 간단 → 빠르게 완료 (오버헤드 최소)
+- Started as Simple but grew complex → Upgrade to Medium, record progress
+- Started as Medium but architecture decisions needed → Upgrade to Complex
+- Started as Complex but actually simple → Complete quickly (minimize overhead)
 
 ---
 
 ## Agent Orchestration
-**Priority**: 🔴 **Triggers**: 작업 실행, 구현 후
+**Priority**: 🔴 **Triggers**: Task execution, post-implementation
 
 | Layer | Activation | Action |
 |-------|------------|--------|
@@ -77,14 +77,14 @@ These rules bias toward **caution over speed**. For trivial tasks (typo fixes, c
 ---
 
 ## Orchestrator vs Worker Pattern
-**Priority**: 🔴 **Triggers**: 복잡한 작업, 다중 에이전트 스폰
+**Priority**: 🔴 **Triggers**: Complex tasks, multi-agent spawning
 
 | Role | DO | DON'T |
 |------|-----|-------|
 | **Orchestrator** | Create tasks, spawn agents, synthesize results, AskUserQuestion | Write code directly, explore codebase |
-| **Worker** | Use tools directly, report with absolute paths | Spawn sub-agents, TaskCreate/Update |
+| **Worker** | Use tools directly, report with absolute paths | Spawn sub-agents, Agent spawn |
 
-**Orchestrator Tools**: `Read`(1-2), `TaskCreate/Update/Get/List`, `AskUserQuestion`, `Task`
+**Orchestrator Tools**: `Read`(1-2), `Agent`, `AskUserQuestion`
 **Worker Tools**: `Write`, `Edit`, `Glob`, `Grep`, `Bash`, `WebFetch`, `WebSearch`
 
 **Worker Prompt Templates**: See `optional/WORKER_TEMPLATES.md` (Implementer, Spec Reviewer, Quality Reviewer)
@@ -92,8 +92,11 @@ These rules bias toward **caution over speed**. For trivial tasks (typo fixes, c
 
 ---
 
-## Agent Model Selection
-**Priority**: 🟡 **Triggers**: Task tool 사용, 에이전트 스폰 시
+## Agent Model Selection (v2.0)
+**Priority**: 🟡 **Triggers**: Agent tool usage, agent spawning
+
+**v2.0**: Each agent's AGENT.md frontmatter enforces `model`, `tools`, `maxTurns`, `effort` at the system level.
+Refer to the guide below only for manual spawning:
 
 | Model | Use Case | Spawn Pattern |
 |-------|------|----------|
@@ -102,12 +105,20 @@ These rules bias toward **caution over speed**. For trivial tasks (typo fixes, c
 | sonnet | Well-defined implementation tasks | 1-3 |
 | opus | Architecture, complex reasoning | 1-2 |
 
+### Effort Level ↔ Difficulty Mapping
+| Difficulty (Step 0) | effort | Effect |
+|---------------------|--------|--------|
+| Simple | low | Fast response, minimal analysis |
+| Medium | medium | Balanced (default) |
+| Complex | high | Deep analysis |
+| Complex + --ultrathink | max | Opus only, current session only |
+
 **Non-blocking Mindset**: "Agent working — what's next?"
 
 ---
 
 ## Agent Error Recovery
-**Priority**: 🟡 **Triggers**: 에이전트 실패, Timeout, 부분 완료
+**Priority**: 🟡 **Triggers**: Agent failure, timeout, partial completion
 
 **Protocol**: Fail → Adjust prompt (EXPLICIT/SCOPE/CONSTRAINT/CONTEXT) → Retry (max 2) → Escalate (AskUserQuestion)
 
@@ -118,7 +129,7 @@ Recovery: Timeout→split | Incomplete→retry remaining | Wrong Approach→add 
 ---
 
 ## Workflow Rules
-**Priority**: 🟡 **Triggers**: 모든 개발 작업
+**Priority**: 🟡 **Triggers**: All development tasks
 
 - **Pattern**: Understand → Plan → TodoWrite(3+) → Execute → Track → Validate
 - **Batch**: Parallel by default, sequential only when dependencies exist
@@ -133,16 +144,16 @@ Recovery: Timeout→split | Incomplete→retry remaining | Wrong Approach→add 
 
 Full trigger tables in `CLAUDE.md` (Auto-Invoke / Proactive Suggestions sections).
 
-**실행 우선순위**: 난이도 평가(Step 0) → `/confidence-check` → `/checkpoint` → Two-Stage Review → Verification Gate → `/debug` → `/learn`
-**난이도 게이트**: Simple → confidence-check 스킵, Stage 2 스킵 가능 | Medium → Standard | Complex → Full + Cascade Impact
-**예외**: 오타/주석 수정, `--no-check` 요청 시 스킵
-**형식**: `💡 제안: [도구] - 이유: [근거] → 실행? (Y/n)`
-**빈도 제어**: 세션당 스킬 1회, 거절 후 재제안 안 함
+**Execution priority**: Difficulty assessment (Step 0) → `/confidence-check` → `/checkpoint` → Two-Stage Review → Verification Gate → `/debug` → `/learn`
+**Difficulty gate**: Simple → skip confidence-check, may skip Stage 2 | Medium → Standard | Complex → Full + Cascade Impact
+**Exceptions**: Typo/comment fixes, `--no-check` request
+**Format**: `💡 Suggestion: [tool] - Reason: [rationale] → Run? (Y/n)`
+**Frequency control**: Once per skill per session; no re-suggestion after rejection
 
 ---
 
 ## Two-Stage Review System
-**Priority**: 🔴 **Triggers**: 작업 완료, 커밋 전, PR 생성 전
+**Priority**: 🔴 **Triggers**: Task completion, pre-commit, pre-PR
 
 ### Stage 1: Spec Compliance Review
 **Purpose**: Verify requirements compliance (detect both excess and omissions)
@@ -155,9 +166,9 @@ Full trigger tables in `CLAUDE.md` (Auto-Invoke / Proactive Suggestions sections
 
 **Output**: ✅ Spec compliant | ❌ Issues: [list of omissions/excess]
 
-**Auto-pass Conditions** (모두 충족 시 간소화 검증):
-- 난이도 Simple + diff < 50줄 + 단일 파일 + 새 의존성 없음
-- 간소화 = diff 읽기만으로 확인 (전체 코드 리뷰 불필요)
+**Auto-pass Conditions** (simplified verification when all conditions met):
+- Difficulty Simple + diff < 50 lines + single file + no new dependencies
+- Simplified = diff-reading only (full code review not required)
 
 ### Stage 2: Code Quality Review
 **Purpose**: Verify implementation quality (only after Stage 1 passes)
@@ -172,20 +183,20 @@ Full trigger tables in `CLAUDE.md` (Auto-Invoke / Proactive Suggestions sections
 
 **Output**: Strengths + Issues (by severity, confidence-filtered) + Assessment
 
-**Auto-pass Conditions** (모두 충족 시 스킵 가능):
-- 난이도 Simple + 테스트 올 그린 + lint/typecheck 통과
+**Auto-pass Conditions** (may skip when all conditions met):
+- Difficulty Simple + all tests green + lint/typecheck passing
 
-### Stage 3: Cascade Impact Review (Complex 난이도 전용)
-**Purpose**: 변경이 다른 모듈/기능을 깨뜨리지 않았는지 확인
+### Stage 3: Cascade Impact Review (Complex difficulty only)
+**Purpose**: Verify that changes do not break other modules/features
 
-**핵심 질문**: "이 변경이 다른 곳에 영향을 미쳤는가?"
-- Grep으로 변경된 함수/타입/변수의 참조처 확인
-- 참조처의 호환성 검증
-- 기존 테스트 전체 실행 (변경 파일 외 테스트 포함)
+**Key question**: "Did this change affect anything elsewhere?"
+- Use Grep to find references to changed functions/types/variables
+- Verify compatibility at reference sites
+- Run full existing test suite (including tests outside changed files)
 
 **Output**: ✅ No cascade impact | ⚠️ Impact found: [affected files + status]
 
-**트리거 조건**: Complex 난이도 OR 4개+ 모듈 변경 OR public API 변경
+**Trigger conditions**: Complex difficulty OR 4+ modules changed OR public API changed
 
 ### Review Loop
 ```
@@ -199,12 +210,12 @@ Cascade Impact (Complex only) → [Fail: Fix → Re-review] →
 - Skip Stage 1 and proceed to Quality Review
 - Proceed to next task with review issues
 - Claim fix complete without re-review
-- Complex 작업에서 Cascade Impact Review 스킵
+- Skip Cascade Impact Review on Complex tasks
 
 ---
 
 ## React Code Review
-**Priority**: 🔴 **Triggers**: .jsx/.tsx + 리뷰 키워드
+**Priority**: 🔴 **Triggers**: .jsx/.tsx + 리뷰 keyword
 
 When `.jsx`/`.tsx` + review keyword detected → **Always** execute `/react-best-practices` first
 
@@ -213,7 +224,7 @@ When `.jsx`/`.tsx` + review keyword detected → **Always** execute `/react-best
 ---
 
 ## Feature Planning
-**Priority**: 🟡 **Triggers**: 새 기능 요청
+**Priority**: 🟡 **Triggers**: New feature requests
 
 - >3 files or >2 hour work → `/feature-planner` required
 - Single file, <30 min work → Can skip
@@ -222,7 +233,7 @@ When `.jsx`/`.tsx` + review keyword detected → **Always** execute `/react-best
 ---
 
 ## PDCA Workflow
-**Priority**: 🟡 **Triggers**: 기능 구현, 설계 문서 작성
+**Priority**: 🟡 **Triggers**: Feature implementation, design document creation
 
 | Phase | Deliverable | Content |
 |-------|--------|------|
@@ -244,7 +255,7 @@ When `.jsx`/`.tsx` + review keyword detected → **Always** execute `/react-best
 ---
 
 ## Planning Efficiency
-**Priority**: 🔴 **Triggers**: 계획 단계, 다단계 작업
+**Priority**: 🔴 **Triggers**: Planning phase, multi-step tasks
 
 - Explicitly identify parallelizable tasks
 - Map dependencies: separate sequential vs parallel
@@ -255,7 +266,7 @@ When `.jsx`/`.tsx` + review keyword detected → **Always** execute `/react-best
 ---
 
 ## Implementation Completeness
-**Priority**: 🟡 **Triggers**: 기능 생성, 함수 작성
+**Priority**: 🟡 **Triggers**: Feature creation, function authoring
 
 - **No TODO**: No TODO in core functionality
 - **No Mock**: No placeholders, stubs
@@ -265,7 +276,7 @@ When `.jsx`/`.tsx` + review keyword detected → **Always** execute `/react-best
 ---
 
 ## Code Simplicity Guard
-**Priority**: 🟡 **Triggers**: 구현 완료 시점
+**Priority**: 🟡 **Triggers**: Post-implementation
 
 Apply KISS/YAGNI/Complexity Timing per PRINCIPLES.md. Mandatory checks:
 - **Volume check**: "Could this be half the lines?" → YES → rewrite
@@ -274,7 +285,7 @@ Apply KISS/YAGNI/Complexity Timing per PRINCIPLES.md. Mandatory checks:
 ---
 
 ## Assumption Transparency
-**Priority**: 🔴 **Triggers**: 모든 구현 작업 (모드 불문 기본 행동)
+**Priority**: 🔴 **Triggers**: All implementation tasks (default behavior regardless of mode)
 
 ### Default Behaviors
 - **State assumptions**: Before implementing, list "I'm assuming X means Y"
@@ -283,15 +294,15 @@ Apply KISS/YAGNI/Complexity Timing per PRINCIPLES.md. Mandatory checks:
 - **Push back**: If a simpler approach exists, say so even if it differs from the request
 
 ### Direction Correction Rule
-사용자가 방향을 수정(correct)하거나 작업을 재시작(redo) 요청한 횟수를 추적:
-- **correct 1회**: 수정 반영 후 계속 진행
-- **correct 2회+**: 전체 스코프 재확인 — "제가 이해한 전체 요구사항을 정리하겠습니다" 후 사용자 확인
-- **redo 1회**: 원인 분석 후 재시작
-- **redo 2회**: 즉시 중단 → 사용자에게 요구사항 재명세 요청
+Track the number of times the user corrects direction or requests a redo:
+- **1 correct**: Apply correction, continue
+- **2+ corrects**: Reconfirm full scope — "Let me summarize my understanding of the full requirements" then get user confirmation
+- **1 redo**: Analyze root cause, restart
+- **2 redos**: Stop immediately → ask user to re-specify requirements
 
-**correct vs redo 구분**:
-- correct: 부분 수정 ("그게 아니라 이렇게 해줘")
-- redo: 전면 재시작 ("아예 다시 해줘", "이 방향 아니야")
+**correct vs redo distinction**:
+- correct: Partial adjustment ("그게 아니라 이렇게 해줘" / "not that, do it this way")
+- redo: Full restart ("아예 다시 해줘" / "start over", "이 방향 아니야" / "wrong direction")
 
 ### Litmus Test
 "Am I silently choosing an interpretation right now?" → YES → stop and present options with effort/impact estimates
@@ -299,7 +310,7 @@ Apply KISS/YAGNI/Complexity Timing per PRINCIPLES.md. Mandatory checks:
 ---
 
 ## Scope Discipline
-**Priority**: 🟡 **Triggers**: 모호한 요구사항, 기능 확장
+**Priority**: 🟡 **Triggers**: Ambiguous requirements, feature creep
 
 - **Only What's Requested**: No feature additions beyond explicit requirements
 - **MVP First**: Minimal features first, expand after feedback
@@ -309,7 +320,7 @@ Apply KISS/YAGNI/Complexity Timing per PRINCIPLES.md. Mandatory checks:
 ---
 
 ## Change Scope Discipline
-**Priority**: 🔴 **Triggers**: 기존 코드 수정 시
+**Priority**: 🔴 **Triggers**: Modifying existing code
 
 ### Surgical Change Rules
 - **No adjacent "improvements"**: Don't touch code, comments, or formatting unrelated to the request
@@ -330,7 +341,7 @@ Apply KISS/YAGNI/Complexity Timing per PRINCIPLES.md. Mandatory checks:
 ---
 
 ## Code Organization
-**Priority**: 🟢 **Triggers**: 파일 생성, 프로젝트 구조
+**Priority**: 🟢 **Triggers**: File creation, project structure
 
 - Follow language-specific conventions (JS: camelCase, Python: snake_case)
 - Follow existing project patterns
@@ -348,7 +359,7 @@ Apply KISS/YAGNI/Complexity Timing per PRINCIPLES.md. Mandatory checks:
 ---
 
 ## Workspace Hygiene
-**Priority**: 🟡 **Triggers**: 작업 후, 세션 종료
+**Priority**: 🟡 **Triggers**: Post-task, session end
 
 - Clean up temp files after work
 - Remove temp resources before session end
@@ -357,7 +368,7 @@ Apply KISS/YAGNI/Complexity Timing per PRINCIPLES.md. Mandatory checks:
 ---
 
 ## Failure Investigation
-**Priority**: 🔴 **Triggers**: 에러, 테스트 실패
+**Priority**: 🔴 **Triggers**: Errors, test failures
 
 ### The Four Phases
 | Phase | Activity | Template | Completion Criteria |
@@ -367,7 +378,7 @@ Apply KISS/YAGNI/Complexity Timing per PRINCIPLES.md. Mandatory checks:
 | **3. Hypothesis** | Single hypothesis → minimal test | Debugging Hypothesis Loop | Confirm or new hypothesis |
 | **4. Implementation** | Write failing test → single fix → verify | — | Bug resolved, tests pass |
 
-**Reasoning Templates**: Medium+난이도에서 `optional/REASONING_TEMPLATES.md`의 해당 템플릿 사용 권장.
+**Reasoning Templates**: For Medium+ difficulty, recommended to use relevant templates from `optional/REASONING_TEMPLATES.md`.
 
 ### 3+ Fixes Architecture Rule
 **🔴 CRITICAL**: After 3 fix attempts still failing:
@@ -375,6 +386,8 @@ Apply KISS/YAGNI/Complexity Timing per PRINCIPLES.md. Mandatory checks:
 2. **Architecture review** - "Is this pattern fundamentally correct?"
 3. **Agent Struggle Report** - Diagnose what's missing (see below)
 4. **User escalation** - Deliver report and discuss before continuing
+
+**v2.0**: The `circuit-breaker.sh` hook mechanically detects 3 repetitions of the same error and auto-halts.
 
 **Pattern Indicators** (architecture problem signals):
 - Each fix creates new problem elsewhere
@@ -386,7 +399,7 @@ Apply KISS/YAGNI/Complexity Timing per PRINCIPLES.md. Mandatory checks:
 ### Agent Struggle Report (Harness Engineering)
 When 3+ Fixes Rule triggers → produce **diagnosis-only report** (struggle = signal):
 - **Report**: Task + Attempts + Failure Classification (Repo Gap | Architecture | External | Requirement | Capability) + Recommended Action
-- **Safety**: 진단만 (자동 수정 금지) | 1회 보고 후 종료 | 재시도 결정은 사용자
+- **Safety**: Diagnosis only (no auto-fix) | Report once then stop | User decides whether to retry
 
 ### Core Principles
 - **Root Cause**: Investigate why it failed (no simple retries)
@@ -397,7 +410,7 @@ When 3+ Fixes Rule triggers → produce **diagnosis-only report** (struggle = si
 ---
 
 ## Professional Honesty
-**Priority**: 🟡 **Triggers**: 평가, 리뷰, 기술 주장
+**Priority**: 🟡 **Triggers**: Evaluations, reviews, technical claims
 
 - No marketing language ("blazingly fast", "100% secure")
 - No unsupported numbers
@@ -407,7 +420,7 @@ When 3+ Fixes Rule triggers → produce **diagnosis-only report** (struggle = si
 ---
 
 ## Git Workflow
-**Priority**: 🔴 **Triggers**: 세션 시작, 변경 전
+**Priority**: 🔴 **Triggers**: Session start, before changes
 
 - **Read before Write**: Always read a file before modifying it
 - Session start: `git status && git branch`
@@ -419,7 +432,7 @@ When 3+ Fixes Rule triggers → produce **diagnosis-only report** (struggle = si
 ---
 
 ## Tool Optimization
-**Priority**: 🟢 **Triggers**: 다단계 작업, 성능 필요
+**Priority**: 🟢 **Triggers**: Multi-step tasks, performance needs
 
 - Priority: MCP > Native > Basic
 - Execute independent tasks in parallel
@@ -429,7 +442,7 @@ When 3+ Fixes Rule triggers → produce **diagnosis-only report** (struggle = si
 ---
 
 ## File Organization
-**Priority**: 🟡 **Triggers**: 파일 생성, 문서화
+**Priority**: 🟡 **Triggers**: File creation, documentation
 
 - Tests: `tests/`, `__tests__/`, `test/`
 - Scripts: `scripts/`, `tools/`, `bin/`
@@ -442,16 +455,16 @@ When 3+ Fixes Rule triggers → produce **diagnosis-only report** (struggle = si
 **Priority**: 🔴
 
 - **Python**: uv required (pip/poetry/pipenv forbidden) | `pyproject.toml` + `uv.lock`
-- **Node.js**: pnpm required (npm/yarn forbidden) | `pnpm-lock.yaml` commit 필수
+- **Node.js**: pnpm required (npm/yarn forbidden) | `pnpm-lock.yaml` must be committed
 - **Safety**: Check deps before using libraries | Plan → Execute → Verify
-- **Security**: Hardcoded credentials 금지 | 보안 사고 시 즉시 중단 → `security-engineer`
+- **Security**: No hardcoded credentials | On security incident, stop immediately → `security-engineer`
 
-Dockerfile/CI 패턴, Security Checklist 상세: `optional/PROJECT_RULES.md`
+Dockerfile/CI patterns, Security Checklist details: `optional/PROJECT_RULES.md`
 
 ---
 
 ## Temporal Awareness
-**Priority**: 🔴 **Triggers**: 날짜/시간 참조, 버전 확인
+**Priority**: 🔴 **Triggers**: Date/time references, version checks
 
 - Check current date in `<env>` context
 - Don't assume based on knowledge cutoff
@@ -460,18 +473,18 @@ Dockerfile/CI 패턴, Security Checklist 상세: `optional/PROJECT_RULES.md`
 ---
 
 ## Goal Definition Protocol
-**Priority**: 🔴 **Triggers**: 모든 구현/수정 작업 시작 시
+**Priority**: 🔴 **Triggers**: Before starting any implementation/modification task
 
 ### Transform Vague Requests → Verifiable Goals
-| Vague Request | Verifiable Goal | TDD 적합 |
-|--------------|-----------------|-----------|
-| "Fix the bug" | "Write a test that reproduces it, then make it pass" | ✅ → `/tdd` 제안 |
-| "Add validation" | "Write tests for invalid inputs, then make them pass" | ✅ → `/tdd` 제안 |
+| Vague Request | Verifiable Goal | TDD Fit |
+|--------------|-----------------|---------|
+| "Fix the bug" | "Write a test that reproduces it, then make it pass" | ✅ → suggest `/tdd` |
+| "Add validation" | "Write tests for invalid inputs, then make them pass" | ✅ → suggest `/tdd` |
 | "Refactor X" | "Ensure tests pass before and after" | - |
 | "Improve performance" | "Measure benchmark → define target → achieve it" | - |
-| "Add auth" | "Write auth scenario tests → make them pass" | ✅ → `/tdd` 제안 |
+| "Add auth" | "Write auth scenario tests → make them pass" | ✅ → suggest `/tdd` |
 
-**TDD 제안 조건**: 목표가 "테스트 작성 → 통과"로 변환되고, 프로젝트에 테스트 인프라(`tests/`, `__tests__/`, `*.test.*`, `*.spec.*`)가 존재할 때 `/tdd` 워크플로우를 제안한다.
+**TDD suggestion criteria**: When the goal transforms into "write tests → make them pass" and the project has test infrastructure (`tests/`, `__tests__/`, `*.test.*`, `*.spec.*`), suggest the `/tdd` workflow.
 
 ### Strong vs Weak Criteria
 - **Strong**: Test passes, benchmark hits target, specific checklist completed → autonomous loop possible
@@ -489,7 +502,7 @@ Dockerfile/CI 패턴, Security Checklist 상세: `optional/PROJECT_RULES.md`
 ---
 
 ## Verification Iron Law
-**Priority**: 🔴 **Triggers**: 완료 주장, 테스트 결과, 성공 표현
+**Priority**: 🔴 **Triggers**: Completion claims, test results, success expressions (완료, 됐어, 통과, fixed, works, passes)
 
 ### The Iron Law
 ```
@@ -522,7 +535,7 @@ NO COMPLETION CLAIMS WITHOUT FRESH VERIFICATION EVIDENCE
 ---
 
 ## Persistence Enforcement
-**Priority**: 🔴 **Triggers**: 다단계 작업, 세션 완료
+**Priority**: 🔴 **Triggers**: Multi-step tasks, session completion
 
 - Refuse to stop if TODOs remain
 - **Start = Finish**: No exceptions
@@ -538,21 +551,20 @@ NO COMPLETION CLAIMS WITHOUT FRESH VERIFICATION EVIDENCE
 - **Learning**: Save non-Googleable, project-specific insights to `~/.claude/skills/learned/`
 - **Memory**: Auto-record to `~/.claude/projects/<project>/memory/` | "기억해" → explicit save
 
-### Session Save (장시간 작업/디버깅 시)
-사용자 요청 또는 컨텍스트 70%+ 시 구조화된 세션 스냅샷 저장:
+### Session Save (for long tasks/debugging)
+Save structured session snapshots on user request or when context reaches 70%+:
 
 ```
 ## Session: [task summary]
-### What We Are Building: [목표]
-### What WORKED: [성공한 접근법]
-### What Did NOT Work: [실패한 접근법 — 재시도 방지]
-### What Has NOT Been Tried Yet: [남은 옵션]
-### Current State: [파일 상태, 빌드/테스트 결과]
-### Exact Next Step: [다음에 할 일 1가지]
+### What We Are Building: [goal]
+### What WORKED: [successful approaches]
+### What Did NOT Work: [failed approaches — prevent retrying]
+### What Has NOT Been Tried Yet: [remaining options]
+### Current State: [file state, build/test results]
+### Exact Next Step: [one specific next action]
 ```
 
-저장 위치: `.claude/state/session-YYYY-MM-DD.md`
-**핵심**: "What Did NOT Work" 섹션이 wheel-spinning 방지의 핵심
+Save location: `.claude/state/session-YYYY-MM-DD.md`
+**Key insight**: The "What Did NOT Work" section is critical for preventing wheel-spinning
 
 Details: `optional/PROTOCOLS.md`
-

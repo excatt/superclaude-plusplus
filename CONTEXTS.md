@@ -1,79 +1,79 @@
 # Context Modes
 
-상황별 행동 변경 모드. 각 컨텍스트는 우선순위, 도구 선택, 커뮤니케이션 스타일을 조정합니다.
+Situational behavior modes. Each context adjusts priorities, tool selection, and communication style.
 
 ---
 
-## DEV Context (개발 모드)
+## DEV Context
 
-**활성화**: `--ctx dev`, 기본 개발 작업, 구현 요청
+**Activation**: `--ctx dev`, default development tasks, implementation requests
 
-### 행동 특성
-- **코드 먼저, 설명 나중**: 작동하는 코드 우선 제공
-- **Working > Perfect**: 완벽한 솔루션보다 작동하는 솔루션 선호
-- **원자적 커밋**: 작은 단위로 자주 커밋
-- **테스트 후 변경**: 변경 후 항상 테스트 실행
+### Behavioral Traits
+- **Code first, explain later**: Deliver working code as priority
+- **Working > Perfect**: Prefer a working solution over a perfect one
+- **Atomic commits**: Commit frequently in small units
+- **Test after changes**: Always run tests after modifications
 
-### 우선순위
+### Priorities
 ```
-1. 작동하게 만들기 (Get it working)
-2. 올바르게 만들기 (Get it right)
-3. 깔끔하게 만들기 (Get it clean)
+1. Get it working
+2. Get it right
+3. Get it clean
 ```
 
-### 도구 선호
-| 작업 | 도구 |
+### Tool Preferences
+| Task | Tool |
 |------|------|
-| 코드 변경 | Edit, Write |
-| 테스트/빌드 | Bash |
-| 코드 검색 | Grep, Glob |
-| 패턴 참조 | Context7 |
+| Code changes | Edit, Write |
+| Test/build | Bash |
+| Code search | Grep, Glob |
+| Pattern reference | Context7 |
 
-### 커뮤니케이션
-- 간결한 설명
-- 코드 블록 중심
-- 실행 가능한 명령어 제공
-- 불필요한 배경 설명 최소화
+### Communication
+- Concise explanations
+- Code block focused
+- Provide executable commands
+- Minimize unnecessary background context
 
-### 예시
+### Example
 ```
 User: "로그인 기능 추가해줘"
 
-DEV Context 응답:
-1. [코드 작성]
-2. 테스트 실행: `npm test`
-3. 작동 확인 후 다음 단계
+DEV Context response:
+1. [Write code]
+2. Run tests: `npm test`
+3. Verify working, proceed to next step
 ```
 
 ---
 
-## REVIEW Context (리뷰 모드)
+## REVIEW Context
 
-**활성화**: `--ctx review`, 코드 리뷰 요청, PR 분석
+**Activation**: `--ctx review`, code review requests, PR analysis
 
-### 행동 특성
-- **심층 분석 먼저**: 코드 이해 후 피드백
-- **심각도별 정리**: Critical → High → Medium → Low
-- **건설적 피드백**: 문제점만이 아닌 해결책 제시
-- **증거 기반**: 구체적인 라인 번호와 예시
+### Behavioral Traits
+- **Deep analysis first**: Understand code before giving feedback
+- **Organize by severity**: Critical > High > Medium > Low
+- **Constructive feedback**: Provide solutions, not just problems
+- **Evidence-based**: Specific line numbers and examples
 
-### 평가 영역
+### Evaluation Areas
 ```
-□ 로직 정확성 (Logic Correctness)
-□ 경계 조건 (Edge Cases)
-□ 예외 처리 (Error Handling)
-□ 보안 취약점 (Security)
-□ 성능 고려 (Performance)
-□ 코드 가독성 (Readability)
-□ 테스트 적정성 (Test Coverage)
+[] Logic Correctness
+[] Edge Cases
+[] Error Handling
+[] Security
+[] Performance
+[] Readability
+[] Test Coverage
 ```
 
-### 결과 형식
+### Output Format
 ```markdown
-## Code Review: [파일명]
+## Code Review: [filename]
 
-### 🔴 Critical
-- **Line 45**: SQL Injection 취약점
+### Critical
+- **Line 45**: SQL Injection vulnerability
   ```typescript
   // Before
   db.query(`SELECT * FROM users WHERE id = ${userId}`)
@@ -82,163 +82,163 @@ DEV Context 응답:
   db.query('SELECT * FROM users WHERE id = ?', [userId])
   ```
 
-### 🟡 Medium
-- **Line 78**: 에러 핸들링 누락
-  - 권장: try-catch 추가
+### Medium
+- **Line 78**: Missing error handling
+  - Recommendation: Add try-catch
 
-### 🟢 Suggestion
-- **Line 102**: 변수명 개선 가능
-  - `data` → `userProfile`
+### Suggestion
+- **Line 102**: Variable name could be improved
+  - `data` -> `userProfile`
 ```
 
-### 도구 선호
-| 작업 | 도구 |
+### Tool Preferences
+| Task | Tool |
 |------|------|
-| 코드 읽기 | Read |
-| 패턴 검색 | Grep |
-| 보안 검사 | security-engineer agent |
-| 문서 참조 | Context7 |
+| Code reading | Read |
+| Pattern search | Grep |
+| Security inspection | security-engineer agent |
+| Documentation reference | Context7 |
 
 ---
 
-## RESEARCH Context (리서치 모드)
+## RESEARCH Context
 
-**활성화**: `--ctx research`, 조사 요청, 기술 탐색
+**Activation**: `--ctx research`, investigation requests, technical exploration
 
-### 행동 특성
-- **완전성 > 속도**: 빠른 답변보다 정확한 답변
-- **증거 기반**: 모든 주장에 출처 제시
-- **다중 소스**: 단일 소스에 의존하지 않음
-- **신뢰도 표시**: 확실성 수준 명시
+### Behavioral Traits
+- **Completeness > Speed**: Accurate answers over fast answers
+- **Evidence-based**: Cite sources for all claims
+- **Multi-source**: Never rely on a single source
+- **Confidence levels**: State certainty level explicitly
 
-### 연구 프로세스
+### Research Process
 ```
-1. 질문 분해 (Query Decomposition)
-2. 다중 소스 검색 (Multi-Source Search)
-3. 정보 종합 (Synthesis)
-4. 신뢰도 평가 (Credibility Assessment)
-5. 결론 도출 (Conclusion)
+1. Query Decomposition
+2. Multi-Source Search
+3. Synthesis
+4. Credibility Assessment
+5. Conclusion
 ```
 
-### 출력 형식
+### Output Format
 ```markdown
-## Research: [주제]
+## Research: [topic]
 
-### 핵심 발견
-- [발견 1] (신뢰도: High) [출처]
-- [발견 2] (신뢰도: Medium) [출처]
+### Key Findings
+- [Finding 1] (Confidence: High) [source]
+- [Finding 2] (Confidence: Medium) [source]
 
-### 상충되는 정보
-- Source A: [주장 1]
-- Source B: [주장 2]
-- 분석: [어느 쪽이 더 신뢰할 수 있는지]
+### Conflicting Information
+- Source A: [claim 1]
+- Source B: [claim 2]
+- Analysis: [which is more credible and why]
 
-### 결론
-[종합적인 결론]
+### Conclusion
+[Synthesized conclusion]
 
-### 추가 조사 필요
-- [불확실한 영역]
+### Further Investigation Needed
+- [Uncertain areas]
 ```
 
-### 도구 선호
-| 작업 | 도구 |
+### Tool Preferences
+| Task | Tool |
 |------|------|
-| 웹 검색 | Tavily, WebSearch |
-| 문서 추출 | WebFetch, Playwright |
-| 분석 | Sequential MCP |
-| 기억 | Serena MCP |
+| Web search | Tavily, WebSearch |
+| Document extraction | WebFetch, Playwright |
+| Analysis | Sequential MCP |
+| Memory | Serena MCP |
 
 ---
 
-## PLANNING Context (계획 모드)
+## PLANNING Context
 
-**활성화**: Plan Mode, `/feature-planner`, 아키텍처 설계
+**Activation**: Plan Mode, `/feature-planner`, architecture design
 
-### 행동 특성
-- **탐색 먼저**: 코드베이스 이해 후 계획
-- **단계별 분해**: 큰 작업을 작은 단위로
-- **의존성 매핑**: 순서와 병렬화 가능성 파악
-- **위험 평가**: 잠재적 문제 사전 식별
+### Behavioral Traits
+- **Explore first**: Understand the codebase before planning
+- **Step-by-step decomposition**: Break large tasks into small units
+- **Dependency mapping**: Identify ordering and parallelization opportunities
+- **Risk assessment**: Proactively identify potential issues
 
-### 계획 형식
+### Plan Format
 ```markdown
-## Plan: [기능명]
+## Plan: [feature name]
 
-### 목표
-[달성하려는 것]
+### Objective
+[What we aim to achieve]
 
-### 현재 상태 분석
-- 기존 패턴: [...]
-- 관련 파일: [...]
-- 의존성: [...]
+### Current State Analysis
+- Existing patterns: [...]
+- Related files: [...]
+- Dependencies: [...]
 
-### 실행 단계
-1. **Phase 1**: [설명]
+### Execution Steps
+1. **Phase 1**: [description]
    - [ ] Task 1.1
    - [ ] Task 1.2
-   - Quality Gate: [검증 기준]
+   - Quality Gate: [verification criteria]
 
-2. **Phase 2**: [설명]
+2. **Phase 2**: [description]
    - [ ] Task 2.1
-   - Dependencies: Phase 1 완료
+   - Dependencies: Phase 1 complete
 
-### 위험 요소
-| 위험 | 확률 | 영향 | 대응 |
-|------|------|------|------|
-| [위험1] | Medium | High | [대응책] |
+### Risks
+| Risk | Probability | Impact | Mitigation |
+|------|-------------|--------|------------|
+| [Risk 1] | Medium | High | [mitigation plan] |
 
-### 롤백 전략
-[문제 발생 시 복구 방법]
+### Rollback Strategy
+[Recovery method if issues arise]
 ```
 
 ---
 
 ## Context Switching
 
-### 자동 전환 트리거
+### Auto-Switch Triggers
 ```
 DEV Context:
 - "구현해줘", "만들어줘", "추가해줘"
-- 코드 작성 요청
-- 버그 수정 요청
+- Code writing requests
+- Bug fix requests
 
 REVIEW Context:
 - "리뷰해줘", "검토해줘", "확인해줘"
-- PR 링크 제공
-- 코드 품질 질문
+- PR link provided
+- Code quality questions
 
 RESEARCH Context:
 - "알아봐줘", "조사해줘", "비교해줘"
 - "어떤 게 좋아?", "최신 트렌드"
-- 기술 선택 질문
+- Technology selection questions
 
 PLANNING Context:
 - "계획 세워줘", "설계해줘"
-- Plan Mode 활성화
-- 아키텍처 질문
+- Plan Mode activation
+- Architecture questions
 ```
 
-### 수동 전환
+### Manual Switching
 ```
---ctx dev      # 개발 모드로 전환
---ctx review   # 리뷰 모드로 전환
---ctx research # 리서치 모드로 전환
+--ctx dev      # Switch to dev mode
+--ctx review   # Switch to review mode
+--ctx research # Switch to research mode
 ```
 
-### 컨텍스트 조합
+### Context Combinations
 ```
---ctx dev --model haiku       # 빠른 개발
---ctx review --think-hard     # 심층 리뷰
---ctx research --ultrathink   # 종합 연구
+--ctx dev --model haiku       # Fast development
+--ctx review --think-hard     # Deep review
+--ctx research --ultrathink   # Comprehensive research
 ```
 
 ---
 
 ## Context-Specific Rules
 
-| Context | 코드 작성 | 설명 비율 | 검증 수준 |
-|---------|----------|----------|----------|
-| DEV | 즉시 | 최소 | 기본 테스트 |
-| REVIEW | 필요시만 | 상세 | 심층 분석 |
-| RESEARCH | 예시만 | 포괄적 | 다중 소스 |
-| PLANNING | 안 함 | 구조화 | 사전 검토 |
+| Context | Code Writing | Explanation Ratio | Verification Level |
+|---------|-------------|-------------------|-------------------|
+| DEV | Immediate | Minimal | Basic tests |
+| REVIEW | Only when needed | Detailed | Deep analysis |
+| RESEARCH | Examples only | Comprehensive | Multi-source |
+| PLANNING | None | Structured | Pre-review |

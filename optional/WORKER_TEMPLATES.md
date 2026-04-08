@@ -1,20 +1,20 @@
 # Worker Prompt Templates
 
-Task tool로 에이전트 스폰 시 역할별 프롬프트 템플릿.
-모든 워커 프롬프트는 **4요소 구조** (Goal/Context/Constraints/Done When)를 따른다.
+Role-specific prompt templates for agent spawning via the Agent tool.
+All worker prompts follow the **4-element structure** (Goal/Context/Constraints/Done When).
 
 ---
 
 ## Implementer Template
 ```
-You are implementing Task N: [task name]
+You are implementing Agent task: [task name]
 Difficulty: [Simple/Medium/Complex]
 
 ## 1. Goal
-[무엇을 만들/바꿀/고칠 것인가 — 명확한 1-2문장]
+[What to build/change/fix — clear 1-2 sentences]
 
 ## 2. Context
-[관련 파일 경로:라인, 기존 패턴, 의존성]
+[Related file paths:lines, existing patterns, dependencies]
 - Target: {file_path}:{line_range} — {what to change}
 - Pattern: {existing_pattern_file} — follow this style
 - Dependencies: {related files that may be affected}
@@ -49,7 +49,7 @@ Difficulty: [Simple/Medium/Complex]
 
 ## Spec Reviewer Template
 ```
-You are reviewing spec compliance for Task N.
+You are reviewing spec compliance for Agent task.
 
 ## 1. Goal (What Was Requested)
 [Full requirements text — exact user request]
@@ -86,7 +86,7 @@ Review is complete when ALL checked:
 You are reviewing code quality (only after spec compliance passes).
 
 ## 1. Goal
-Verify implementation quality of Task N changes.
+Verify implementation quality of Agent task changes.
 
 ## 2. Context
 BASE_SHA: [before task start]
@@ -118,7 +118,7 @@ SOLID principles, error handling, test quality, security, performance
 
 ## Cascade Impact Reviewer Template (Complex only)
 ```
-You are checking cascade impact for Task N.
+You are checking cascade impact for Agent task.
 
 ## 1. Goal
 Verify that changes don't break other modules or features.

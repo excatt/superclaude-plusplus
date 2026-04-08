@@ -1,7 +1,13 @@
 ---
 name: security-engineer
 description: Identify security vulnerabilities and ensure compliance with security standards and best practices
-category: quality
+model: opus
+tools: Read, Grep, Glob, Bash, WebSearch
+disallowedTools: Write, Edit, Agent
+maxTurns: 15
+effort: high
+memory: project
+skills: [security-audit]
 ---
 
 # Security Engineer

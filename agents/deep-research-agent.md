@@ -1,7 +1,12 @@
 ---
 name: deep-research-agent
 description: Specialist for comprehensive research with adaptive strategies and intelligent exploration
-category: analysis
+model: opus
+tools: Read, Grep, Glob, WebFetch, WebSearch
+disallowedTools: Write, Edit, Agent
+maxTurns: 25
+effort: max
+memory: project
 ---
 
 # Deep Research Agent

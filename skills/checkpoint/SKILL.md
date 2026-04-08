@@ -3,6 +3,14 @@ name: checkpoint
 description: Save and restore work state with Git-based lightweight checkpoint system. Use before risky work, milestone completion, experimental changes. Keywords: checkpoint, save, restore, rollback, snapshot, backup, git, stash.
 ---
 
+## Dynamic Context
+
+Current git state:
+!`git log --oneline -5 2>/dev/null`
+
+Existing stashes:
+!`git stash list 2>/dev/null || echo "No stashes"`
+
 # Checkpoint Skill
 
 ## Purpose

@@ -106,33 +106,33 @@ write_memory("session_summary", "Auth system complete and validated")
 
 ### 5-Layer Progressive Context Loading
 
-요청 복잡도에 따라 컨텍스트를 점진적으로 로드하여 토큰 효율성 극대화:
+Maximize token efficiency by progressively loading context based on request complexity:
 
 ```yaml
-Layer 0: Bootstrap (150 tokens) - 항상 활성
-  - 시간 인식 + 레포 감지 + 세션 초기화
+Layer 0: Bootstrap (150 tokens) - always active
+  - Time awareness + repo detection + session init
 
 Layer 1: Minimal (500-800 tokens)
   - Triggers: "progress", "status", "update"
-  - 간단한 상태 확인, 진행 보고
+  - Simple status checks, progress reports
 
 Layer 2: Target (500-1K tokens)
   - Triggers: "typo", "rename", "comment"
-  - 단일 파일 작은 변경
+  - Single-file small changes
 
 Layer 3: Related (3-4.5K tokens)
   - Triggers: "bug", "fix", "refactor"
-  - 관련 파일들 분석 필요
+  - Related file analysis needed
 
 Layer 4: System (8-12K tokens)
   - Triggers: "feature", "architecture"
-  - 시스템 전체 이해 필요
-  - 사용자 확인 권장
+  - Full system understanding needed
+  - User confirmation recommended
 
 Layer 5: External (20-50K tokens)
   - Triggers: "redesign", "migration"
-  - 외부 문서/API 참조 필요
-  - WARNING 표시 필수
+  - External docs/API references needed
+  - WARNING display required
 ```
 
 ### Intent Classification
@@ -145,17 +145,17 @@ def classify_intent(request: str) -> Layer:
     heavy = ["feature", "implement", "add", "create"]
     ultra_heavy = ["redesign", "migration", "rewrite", "overhaul"]
 
-    # 키워드 매칭으로 적절한 레이어 결정
-    # → 최소 필요 컨텍스트만 로드
+    # Match keywords to determine appropriate layer
+    # → Load only the minimum required context
 ```
 
 ### Token Budget Management
 
-| 작업 유형 | 일반 토큰 | 최적화 후 | 절약률 |
-|----------|----------|----------|--------|
-| 오타 수정 | 200-500 | 150-200 | 60% |
-| 버그 수정 | 2,000-5,000 | 1,000-2,000 | 50% |
-| 기능 추가 | 10,000-50,000 | 5,000-15,000 | 60% |
-| 잘못된 방향 | 50,000+ | 100-200 (방지) | 99%+ |
+| Task Type | Baseline Tokens | After Optimization | Savings |
+|-----------|-----------------|-------------------|---------|
+| Typo fix | 200-500 | 150-200 | 60% |
+| Bug fix | 2,000-5,000 | 1,000-2,000 | 50% |
+| Feature add | 10,000-50,000 | 5,000-15,000 | 60% |
+| Wrong direction | 50,000+ | 100-200 (prevented) | 99%+ |
 
-**핵심 인사이트**: 예방(confidence check)이 최적화보다 더 많은 토큰 절약
+**Key insight**: Prevention (confidence check) saves more tokens than optimization

@@ -1,6 +1,6 @@
 # Behavioral Modes
 
-상황별 행동 변경 모드. 각 모드는 사고방식, 우선순위, 커뮤니케이션 스타일을 조정합니다.
+Context-adaptive behavioral modes. Each mode adjusts mindset, priorities, and communication style.
 
 ---
 
@@ -8,49 +8,49 @@
 
 | Mode | Purpose | Trigger | Flag |
 |------|---------|---------|------|
-| **Brainstorming** | 요구사항 탐색 | "maybe", "생각중인데" | `--brainstorm` |
-| **Deep Research** | 체계적 조사 | `/sc:research`, "조사해줘" | `--research` |
-| **Introspection** | 메타인지 분석 | 에러 복구, 자기 분석 | `--introspect` |
-| **Orchestration** | 도구 최적화 | 다중 도구, 병렬 실행 | `--orchestrate` |
-| **Task Management** | 계층적 작업 관리 | >3단계 작업, 복잡한 스코프 | `--task-manage` |
-| **Token Efficiency** | 압축된 커뮤니케이션 | 컨텍스트 >75% | `--uc` |
-| **Business Panel** | 전문가 패널 분석 | `/sc:business-panel` | - |
-| **Harness** | 에이전트 주도 구현 | "에이전트한테 맡겨", "전부 자동으로" | `--harness` |
+| **Brainstorming** | Requirements exploration | "maybe", "생각중인데" | `--brainstorm` |
+| **Deep Research** | Systematic investigation | `/sc:research`, "조사해줘" | `--research` |
+| **Introspection** | Metacognitive analysis | Error recovery, self-analysis | `--introspect` |
+| **Orchestration** | Tool optimization | Multi-tool, parallel execution | `--orchestrate` |
+| **Task Management** | Hierarchical task management | >3-step tasks, complex scope | `--task-manage` |
+| **Token Efficiency** | Compressed communication | Context >75% | `--uc` |
+| **Business Panel** | Expert panel analysis | `/sc:business-panel` | - |
+| **Harness** | Agent-driven implementation | "에이전트한테 맡겨", "전부 자동으로" | `--harness` |
 
 ---
 
 ## Brainstorming Mode
 
-**Purpose**: 협업적 요구사항 탐색 및 창의적 문제 해결
+**Purpose**: Collaborative requirements exploration and creative problem solving
 
 **Triggers**:
-- 모호한 요청: "뭔가 만들어볼까...", "생각중인데..."
-- 키워드: brainstorm, 탐색, 논의, 고민, 잘 모르겠는데
-- 불확실성: "maybe", "아마", "혹시", "할 수 있을까"
+- Vague requests: "뭔가 만들어볼까...", "생각중인데..."
+- Keywords: brainstorm, 탐색, 논의, 고민, 잘 모르겠는데
+- Uncertainty: "maybe", "아마", "혹시", "할 수 있을까"
 
 **Behavior**:
-- 🤔 소크라틱 대화로 숨겨진 요구사항 발견
-- 📝 인사이트를 구조화된 요구사항 브리프로 합성
-- ✅ 가정 없이 사용자가 방향 결정하도록 유도
+- 🤔 Discover hidden requirements through Socratic dialogue
+- 📝 Synthesize insights into structured requirements briefs
+- ✅ Guide user toward decisions without making assumptions
 
 **Questioning Principles**:
-- **Questions Reveal Consequences**: 단순 정보 수집이 아닌, 아키텍처/비용/복잡도 결정을 드러내는 질문
-- **Trade-off 명시**: 선택지마다 장단점 표로 제시 (Option A: +속도 -복잡도 형식)
-- **Default 제공**: 사용자 미응답 시 진행 가능한 합리적 기본값과 근거 제시
+- **Questions Reveal Consequences**: Ask questions that expose architecture/cost/complexity decisions, not just gather information
+- **Trade-off Clarity**: Present pros and cons for each option in table format (Option A: +speed -complexity)
+- **Default Provided**: Offer reasonable defaults with rationale when user does not respond
 
 ---
 
 ## Deep Research Mode
 
-**Purpose**: 체계적 조사 및 증거 기반 추론
+**Purpose**: Systematic investigation and evidence-based reasoning
 
-**Triggers**: `/sc:research` | "조사해줘", "알아봐줘", "탐색" | 최신 정보 필요
+**Triggers**: `/sc:research` | "조사해줘", "알아봐줘", "탐색" | Latest information needed
 
 **Behavior**:
-- 체계적 > 즉흥: 방법론적으로 조사 구조화
-- 증거 > 가정: 모든 주장 검증
-- 신뢰도 수준 선행, 인라인 인용 제공
-- 항상 조사 계획 생성, 병렬 작업 기본
+- Systematic > ad-hoc: Structure research methodologically
+- Evidence > assumptions: Verify all claims
+- Lead with confidence levels, provide inline citations
+- Always generate a research plan, parallelize by default
 
 **Integration**: auto-activate deep-research-agent, Tavily, Sequential
 
@@ -58,26 +58,26 @@
 
 ## Introspection Mode
 
-**Purpose**: 자기 성찰 및 추론 최적화를 위한 메타인지 분석
+**Purpose**: Metacognitive analysis for self-reflection and reasoning optimization
 
 **Triggers**:
-- 자기 분석 요청: "내 추론 분석해봐"
-- 에러 복구: 예상치 못한 결과
-- 패턴 인식 필요
+- Self-analysis requests: "내 추론 분석해봐"
+- Error recovery: Unexpected results
+- Pattern recognition needed
 
 **Behavior**:
-- 🧠 의사결정 로직 및 추론 체인 분석
-- 🔄 반복 패턴 감지 및 최적화 기회 식별
-- 💡 지속적 개선을 위한 인사이트 추출
-- 마커 사용: 🤔 🎯 ⚡ 📊 💡
+- 🧠 Analyze decision logic and reasoning chains
+- 🔄 Detect repetitive patterns and identify optimization opportunities
+- 💡 Extract insights for continuous improvement
+- Markers: 🤔 🎯 ⚡ 📊 💡
 
 ---
 
 ## Orchestration Mode
 
-**Purpose**: 최적의 작업 라우팅 및 리소스 효율을 위한 지능적 도구 선택
+**Purpose**: Intelligent tool selection for optimal task routing and resource efficiency
 
-**Triggers**: 다중 도구 작업 조율 | 리소스 >75% | 병렬 실행 기회 (>3 파일)
+**Triggers**: Multi-tool task coordination | Resource >75% | Parallel execution opportunity (>3 files)
 
 **Pipeline**: CLARIFY (4×4 AskUserQuestion) → PARALLELIZE (dependency analysis) → EXECUTE (`run_in_background=True`) → SYNTHESIZE (merge results)
 
@@ -93,17 +93,22 @@
 
 **Agent Chaining**: Feature (planner→tdd→reviewer→security) | Bugfix (root-cause→tdd→reviewer) | Refactor (architect→reviewer→tdd)
 
+**Parallel Execution (v2.0)**:
+- Worktree isolation: `isolation: worktree` gives each agent an independent branch
+- Generator+Validator loop: generate → validate → fix → ship
+- `/batch` integration: `--delegate` flag internally leverages `/batch`
+
 ---
 
 ## Task Management Mode
 
-**Purpose**: 복잡한 다단계 작업을 위한 계층적 조직 및 영속 메모리
+**Purpose**: Hierarchical organization and persistent memory for complex multi-step tasks
 
 **Triggers**:
-- >3단계 작업
-- 다중 파일/디렉토리 스코프
-- 복잡한 의존성 필요
-- 키워드: 다듬어, 개선해, 정리해, polish, refine
+- >3-step tasks
+- Multi-file/directory scope
+- Complex dependencies required
+- Keywords: 다듬어, 개선해, 정리해, polish, refine
 
 **Task Hierarchy**:
 ```
@@ -130,9 +135,9 @@ End: think_about_whether_you_are_done() → session_summary
 
 ## Token Efficiency Mode
 
-**Purpose**: 압축된 명확성과 효율적 토큰 사용을 위한 심볼 강화 커뮤니케이션
+**Purpose**: Symbol-enhanced communication for compressed clarity and efficient token usage
 
-**Triggers**: 컨텍스트 >75% | `--uc`, `--ultracompressed` | 대규모 작업
+**Triggers**: Context >75% | `--uc`, `--ultracompressed` | Large-scale tasks
 
 **Symbol Systems**:
 
@@ -167,7 +172,7 @@ End: think_about_whether_you_are_done() → session_summary
 
 ## Business Panel Mode
 
-**Purpose**: 적응적 상호작용 전략을 활용한 다중 전문가 비즈니스 분석
+**Purpose**: Multi-expert business analysis with adaptive interaction strategies
 
 **Trigger**: `/sc:business-panel`
 
@@ -182,21 +187,50 @@ End: think_about_whether_you_are_done() → session_summary
 
 ---
 
-## Harness Mode
+## Harness Mode (v2.0)
 
-**Purpose**: 에이전트가 전체 구현을 주도하고, 엔지니어는 의도 명시/환경 설계/피드백에 집중
+**Purpose**: Agent drives the full implementation; engineer focuses on intent, environment design, and feedback
 
-**Triggers**: `--harness` | "에이전트한테 맡겨", "전부 자동으로" | 대규모/반복 구현 위임
+**Triggers**: `--harness` | "에이전트한테 맡겨", "전부 자동으로" | Delegating large-scale/repetitive implementation
 
-**Workflow**: INTENT (엔지니어) → SCAFFOLD (에이전트, **Phase Gate: 사용자 확인 필수**) → IMPLEMENT (에이전트 자율) → VERIFY (Two-Stage Review) → DELIVER (합류)
+**Workflow**: INTENT → SCAFFOLD → TEAM(optional) → IMPLEMENT → VERIFY → DELIVER
 
-**Safety**: Scope Lock | Struggle Escalation (3회 실패 → Report) | No Silent Decisions | Incremental Delivery
+| Phase | Owner | Tools | Isolation |
+|-------|-------|-------|-----------|
+| INTENT | Engineer | - | - |
+| SCAFFOLD | Agent (**Phase Gate: user approval required**) | Read, Grep | - |
+| TEAM | Team Lead (when Agent Teams enabled) | Agent Teams API | - |
+| IMPLEMENT | harness-worker / team-implementer | Write, Edit, Bash | **worktree** |
+| VERIFY | team-reviewer / Two-Stage Review | Read, Grep, Bash | - |
+| DELIVER | Converge (merge + final check) | Git | - |
 
-**Dependency Flow**: `Types → Config → Domain → Service → Runtime → UI` (역방향 import 경고)
+**Agent Teams Integration** (experimental):
+- Enabled when `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` is set
+- Team Lead autonomously spawns team members during the TEAM phase
+- Each member works independently in a worktree-isolated environment
+- Falls back to existing Subagent pattern when disabled
 
-**GC**: 세션 종료 시 `codebase-gc` 제안 (dead code, import, doc-code sync, test gaps)
+**Team Composition Examples**:
+```
+Harness Team:
+  Lead: orchestrator
+  ├─ team-implementer (worktree) × N
+  ├─ team-reviewer (read-only)
+  └─ quality-engineer (testing)
 
-**결합**: `--orchestrate` (병렬) | `--safe-mode` (전 Phase 확인) | `--think-hard` (깊은 분석) | `--uc` (압축)
+Bugfix Team:
+  Lead: root-cause-analyst
+  ├─ team-implementer (worktree, skills: tdd)
+  └─ team-reviewer
+```
+
+**Safety**: Scope Lock | Struggle Escalation (Circuit Breaker: auto-stop after 3 failures) | No Silent Decisions | Incremental Delivery
+
+**Dependency Flow**: `Types → Config → Domain → Service → Runtime → UI` (reverse import warning)
+
+**GC**: Suggest `codebase-gc` at session end (dead code, imports, doc-code sync, test gaps)
+
+**Combinations**: `--orchestrate` (parallel) | `--safe-mode` (approve every phase) | `--think-hard` (deep analysis) | `--uc` (compressed)
 
 Details: `optional/MODE_Harness.md`
 
@@ -204,21 +238,21 @@ Details: `optional/MODE_Harness.md`
 
 ## Progressive Context Loading
 
-난이도 평가(Step 0)와 연동하여 컨텍스트를 점진적으로 로딩:
+Loads context incrementally in conjunction with difficulty assessment (Step 0):
 
 | Layer | Tokens | Difficulty | Triggers | Use Case |
 |-------|--------|------------|----------|----------|
-| 0 | 150 | — | 항상 | Bootstrap |
-| 1 | 500-800 | — | 진행상황, 상태 | 상태 확인 |
-| 2 | 500-1K | Simple | 오타, 이름변경 | 소규모 변경 |
-| 3 | 3-4.5K | Medium | 버그, 수정, 리팩토링 | 관련 파일 분석 |
-| 4 | 8-12K | Complex | 기능, 아키텍처 | 시스템 이해 |
-| 5 | 20-50K | Complex+ | 재설계, 마이그레이션 | 외부 참조 |
+| 0 | 150 | — | Always | Bootstrap |
+| 1 | 500-800 | — | Progress, status | Status check |
+| 2 | 500-1K | Simple | Typos, renames | Small changes |
+| 3 | 3-4.5K | Medium | Bugs, fixes, refactoring | Related file analysis |
+| 4 | 8-12K | Complex | Features, architecture | System understanding |
+| 5 | 20-50K | Complex+ | Redesign, migration | External references |
 
-**난이도별 리소스 로딩**:
-- **Simple**: RULES.md 핵심만 참조, optional/ 로딩 불필요
-- **Medium**: RULES.md + 관련 optional/ 1-2개 선택적 로딩
-- **Complex**: RULES.md + REASONING_TEMPLATES.md + CONTEXT_BUDGET.md 로딩
+**Resource Loading by Difficulty**:
+- **Simple**: Reference RULES.md essentials only, no optional/ loading needed
+- **Medium**: RULES.md + selectively load 1-2 relevant optional/ files
+- **Complex**: RULES.md + REASONING_TEMPLATES.md + CONTEXT_BUDGET.md
 
-**핵심**: 예방(confidence check)이 최적화보다 토큰을 더 절약함
-**상세**: `optional/CONTEXT_BUDGET.md` 참조
+**Key Insight**: Prevention (confidence check) saves more tokens than optimization
+**Details**: See `optional/CONTEXT_BUDGET.md`
