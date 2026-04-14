@@ -5,6 +5,40 @@
 형식은 [Keep a Changelog](https://keepachangelog.com/ko/1.0.0/)를 따르며,
 [Semantic Versioning](https://semver.org/lang/ko/)을 준수합니다.
 
+## [2.0.2] - 2026-04-14
+
+### Added
+- **DESIGN.md 통합** ([source](https://github.com/VoltAgent/awesome-design-md)):
+  Google Stitch DESIGN.md 포맷을 디자인 파이프라인에 통합. AI 에이전트가 읽는 디자인 시스템 문서로 일관된 UI 생성 지원.
+
+  **templates/visual-design.template.md (신규)**:
+  - Google Stitch 9-section 포맷 템플릿 (Visual Theme, Color, Typography, Components, Layout, Depth, Do/Don'ts, Responsive, Agent Prompt Guide)
+  - 커스텀 DESIGN.md 작성 시 즉시 사용 가능
+
+  **skills/frontend-design 업데이트**:
+  - DESIGN.md Integration 섹션 추가: DESIGN.md 존재 시 디자인 토큰의 authoritative source로 사용
+  - DESIGN.md 미존재 시 awesome-design-md 또는 `/ui-ux-pro-max --persist` 제안
+
+  **skills/ui-ux-pro-max 업데이트**:
+  - Step 2c 추가: 기존 DESIGN.md (Google Stitch Format) 사용 워크플로우
+  - `npx getdesign@latest add {brand}` (66 brands) 설치 가이드
+  - Design Pipeline에 DESIGN.md를 Step 0 (source of truth)으로 추가
+
+  **CLAUDE.md 업데이트**:
+  - Workflow Integration의 Design 단계에 DESIGN.md 우선 참조 추가
+  - DESIGN.md 섹션 신규: AGENTS.md/DESIGN.md 역할 구분표, 사용 방법
+
+  **README.md 업데이트**:
+  - DESIGN.md (Visual Design System) 섹션 추가
+  - Directory Structure에 visual-design.template.md 반영
+  - Credits에 awesome-design-md 추가
+
+### Sources & Inspiration
+- [VoltAgent/awesome-design-md](https://github.com/VoltAgent/awesome-design-md) — 66 brand design systems (Google Stitch DESIGN.md format). MIT License
+- [Google Stitch DESIGN.md](https://stitch.withgoogle.com/docs/design-md/overview/) — DESIGN.md format specification
+
+---
+
 ## [2.0.1] - 2026-04-08
 
 ### Added

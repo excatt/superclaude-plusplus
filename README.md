@@ -105,7 +105,7 @@ skills: [api-design, db-design, security-audit]
 | `/feature-planner` | 기능 구현 계획 수립 |
 | `/gap-analysis` | 설계-구현 비교, Match Rate 계산 |
 | `/tdd` | RED-GREEN-REFACTOR 주기 강제 + Git checkpoint |
-| `/ui-ux-pro-max` | AI 디자인 인텔리전스 (67 스타일, 96 팔레트, 57 폰트) |
+| `/ui-ux-pro-max` | AI 디자인 인텔리전스 (67 스타일, 96 팔레트, 57 폰트) + DESIGN.md 통합 |
 | `/fix-pr` | PR 코멘트 기반 자동 수정 (v2.0 신규) |
 
 #### Document Skills
@@ -362,9 +362,10 @@ superclaude-plusplus/                # 프로젝트 저장소 (source of truth)
 │   └── ...                         # 23개 문서
 ├── docs/
 │   └── PLAN-v2.0.md                # v2.0 마이그레이션 계획
-└── templates/                      # PDCA 템플릿
+└── templates/                      # PDCA + 디자인 시스템 템플릿
     ├── plan.template.md
     ├── design.template.md
+    ├── visual-design.template.md   # DESIGN.md 템플릿 (Google Stitch 9-section)
     ├── analysis.template.md
     └── report.template.md
 ```
@@ -424,6 +425,30 @@ Team Lead (Orchestrator)
 ```
 
 활성화: `settings.json`에서 `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`
+
+### DESIGN.md (Visual Design System)
+
+AI 에이전트가 읽는 디자인 시스템 문서 ([Google Stitch format](https://stitch.withgoogle.com/docs/design-md/overview/)). 프로젝트 루트에 `DESIGN.md`를 배치하면 에이전트가 일관된 UI를 생성합니다.
+
+| File | 독자 | 정의 |
+|------|------|------|
+| `AGENTS.md` | 코딩 에이전트 | 프로젝트를 어떻게 빌드하는지 |
+| `DESIGN.md` | 디자인 에이전트 | 프로젝트가 어떻게 보이는지 |
+
+**사용 방법**:
+```bash
+npx getdesign@latest add vercel    # 66개 브랜드 중 선택 (vercel, stripe, linear.app 등)
+npx getdesign@latest list          # 전체 목록
+```
+
+**디자인 파이프라인**:
+```
+DESIGN.md (source of truth) → /ui-ux-pro-max → /frontend-design → /web-design-guidelines
+```
+
+- **커스텀 생성**: `/ui-ux-pro-max --design-system --persist`
+- **템플릿**: `templates/visual-design.template.md` (9-section Stitch format)
+- **컬렉션**: [VoltAgent/awesome-design-md](https://github.com/VoltAgent/awesome-design-md) (66 brands)
 
 ### PDCA Workflow
 체계적인 개발 사이클을 위한 Plan-Do-Check-Act 워크플로우:
@@ -598,6 +623,7 @@ rm -rf ~/.claude
 - **[Karpathy Guidelines](https://github.com/forrestchang/andrej-karpathy-skills)** - LLM 코딩 행동 규칙 (Think Before Coding, Simplicity First, Surgical Changes, Goal-Driven Execution). [Andrej Karpathy의 관찰](https://x.com/karpathy/status/2015883857489522876)에서 파생
 - **[Harness Engineering](https://openai.com/index/harness-engineering/)** - OpenAI의 에이전트 주도 개발 방법론 (Repository as Knowledge Base, Dependency Flow, Struggle = Signal, Codebase GC). [Martin Fowler의 분석](https://martinfowler.com/articles/exploring-gen-ai/harness-engineering.html) 참조
 - **[UI UX Pro Max](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill)** - BM25 기반 UI/UX 디자인 인텔리전스 (67 스타일, 96 팔레트, 57 폰트, 100 추론 규칙, 13 스택). MIT License
+- **[awesome-design-md](https://github.com/VoltAgent/awesome-design-md)** - 66개 브랜드 디자인 시스템 컬렉션 (Google Stitch DESIGN.md 포맷). `npx getdesign@latest add {brand}`로 즉시 사용. MIT License
 - **[Antigravity Kit](https://github.com/vudovn/antigravity-kit)** - Gemini 대상 AI 에이전트 프레임워크. Brainstorming Questioning Principles (결과 드러내는 질문, 트레이드오프 명시, 기본값 제공), 우선순위 기반 검증 파이프라인 (`checklist.sh` 영감). MIT License
 - **[oh-my-agent](https://github.com/first-fluke/oh-my-agent)** - 멀티 에이전트 하네스의 공유 프로토콜 (`_shared/`). 난이도 분기(difficulty-guide), 추론 템플릿(reasoning-templates), 컨텍스트 예산(context-budget/loading), 4요소 프롬프트(prompt-structure), Phase Gate 자동통과(phase-gates), Cascade Impact Review(multi-review-protocol), Clarification Debt(session-metrics). MIT License
 - **[oh-my-claudecode](https://github.com/Yeachan-Heo/oh-my-claudecode)** - 자동화 훅 및 워크플로우 아이디어
