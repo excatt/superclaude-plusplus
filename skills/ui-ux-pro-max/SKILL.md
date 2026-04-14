@@ -152,6 +152,20 @@ python3 skills/ui-ux-pro-max/scripts/search.py "<query>" --design-system --persi
 2. If the page file exists, its rules **override** the Master file
 3. If not, use `design-system/MASTER.md` exclusively
 
+### Step 2c: Use Existing DESIGN.md (Google Stitch Format)
+
+If the project already has a `DESIGN.md` in the root (e.g., from [awesome-design-md](https://github.com/VoltAgent/awesome-design-md)), **skip design system generation** and use it directly. DESIGN.md follows the 9-section Stitch format (visual theme, colors, typography, components, layout, depth, do/don'ts, responsive, agent prompts) and serves as the single source of truth for all UI decisions.
+
+**Install a brand DESIGN.md:**
+```bash
+npx getdesign@latest add {brand}     # e.g., vercel, stripe, linear.app
+npx getdesign@latest list             # show all 66 available brands
+```
+
+**Available brands**: airbnb, apple, claude, cursor, figma, linear.app, notion, stripe, supabase, tesla, vercel, and 55 more.
+
+**Template**: Use `templates/visual-design.template.md` to create a custom DESIGN.md from scratch.
+
 ### Step 3: Supplement with Detailed Searches (as needed)
 
 After getting the design system, use domain searches to get additional details:
@@ -304,9 +318,10 @@ Before delivering UI code, verify:
 ### Design Pipeline
 
 ```
-/ui-ux-pro-max (design decisions) -> /frontend-design (implementation) -> /web-design-guidelines (quality review)
+DESIGN.md (source of truth) -> /ui-ux-pro-max (design decisions) -> /frontend-design (implementation) -> /web-design-guidelines (quality review)
 ```
 
+0. **Design System** (`DESIGN.md`): Brand design tokens — install via `npx getdesign@latest add {brand}` or generate via `--persist`
 1. **Design Decisions** (`/ui-ux-pro-max`): Style, color, typography, pattern recommendations
 2. **UI Implementation** (`/frontend-design`): Creative, polished code generation
 3. **Quality Review** (`/web-design-guidelines`): Accessibility, performance, UX rule verification

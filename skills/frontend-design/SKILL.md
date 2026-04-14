@@ -8,9 +8,19 @@ This skill guides creation of distinctive, production-grade frontend interfaces 
 
 The user provides frontend requirements: a component, page, application, or interface to build. They may include context about the purpose, audience, or technical constraints.
 
+## DESIGN.md Integration
+
+Before making any aesthetic decisions, check if a `DESIGN.md` file exists in the project root or `design-system/` directory. DESIGN.md is a plain-text design system document (Google Stitch format) that defines how the UI should look and feel.
+
+**If DESIGN.md exists**: Use it as the authoritative source for colors, typography, spacing, components, and layout. Do not deviate from its tokens unless the user explicitly asks to override.
+
+**If DESIGN.md does not exist**: Proceed with the creative design thinking below. Consider suggesting the user adopt one from [awesome-design-md](https://github.com/VoltAgent/awesome-design-md) (66 brand-inspired design systems) or generate one via `/ui-ux-pro-max --design-system --persist`.
+
+**To install a brand DESIGN.md**: `npx getdesign@latest add {brand}` (e.g., `npx getdesign@latest add vercel`)
+
 ## Design Thinking
 
-Before coding, understand the context and commit to a BOLD aesthetic direction:
+Before coding (and when no DESIGN.md is present), understand the context and commit to a BOLD aesthetic direction:
 - **Purpose**: What problem does this interface solve? Who uses it?
 - **Tone**: Pick an extreme: brutally minimal, maximalist chaos, retro-futuristic, organic/natural, luxury/refined, playful/toy-like, editorial/magazine, brutalist/raw, art deco/geometric, soft/pastel, industrial/utilitarian, etc. There are so many flavors to choose from. Use these for inspiration but design one that is true to the aesthetic direction.
 - **Constraints**: Technical requirements (framework, performance, accessibility).

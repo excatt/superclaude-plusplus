@@ -98,12 +98,26 @@ Claude automatically records learnings to `~/.claude/projects/<project>/memory/`
 - **Step 0**: Difficulty Assessment (Simple/Medium/Complex) → protocol branching
 - **Pre-Implementation**: `/confidence-check` → ≥90% proceed (Medium+)
 - **Planning**: `/feature-planner` → `/architecture` (Complex: + reasoning templates)
-- **Design**: `/ui-ux-pro-max` → `/frontend-design` → `/web-design-guidelines`
+- **Design**: `DESIGN.md` (if exists) → `/ui-ux-pro-max` → `/frontend-design` → `/web-design-guidelines`
 - **Implementation**: Domain-specific skills (Complex: + mid-checkpoint at 50%)
 - **Review**: Two-Stage Review (Simple: Stage 1 only | Medium: Stage 1+2 | Complex: + Cascade Impact)
 - **Deployment**: `/docker`, `/cicd`, `/monitoring`
 - **Verification**: `/verify` → `/audit` (project rules)
 - **Post-Implementation**: `/learn`
+
+### DESIGN.md (Visual Design System)
+AI 에이전트가 읽는 디자인 시스템 문서 ([Google Stitch format](https://stitch.withgoogle.com/docs/design-md/overview/)).
+
+| File | Who reads it | What it defines |
+|------|-------------|-----------------|
+| `AGENTS.md` | Coding agents | How to build the project |
+| `DESIGN.md` | Design agents | How the project should look and feel |
+
+**Usage**:
+- **Install brand design**: `npx getdesign@latest add {brand}` (66 brands: vercel, stripe, linear.app, etc.)
+- **Generate custom**: `/ui-ux-pro-max --design-system --persist`
+- **Template**: `templates/visual-design.template.md`
+- **Collection**: [VoltAgent/awesome-design-md](https://github.com/VoltAgent/awesome-design-md)
 
 ## Optional References (load on demand)
 - `optional/REASONING_TEMPLATES.md` — Structured reasoning (debugging, architecture decisions, performance analysis)
