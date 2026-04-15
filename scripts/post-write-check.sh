@@ -24,7 +24,7 @@ fi
 
 # Fallback: grep for file path pattern
 if [[ -z "$FILE_PATH" || "$FILE_PATH" == "null" ]]; then
-  FILE_PATH=$(echo "$INPUT" | grep -oP '"file_?[pP]ath"\s*:\s*"\K[^"]+' | head -1)
+  FILE_PATH=$(echo "$INPUT" | grep -oE '"file_?[pP]ath"[[:space:]]*:[[:space:]]*"[^"]+"' | head -1 | sed 's/.*:[[:space:]]*"//;s/"$//')
 fi
 
 # Exit if no file path found

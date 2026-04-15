@@ -5,6 +5,23 @@
 형식은 [Keep a Changelog](https://keepachangelog.com/ko/1.0.0/)를 따르며,
 [Semantic Versioning](https://semver.org/lang/ko/)을 준수합니다.
 
+## [2.0.3] - 2026-04-15
+
+### Fixed
+- **macOS 호환성 수정** — Python 3.10+ 전용 문법을 Python 3.9 호환으로 변경:
+  - `scripts/skill-matcher.py`: `dict | None` (PEP 604) → `from __future__ import annotations` 추가
+  - `skills/mcp-builder/scripts/evaluation.py`: `str | None` (PEP 604) → `from __future__ import annotations` 추가
+  - `skills/document-skills/{pptx,docx}/ooxml/scripts/pack.py`: `match/case` (PEP 634) → `if/elif/else`로 변환
+  - `skills/document-skills/{pptx,docx}/ooxml/scripts/validate.py`: `match/case` (PEP 634) → `if/elif/else`로 변환
+- **macOS BSD grep 호환성 수정** — `grep -oP` (GNU 전용)를 `grep -oE` + `sed`로 대체:
+  - `scripts/pre-compact-note.sh`: Perl regex `\K` 제거
+  - `scripts/post-write-check.sh`: Perl regex `\K` 제거
+
+### Changed
+- **README.md**: Requirements 섹션에 Platform Support 테이블 추가, Windows는 WSL2 필수 명시
+
+---
+
 ## [2.0.2] - 2026-04-14
 
 ### Added

@@ -3,6 +3,8 @@
 This script evaluates MCP servers by running test questions against them using Claude.
 """
 
+from __future__ import annotations
+
 import argparse
 import asyncio
 import json

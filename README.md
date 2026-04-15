@@ -597,9 +597,19 @@ rm -rf ~/.claude
 
 - [Claude Code](https://docs.anthropic.com/claude-code) CLI (>= 2.1.0)
 - Claude Max/Pro 구독 또는 Anthropic API 키
-- macOS/Linux (Windows는 WSL 권장)
-- Python 3 (skill-matcher.py, injection-scanner.py 실행용)
+- Python 3.9+ (skill-matcher.py, injection-scanner.py 실행용)
 - `jq` (선택사항, 일부 스크립트에서 사용)
+
+### Platform Support
+
+| 플랫폼 | 지원 수준 | 비고 |
+|---------|-----------|------|
+| **macOS** (Intel/Apple Silicon) | Full | 기본 개발/테스트 환경 |
+| **Linux** (Ubuntu, Debian 등) | Full | - |
+| **Windows + WSL2** | Full | WSL2 내에서 실행 시 완전 호환 |
+| **Windows (네이티브)** | Not Supported | hook 시스템이 Bash 스크립트 기반으로 동작 불가 |
+
+> **Windows 사용자**: WSL2 (Windows Subsystem for Linux) 환경에서 실행해 주세요. 14개 hook 스크립트가 Bash 기반이므로 네이티브 Windows(cmd.exe, PowerShell)에서는 hook 시스템이 작동하지 않습니다. Git Bash는 부분적으로 동작할 수 있으나 공식 지원하지 않습니다.
 
 ## Contributing
 

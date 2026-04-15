@@ -8,6 +8,8 @@ for auto-activated or suggested skills.
 Exit 0 always (non-blocking). Uses only Python stdlib.
 """
 
+from __future__ import annotations
+
 import json
 import os
 import re

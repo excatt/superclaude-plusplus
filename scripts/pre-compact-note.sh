@@ -23,7 +23,7 @@ fi
 
 # Fallback if jq fails
 if [[ -z "$PROMPT" || "$PROMPT" == "null" ]]; then
-  PROMPT=$(echo "$INPUT" | grep -oP '"(prompt|message|content)"\s*:\s*"\K[^"]+' | head -1)
+  PROMPT=$(echo "$INPUT" | grep -oE '"(prompt|message|content)"[[:space:]]*:[[:space:]]*"[^"]+"' | head -1 | sed 's/.*:[[:space:]]*"//;s/"$//')
 fi
 
 # Exit if no prompt

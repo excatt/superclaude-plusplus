@@ -43,14 +43,13 @@ def main():
     )
 
     # Run validations
-    match file_extension:
-        case ".docx":
-            validators = [DOCXSchemaValidator, RedliningValidator]
-        case ".pptx":
-            validators = [PPTXSchemaValidator]
-        case _:
-            print(f"Error: Validation not supported for file type {file_extension}")
-            sys.exit(1)
+    if file_extension == ".docx":
+        validators = [DOCXSchemaValidator, RedliningValidator]
+    elif file_extension == ".pptx":
+        validators = [PPTXSchemaValidator]
+    else:
+        print(f"Error: Validation not supported for file type {file_extension}")
+        sys.exit(1)
 
     # Run validators
     success = True
