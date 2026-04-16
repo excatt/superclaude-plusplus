@@ -1,23 +1,6 @@
 ---
-name: security-audit
-description: |
-  Comprehensive security audit with OWASP Top 10, STRIDE threat model,
-  and LLM/AI-specific security analysis. Covers traditional web security
-  plus AI-era attack surfaces: prompt injection, tool call validation,
-  skill supply chain, and cost amplification.
-
-  Use proactively when:
-  - Security review requested
-  - Auth/authz implementation
-  - API endpoint exposure
-  - LLM/AI integration code
-  - Dependency updates
-  - Pre-deployment audit
-
-  Triggers: security audit, security review, vulnerability check,
-  pentest, threat model, OWASP, security scan
-
-  Do NOT use for: performance optimization, code style review
+name: "security-audit"
+description: "Comprehensive security audit with OWASP Top 10, STRIDE threat model, and LLM/AI-specific security analysis. Covers traditional web security plus AI-era attack surfaces: prompt injection, tool call validation, skill supply chain, and cost amplification. Use proactively when: security review requested, auth/authz implementation, API endpoint exposure, LLM/AI integration code, dependency updates, pre-deployment audit. Triggers: security audit, security review, vulnerability check, pentest, threat model, OWASP, security scan. Do NOT use for: performance optimization, code style review."
 user-invocable: true
 argument-hint: [path-or-scope]
 ---
@@ -250,16 +233,6 @@ Overall Risk: [Critical/High/Medium/Low]
 - **Fix**: Use parameterized query
 - **Evidence**: `db.query(\`SELECT * FROM users WHERE name = '${name}'\`)`
 ```
-
-### Severity Definitions
-
-| Severity | Definition | Action |
-|----------|-----------|--------|
-| **Critical** | Actively exploitable, data breach risk | Stop and fix immediately |
-| **High** | Exploitable with moderate effort | Fix before deploy |
-| **Medium** | Requires specific conditions to exploit | Fix before next release |
-| **Low** | Defense-in-depth improvement | Track in backlog |
-| **Info** | Best practice recommendation | No immediate action |
 
 ## Related Skills
 
