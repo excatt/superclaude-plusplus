@@ -1,18 +1,6 @@
 ---
-name: tdd
-description: |
-  Test-Driven Development workflow with RED-GREEN-REFACTOR cycle enforcement.
-  Ensures tests are written before production code, with Git checkpoints at each phase.
-
-  Use proactively when:
-  - New feature implementation with testable behavior
-  - Bug fix (write reproduction test first)
-  - User explicitly requests TDD approach
-
-  Triggers: TDD, test-driven, test first, red green refactor,
-  write test first, failing test, reproduction test
-
-  Do NOT use for: config changes, documentation, simple renames, UI-only changes
+name: "tdd"
+description: "Test-Driven Development workflow with RED-GREEN-REFACTOR cycle enforcement. Ensures tests are written before production code, with Git checkpoints at each phase. Use proactively when: new feature implementation with testable behavior, bug fix (write reproduction test first), user explicitly requests TDD approach. Triggers: TDD, test-driven, test first, red green refactor, write test first, failing test, reproduction test. Do NOT use for: config changes, documentation, simple renames, UI-only changes."
 user-invocable: true
 argument-hint: [feature-or-bug-description]
 ---
@@ -139,15 +127,6 @@ pytest --cov --cov-report=term-missing
 - Brittle selectors (CSS classes, DOM structure) in tests
 - Test-to-test dependencies (each test must be independent)
 - Large RED→GREEN jumps (write too much code at once)
-
-## Integration with Verification Iron Law
-
-TDD checkpoints feed directly into the Verification Iron Law:
-- RED commit = evidence that test correctly fails
-- GREEN commit = evidence that implementation works
-- REFACTOR commit = evidence that tests remain green after cleanup
-
-Each commit is a verification artifact.
 
 ## Output Format
 
