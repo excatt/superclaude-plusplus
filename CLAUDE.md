@@ -17,7 +17,7 @@
 
 ## Skill System (v2.0)
 
-**118 skills unified under `skills/`. All 0-token when idle.**
+**139 skills unified under `skills/`. All 0-token when idle.**
 
 ### Skill Activation
 - **Auto-Invoke**: `UserPromptSubmit` hook in `.claude/skill-rules.json` analyzes prompts for mechanical matching (implemented in Phase 2)
@@ -38,12 +38,13 @@
 | `/learn` | Extract and save patterns |
 | `/note` | Persist memos across sessions |
 
-### Domain Skills (118 total, major categories)
+### Domain Skills (139 total, major categories)
 - **Analysis**: `/think`, `/debug`, `/code-review`, `/code-smell`, `/analyze`
 - **Architecture**: `/architecture`, `/api-design`, `/db-design`, `/design-patterns`, `/design`
 - **Security**: `/security-audit`, `/auth`, `/error-handling`
 - **Performance**: `/perf-optimize`, `/caching`, `/scaling`
-- **Frontend**: `/react-best-practices`, `/composition-patterns`, `/web-design-guidelines`, `/responsive`, `/a11y`, `/state`, `/seo`, `/ui-ux-pro-max`
+- **Frontend**: `/react-best-practices`, `/composition-patterns`, `/web-design-guidelines`, `/responsive`, `/a11y`, `/state`, `/seo`, `/ui-ux-pro-max`, `/frontend-design`
+- **Impeccable Design Language** (Apache 2.0, pbakaus/impeccable v2.1.1): `/impeccable [craft|teach|extract]` (entry + context), 17 commands: `/shape`, `/layout`, `/typeset`, `/colorize`, `/animate`, `/delight`, `/polish`, `/critique`, `/design-audit`, `/harden`, `/optimize`, `/clarify`, `/distill`, `/quieter`, `/bolder`, `/adapt`, `/overdrive`
 - **Backend**: `/graphql`, `/websocket`, `/queue`, `/pagination`, `/rate-limit`, `/fastapi`
 - **Python**: `/python-best-practices`, `/pytest-runner`, `/uv-package`
 - **DevOps**: `/docker`, `/cicd`, `/monitoring`, `/env`

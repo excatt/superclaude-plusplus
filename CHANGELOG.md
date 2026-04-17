@@ -5,6 +5,22 @@
 형식은 [Keep a Changelog](https://keepachangelog.com/ko/1.0.0/)를 따르며,
 [Semantic Versioning](https://semver.org/lang/ko/)을 준수합니다.
 
+## [2.1.0] - 2026-04-17
+
+### Added
+- **Impeccable Design Language 통합** (Apache 2.0, pbakaus/impeccable v2.1.1) — AI가 생성한 UI의 "AI slop" 아이덴티티 문제를 해결하기 위한 디자인 어휘 시스템.
+  - 신규 skill 18개: `/impeccable [craft|teach|extract]` (엔트리 + context 관리), `/shape`, `/layout`, `/typeset`, `/colorize`, `/animate`, `/delight`, `/polish`, `/critique`, `/design-audit`, `/harden`, `/optimize`, `/clarify`, `/distill`, `/quieter`, `/bolder`, `/adapt`, `/overdrive`
+  - 7개 도메인 reference: typography, color-and-contrast, spatial-design, motion-design, interaction-design, responsive-design, ux-writing
+  - 총 skill 수: 121 → 139
+  - 기존 `/frontend-design` (Anthropic 원본) 유지, `/impeccable`은 동일 계보의 확장판으로 병렬 제공
+  - `NOTICE.md` 추가 — 통합 skill의 저작권/라이선스 추적
+
+### Changed
+- Impeccable 원본의 `audit` skill을 **`design-audit`**으로 리네이밍 — SuperClaude++ 기존 `/audit` (프로젝트 룰 검증, Core Skill)과 네임스페이스 충돌 회피
+  - 충돌 영향 skill 내부 참조 (`/audit` → `/design-audit`) 일괄 치환: `skills/design-audit/SKILL.md`, `skills/critique/SKILL.md`
+- `skills/impeccable/SKILL.md`의 `<post-update-cleanup>` 블록 제거 (신규 설치 시 불필요)
+- `CLAUDE.md` Domain Skills 섹션에 Impeccable 카테고리 추가, skill 카운트 139 반영
+
 ## [2.0.3] - 2026-04-15
 
 ### Fixed

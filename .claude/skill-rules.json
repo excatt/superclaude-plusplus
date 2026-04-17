@@ -598,6 +598,31 @@
         ]
       },
       "message": "💡 /devils-advocate — 결정/설계 비판적 리뷰? (Y/n)"
+    },
+    {
+      "skill": "impeccable",
+      "mode": "suggest",
+      "triggers": {
+        "prompt_patterns": [
+          "landing page", "hero section", "frontend design", "UI design",
+          "component design", "design system", "AI slop",
+          "랜딩 페이지", "히어로 섹션", "프론트엔드 디자인", "UI 디자인",
+          "컴포넌트 만들어", "디자인 언어", "디자인 시스템 잡아"
+        ],
+        "file_patterns": ["*.tsx", "*.jsx", "*.vue", "*.svelte"]
+      },
+      "message": "💡 /impeccable — 디자인 어휘(typography/color/motion) 기반 프론트엔드 빌드? (Y/n)"
+    },
+    {
+      "skill": "design-audit",
+      "mode": "suggest",
+      "triggers": {
+        "prompt_patterns": [
+          "accessibility audit", "a11y check", "design review", "UI audit",
+          "접근성 감사", "a11y 체크", "디자인 감사", "UI 품질", "디자인 점수"
+        ]
+      },
+      "message": "💡 /design-audit — 접근성·성능·테마·반응형·안티패턴 P0-P3 감사? (Y/n)"
     }
   ],
   "settings": {
