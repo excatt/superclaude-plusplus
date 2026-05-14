@@ -224,13 +224,29 @@ Bugfix Team:
   └─ team-reviewer
 ```
 
-**Safety**: Scope Lock | Struggle Escalation (Circuit Breaker: auto-stop after 3 failures) | No Silent Decisions | Incremental Delivery
+**Autonomous Loop via `/goal`** (Claude Code 2.1.139+):
+After INTENT is locked and SCAFFOLD is approved, declare the DELIVER condition with `/goal` so IMPLEMENT → VERIFY iterates without manual prompting until the condition holds.
+
+| DELIVER Intent | `/goal` Condition (verifiable) |
+|----------------|--------------------------------|
+| Feature shipped | `"pnpm test → 0 failures AND pnpm build exit 0 AND PR opened"` |
+| Module migration | `"all call sites of legacyX() replaced AND grep -r legacyX src/ returns 0 AND tests green"` |
+| File split | `"each file in src/ under 300 lines AND tests green"` |
+| Backlog drain | `"gh issue list --label harness returns empty AND tests green"` |
+
+**Soft check warning**: `/goal`'s per-turn check is performed by a small model. It judges *whether the condition seems met*, not whether tests actually passed. **Therefore**:
+- Conditions must reference command exit codes, counts, or file existence — never subjective state
+- Verification Iron Law (hard evidence) still gates final completion claim
+- Circuit Breaker (3+ Fixes) overrides `/goal` — diagnosis report wins over persistence
+- Safe patterns and anti-patterns: `optional/GOAL_PATTERNS.md`
+
+**Safety**: Scope Lock | Struggle Escalation (Circuit Breaker: auto-stop after 3 failures) | No Silent Decisions | Incremental Delivery | `/goal clear` if scope drifts
 
 **Dependency Flow**: `Types → Config → Domain → Service → Runtime → UI` (reverse import warning)
 
 **GC**: Suggest `codebase-gc` at session end (dead code, imports, doc-code sync, test gaps)
 
-**Combinations**: `--orchestrate` (parallel) | `--safe-mode` (approve every phase) | `--think-hard` (deep analysis) | `--uc` (compressed)
+**Combinations**: `--orchestrate` (parallel) | `--safe-mode` (approve every phase, do NOT use with `/goal`) | `--think-hard` (deep analysis) | `--uc` (compressed)
 
 Details: `optional/MODE_Harness.md`
 

@@ -487,8 +487,8 @@ Dockerfile/CI patterns, Security Checklist details: `optional/PROJECT_RULES.md`
 **TDD suggestion criteria**: When the goal transforms into "write tests → make them pass" and the project has test infrastructure (`tests/`, `__tests__/`, `*.test.*`, `*.spec.*`), suggest the `/tdd` workflow.
 
 ### Strong vs Weak Criteria
-- **Strong**: Test passes, benchmark hits target, specific checklist completed → autonomous loop possible
-- **Weak**: "Make it work", "improve it", "make it better" → clarify immediately before starting
+- **Strong**: Test passes, benchmark hits target, specific checklist completed → autonomous loop possible → consider `/goal`
+- **Weak**: "Make it work", "improve it", "make it better" → clarify immediately before starting. **NEVER pass weak criteria to `/goal`** — guarantees runaway loop
 
 ### Multi-Step Plan Format
 ```
@@ -497,7 +497,18 @@ Dockerfile/CI patterns, Security Checklist details: `optional/PROJECT_RULES.md`
 3. [Step] → verify: [specific check]
 ```
 
-**Principle**: Strong success criteria → loop independently. Weak criteria → stop and clarify first.
+### `/goal` Trigger (Claude Code 2.1.139+)
+When Strong criteria exist AND the work spans multiple turns, wrap autonomous execution with `/goal`:
+- ✅ `/goal "pnpm test → 0 failures AND pnpm build exit 0 AND PR opened"`
+- ✅ `/goal "all call sites of legacyAuth() migrated AND tests green"`
+- ❌ `/goal "기능이 완성되면 멈춰"` — soft check, hallucination risk
+- ❌ `/goal "리팩토링 잘 됐으면 종료"` — no verifiable evidence
+
+`/goal` condition must reference **command exit codes, test counts, or file existence** — not subjective state.
+Safety nets remain in force: Verification Iron Law (hard evidence), 3+ Fixes Rule (Circuit Breaker), Two-Stage Review.
+Detailed patterns: `optional/GOAL_PATTERNS.md`
+
+**Principle**: Strong success criteria → `/goal` loops independently. Weak criteria → stop and clarify first.
 
 ---
 
@@ -537,10 +548,14 @@ NO COMPLETION CLAIMS WITHOUT FRESH VERIFICATION EVIDENCE
 ## Persistence Enforcement
 **Priority**: 🔴 **Triggers**: Multi-step tasks, session completion
 
-- Refuse to stop if TODOs remain
-- **Start = Finish**: No exceptions
-- Max 10 iterations (prevent infinite loop)
-- Save progress to `.claude/state/`
+- **Start = Finish**: No exceptions — TODOs remaining → keep working
+- **Autonomous persistence → delegate to `/goal`**: For multi-turn work with verifiable end state, use `/goal <condition>` (Claude Code 2.1.139+) instead of manual loop tracking. The harness checks the condition after each turn and auto-continues until met.
+- **Safety nets always apply** (do NOT disable when using `/goal`):
+  - 3+ Fixes Architecture Rule / `circuit-breaker.sh` — auto-halts on repeated failures
+  - Verification Iron Law — `/goal`'s soft check ≠ hard evidence; require command exit codes
+  - Two-Stage Review — runs on completion, regardless of how the loop ended
+- Save progress to `.claude/state/` for session-resume scenarios
+- Patterns and anti-patterns: `optional/GOAL_PATTERNS.md`
 
 ---
 

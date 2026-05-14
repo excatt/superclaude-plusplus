@@ -92,6 +92,7 @@ skills: [api-design, db-design, security-audit]
 | `/learn` | 재사용 가능한 패턴 추출 및 저장 |
 | `/audit` | 프로젝트 고유 규칙 검증 (비즈니스 로직, 아키텍처 패턴) |
 | `/config-doctor` | SuperClaude++ 설정 유효성 검증 (v2.0 신규) |
+| `/goal` | 자율 실행 루프 — 검증 가능한 종료 조건 충족 시까지 자동 반복 (Claude Code 빌트인, v2.2 통합) |
 
 #### Development Skills
 | Skill | 설명 |
@@ -292,7 +293,8 @@ peon packs use glados # 팩 변경
 |------|------|
 | `--harness` | 에이전트 주도 구현 (5-Phase: Intent - Scaffold - Implement - Verify - Deliver) |
 | `--harness --orchestrate` | 병렬 에이전트 최대 활용 |
-| `--harness --safe-mode` | 모든 Phase에서 사용자 확인 |
+| `--harness --safe-mode` | 모든 Phase에서 사용자 확인 (`/goal` 비호환) |
+| `--harness` + `/goal` | DELIVER 조건을 검증 가능한 명령으로 표현, 자율 루프 활성화 (v2.2 신규, 상세: `optional/GOAL_PATTERNS.md`) |
 
 #### Proactive Suggestion Flags
 | Flag | 설명 |

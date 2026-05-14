@@ -5,6 +5,24 @@
 형식은 [Keep a Changelog](https://keepachangelog.com/ko/1.0.0/)를 따르며,
 [Semantic Versioning](https://semver.org/lang/ko/)을 준수합니다.
 
+## [2.2.0] - 2026-05-14
+
+### Added
+- **`/goal` 명령 통합** (Claude Code 2.1.139+, 2026-05-12 출시) — 자율 실행 루프를 네이티브 빌트인에 위임.
+  - `optional/GOAL_PATTERNS.md` 신규 (214줄) — 핵심 원칙 3종, 안전 패턴 5종 (Test-Driven / Migration Drain / Backlog Drain / Size Budget / PR Acceptance), 안티 패턴 5종, `/loop` vs `/goal` 결정표, SC++ 워크플로우 진입점 매트릭스, 운영 체크리스트.
+  - `CLAUDE.md` Workflow Integration에 **Goal Lock** 단계 신설 — Pre-Implementation과 Planning 사이에서 Strong success criteria 충족 시 `/goal "<verifiable condition>"`을 발동.
+  - `CLAUDE.md` Optional References에 `GOAL_PATTERNS.md` 등록.
+  - `MODES.md` Harness Mode에 **Autonomous Loop via `/goal`** 절 추가 — DELIVER 조건을 4가지 패턴(Feature / Migration / File-split / Backlog)으로 표준화. Soft check 경고와 안전망 명시.
+
+### Changed
+- **Persistence Enforcement 절 재작성** (RULES.md) — 수동 "max 10 iterations" 트래킹을 제거하고 `/goal` 위임으로 단순화. 3+ Fixes Architecture Rule(Circuit Breaker), Verification Iron Law(hard evidence), Two-Stage Review 3중 안전망은 **`/goal` 사용 시에도 항상 활성**임을 명시.
+- **Goal Definition Protocol 강화** (RULES.md) — Strong vs Weak Criteria 표에 `/goal` 진입 조건 추가. "Weak criteria는 절대 `/goal`에 넘기지 마라 — 무한 루프 보장" 경고. 권장/금지 조건 예시 제공.
+
+### Rationale
+- `/goal`의 종료 판정은 **작은 모델의 소프트 체크**이므로 환각 위험이 존재. 따라서 조건은 **command exit code / count / file existence / GitHub state 기반**으로 작성해야 한다.
+- SC++ 안전장치(Circuit Breaker, Verification Iron Law, Two-Stage Review)는 `/goal`을 override하여 품질 게이트 역할을 유지한다.
+- `--safe-mode`는 phase별 사용자 승인을 요구하므로 `/goal`과 함께 사용하지 않는다.
+
 ## [2.1.0] - 2026-04-17
 
 ### Added
