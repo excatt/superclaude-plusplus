@@ -382,7 +382,7 @@ superclaude-plusplus/                # 프로젝트 저장소 (source of truth)
 │   ├── settings.local.json         # 로컬 설정 오버라이드
 │   ├── context.md                  # 프로젝트 컨텍스트
 │   └── state/                      # 세션 상태 저장
-├── optional/                       # 23개 선택적 로딩 문서
+├── optional/                       # 24개 선택적 로딩 문서
 │   ├── MCP_*.md                    # MCP 서버별 상세 가이드 (7개)
 │   ├── MODE_*.md                   # MODE별 상세 가이드 (8개)
 │   ├── BUSINESS_PANEL_EXAMPLES.md  # 비즈니스 패널 예제
@@ -390,7 +390,8 @@ superclaude-plusplus/                # 프로젝트 저장소 (source of truth)
 │   ├── REASONING_TEMPLATES.md      # 구조화된 추론 템플릿
 │   ├── CONTEXT_BUDGET.md           # 컨텍스트 예산 관리
 │   ├── WORKER_TEMPLATES.md         # 워커 에이전트 프롬프트 템플릿
-│   └── ...                         # 23개 문서
+│   ├── GOAL_PATTERNS.md            # v2.2 신규: /goal 조건 패턴, 안티 패턴, /loop vs /goal 결정표
+│   └── ...                         # 24개 문서
 ├── docs/
 │   └── PLAN-v2.0.md                # v2.0 마이그레이션 계획
 └── templates/                      # PDCA + 디자인 시스템 템플릿
@@ -689,6 +690,7 @@ SuperClaude++ v2.0 = v0.x + 시스템 강제 패러다임:
 - **23개 Agents**: Generator, Validator, Harness Worker, Team 에이전트 추가
 - **16개 Hook Types**: TaskCompleted, FileChanged, ConfigChange 등 전체 활용
 - **신규 스킬**: `/fix-pr` (PR 코멘트 자동 수정), `/config-doctor` (설정 검증)
+- **v2.2 `/goal` 통합**: Claude Code 2.1.139 빌트인 자율 루프를 SC++ 워크플로우에 위임. Persistence Enforcement를 네이티브로 단순화하되 Circuit Breaker · Verification Iron Law · Two-Stage Review 3중 안전망은 유지. 상세: `optional/GOAL_PATTERNS.md`
 
 ### What's Carried from v0.x
 - PDCA 워크플로우 및 Gap Analysis
@@ -721,7 +723,7 @@ v2.0의 설계와 기능은 다음 소스에서 영감을 받았습니다:
 - **[parry](https://github.com/vaporif/parry)** — Prompt injection scanner 설계 참조
 - **[Fullstack Dev Skills](https://github.com/jeffallan/claude-skills)** — `/common-ground` (가정 표면화) 패턴 참조
 
-### 공식 Claude Code 기능 (2026년 4월 기준)
+### 공식 Claude Code 기능 (2026년 5월 기준)
 - **AGENT.md Frontmatter** — `model`, `tools`, `maxTurns`, `effort`, `isolation` 시스템 강제
 - **Agent Teams** (실험적) — 팀원 간 직접 메시징, 공유 태스크 리스트
 - **Worktree Isolation** — 서브에이전트별 독립 git checkout
@@ -731,6 +733,7 @@ v2.0의 설계와 기능은 다음 소스에서 영감을 받았습니다:
 - **Plugin System** — `plugin.json` manifest, `/plugin install` 배포
 - **WebFetch/WebSearch** — 내장 웹 도구 활용
 - **`/batch` Built-in Skill** — 대규모 병렬 변경 오케스트레이션
+- **[`/goal` Command](https://code.claude.com/docs/en/goal)** (v2.1.139, 2026-05-12) — 검증 가능한 종료 조건 기반 자율 멀티턴 루프. SC++ v2.2에서 Persistence Enforcement 위임 대상으로 통합
 
 ## License
 
