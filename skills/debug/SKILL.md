@@ -1,151 +1,116 @@
 ---
 name: "debug"
-description: "체계적 디버깅을 위한 구조화된 접근법을 실행합니다."
+description: "Reproduces bugs, analyzes stack traces, isolates root causes using binary search (git bisect) and breakpoints, and applies structured hypothesis testing with iterative verification. Use when: bug, error, crash, exception, not working, unexpected behavior, stack trace, failing test, broken, regression. Do NOT use for: code style review, feature requests, refactoring without a bug."
 user-invocable: true
+argument-hint: [bug-description-or-error]
 ---
+
+## Dynamic Context
+
+Recent errors and failing tests:
+!`git log --oneline -5 --grep="fix\|bug\|error\|crash" 2>/dev/null || echo "No recent bug-fix commits found"`
+
 # Debug Skill
 
-체계적 디버깅을 위한 구조화된 접근법을 실행합니다.
+## Purpose
 
-## 디버깅 프레임워크
+Systematic debugging through structured hypothesis testing and iterative root cause isolation. Follows a 5-step framework with explicit feedback loops to prevent wasted effort.
 
-### 1단계: 문제 정의
-```
-질문:
-- 예상 동작은?
-- 실제 동작은?
-- 언제부터 발생?
-- 재현 가능한가?
-- 재현 조건은?
-```
+## Usage
 
-### 2단계: 정보 수집
-```
-수집 대상:
-├── 에러 메시지 (전체)
-├── 스택 트레이스
-├── 로그 (시간순)
-├── 입력 데이터
-├── 환경 정보
-│   ├── OS / 브라우저
-│   ├── 버전 정보
-│   └── 환경변수
-└── 최근 변경사항
-```
-
-### 3단계: 가설 수립
-```
-가설 우선순위:
-1. 가장 최근 변경된 코드
-2. 가장 단순한 원인
-3. 과거 유사 버그
-4. 외부 의존성
-```
-
-### 4단계: 격리 및 검증
-```
-기법:
-- 이진 탐색 (bisect)
-- 최소 재현 케이스
-- 변수 하나씩 제거
-- 로그/브레이크포인트 추가
-- 단위 테스트 작성
-```
-
-### 5단계: 수정 및 확인
-```
-체크리스트:
-- [ ] 근본 원인 해결 (증상만 X)
-- [ ] 사이드 이펙트 확인
-- [ ] 회귀 테스트 추가
-- [ ] 문서화 (필요시)
-```
-
-## 디버깅 도구
-
-### 언어별 도구
-```
-Python:  pdb, ipdb, py-spy, cProfile
-JS/TS:   Chrome DevTools, node --inspect
-Java:    jdb, VisualVM
-Go:      delve
-Rust:    rust-gdb, rust-lldb
-```
-
-### 공통 기법
 ```bash
-# Git bisect
+/debug "TypeError in user login flow"    # specific error
+/debug "API returns 500 intermittently"  # intermittent bug
+/debug                                    # prompt for description
+```
+
+## Debugging Framework
+
+### Step 1: Define the Problem
+
+Capture these before investigating:
+- **Expected**: What should happen?
+- **Actual**: What happens instead?
+- **Repro**: Exact steps to reproduce (if possible)
+- **Since when**: Last known working state (commit, date, or version)
+
+### Step 2: Gather Information
+
+```bash
+# Find when it broke
+git log --oneline --since="2 weeks ago" -- <suspected-path>
+
+# Search for related errors
+grep -rn "ERROR\|WARN\|Exception" logs/ | tail -20
+```
+
+Collect: full error message, stack trace, relevant logs (chronological), input data, and recent changes to affected files.
+
+### Step 3: Hypothesize and Prioritize
+
+Rank hypotheses by likelihood:
+1. Most recently changed code in the affected path
+2. Simplest explanation (Occam's razor)
+3. Similar past bugs in the same area
+4. External dependency changes
+
+**Limit**: Test max 3 hypotheses before broadening scope.
+
+### Step 4: Isolate and Verify
+
+```bash
+# Binary search through commits
 git bisect start
 git bisect bad HEAD
-git bisect good <commit>
-
-# 로그 레벨 조정
-DEBUG=* node app.js
-LOG_LEVEL=debug python app.py
+git bisect good <last-known-good-commit>
+# Test at each step, then: git bisect good/bad
 ```
 
-## 일반적인 버그 패턴
+**Feedback loop**: If hypothesis fails, return to Step 3 with updated information. After 3 failed hypotheses, broaden information gathering in Step 2.
 
-### 동시성
-- Race condition
-- Deadlock
-- 순서 의존성
+### Step 5: Fix and Confirm
 
-### 메모리
-- Null/undefined 참조
-- 메모리 누수
-- 버퍼 오버플로우
+```
+Checklist:
+- [ ] Root cause fixed (not just symptom)
+- [ ] Reproduction test written and passing
+- [ ] No side effects (run full test suite)
+- [ ] Regression test added
+```
 
-### 상태
-- 초기화 안됨
-- 잘못된 상태 전이
-- 캐시 불일치
-
-### 타입
-- 암시적 형변환
-- 정수 오버플로우
-- 부동소수점 오차
-
-### 외부 의존성
-- 네트워크 타임아웃
-- API 변경
-- 환경 차이
-
-## 출력 형식
+## Output Format
 
 ```
 ## Debug Report
 
 ### Problem Statement
-- 예상: [예상 동작]
-- 실제: [실제 동작]
-- 재현: [재현 단계]
+- Expected: [expected behavior]
+- Actual: [actual behavior]
+- Repro: [reproduction steps]
 
 ### Investigation
 
-#### Hypothesis 1: [가설]
-- 검증: [검증 방법]
-- 결과: ✅/❌
+#### Hypothesis 1: [hypothesis]
+- Verification: [method used]
+- Result: CONFIRMED / REJECTED
 
 #### Root Cause
-- 위치: 파일:라인
-- 원인: [근본 원인]
-- 증거: [로그/스택트레이스]
+- File: path/to/file:line
+- Cause: [root cause explanation]
+- Evidence: [log output, stack trace, or test result]
 
 ### Solution
-```code
-// 수정 전
-...
-// 수정 후
-...
-```
+- Fix: [description of change]
+- Test: [regression test added]
+- Verified: [full test suite passes]
 
 ### Prevention
-- [ ] 테스트 추가
-- [ ] 타입 강화
-- [ ] 문서화
+- [ ] Regression test added
+- [ ] Related code paths checked
 ```
 
----
+## Related Skills
 
-위 프레임워크를 사용하여 체계적으로 디버깅하세요.
+- `/test` - Write tests for the fix
+- `/troubleshoot` - Broader troubleshooting (infra, config)
+- `/explain` - Understand unfamiliar code before debugging
