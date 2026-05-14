@@ -382,7 +382,7 @@ superclaude-plusplus/                # 프로젝트 저장소 (source of truth)
 │   ├── settings.local.json         # 로컬 설정 오버라이드
 │   ├── context.md                  # 프로젝트 컨텍스트
 │   └── state/                      # 세션 상태 저장
-├── optional/                       # 24개 선택적 로딩 문서
+├── optional/                       # 25개 선택적 로딩 문서
 │   ├── MCP_*.md                    # MCP 서버별 상세 가이드 (7개)
 │   ├── MODE_*.md                   # MODE별 상세 가이드 (8개)
 │   ├── BUSINESS_PANEL_EXAMPLES.md  # 비즈니스 패널 예제
@@ -391,7 +391,7 @@ superclaude-plusplus/                # 프로젝트 저장소 (source of truth)
 │   ├── CONTEXT_BUDGET.md           # 컨텍스트 예산 관리
 │   ├── WORKER_TEMPLATES.md         # 워커 에이전트 프롬프트 템플릿
 │   ├── GOAL_PATTERNS.md            # v2.2 신규: /goal 조건 패턴, 안티 패턴, /loop vs /goal 결정표
-│   └── ...                         # 24개 문서
+│   └── ...                         # 25개 문서
 ├── docs/
 │   └── PLAN-v2.0.md                # v2.0 마이그레이션 계획
 └── templates/                      # PDCA + 디자인 시스템 템플릿
