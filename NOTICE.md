@@ -32,6 +32,33 @@ Impeccable은 Anthropic의 frontend-design skill에서 파생되었으며, 해�
 
 ---
 
+## grill-with-docs (Domain Modeling Skill)
+
+- **출처 (upstream)**: https://github.com/mattpocock/skills
+- **원본 경로**: `skills/engineering/grill-with-docs/` (그리고 `skills/productivity/grill-me/`의 행동 규칙 일부)
+- **라이선스**: MIT License — 전문은 [`skills/grill-with-docs/LICENSE`](skills/grill-with-docs/LICENSE) 참조
+- **저작권**: Copyright (c) 2026 Matt Pocock
+- **통합 시점**: 2026-05-20 (SuperClaude++ v2.3.0)
+
+### 통합 범위 (1개 skill + 부속 문서)
+- `skills/grill-with-docs/SKILL.md` — 본 스킬
+- `skills/grill-with-docs/CONTEXT-FORMAT.md` — 도메인 어휘 사전 형식 가이드
+- `skills/grill-with-docs/ADR-FORMAT.md` — 아키텍처 의사결정 기록 형식 가이드
+- `skills/grill-with-docs/LICENSE` — 원본 MIT 라이선스 전문
+
+### SuperClaude++ 통합 시 수정사항
+| 파일 | 변경 |
+|------|------|
+| `skills/grill-with-docs/SKILL.md` | SuperClaude++ frontmatter 컨벤션 적용 (`user-invocable: true`, `argument-hint`). 한국어 사용자 가이드 보강. `/brainstorm`과의 역할 분리 명시. |
+| `skills/brainstorm/SKILL.md` | 원본 `grill-me`의 3대 행동 규칙 흡수: (1) 한 번에 한 질문 (2) 추천답 동반 제시 (3) 코드베이스로 답할 수 있으면 코드부터 탐색. 다중 페르소나 코디네이션은 그대로 유지. |
+| 루트 `CONTEXT.md` 신규 | SuperClaude++ 자체 도메인 어휘 사전 (skill, agent, harness, /goal 등). `/grill-with-docs` 사용 시 stress-test 기준점. |
+
+### 결합한 두 원본 스킬의 관계
+- `grill-me` (`skills/productivity/grill-me/`) — 기본 인터뷰 행동 규칙. SuperClaude++에서는 별도 스킬을 만들지 않고 `/brainstorm`에 행동 규칙만 흡수함 (중복 방지).
+- `grill-with-docs` (`skills/engineering/grill-with-docs/`) — `grill-me` 위에 도메인 어휘 사전(CONTEXT.md)과 ADR 인라인 갱신을 추가한 확장판. SuperClaude++에서는 `/grill-with-docs`로 그대로 포팅.
+
+---
+
 ## 기타 선재 통합 구성요소
 
 본 NOTICE는 Impeccable 통합 시점(2026-04-17)에 추가되었습니다. `skills/` 내 다른 외부 유래 skill (예: `frontend-design`, `ui-ux-pro-max`, `brand-guidelines`, `algorithmic-art`, `canvas-design`, `slack-gif-creator`, `artifacts-builder`, `pptx`, `xlsx`, `pdf`, `webapp-testing`, `agent-browser`, `mcp-builder`, `skill-creator`, `theme-factory`, `internal-comms` 등)의 출처·라이선스는 각 skill 디렉터리 내 `LICENSE`/`SKILL.md`에 기록되어 있으며, 추후 본 파일에 순차적으로 통합 예정.

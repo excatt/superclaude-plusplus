@@ -1,6 +1,6 @@
 # SuperClaude++ v2.0
 
-Claude Code를 위한 시스템 강제 개발 프레임워크 - 139개 스킬, 23개 에이전트, 16개 훅 타입으로 생산성과 코드 품질을 자동화합니다.
+Claude Code를 위한 시스템 강제 개발 프레임워크 - 140개 스킬, 23개 에이전트, 16개 훅 타입으로 생산성과 코드 품질을 자동화합니다.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
@@ -78,7 +78,7 @@ skills: [api-design, db-design, security-audit]
 | `team-implementer` | Agent Teams 구현 담당 | sonnet | worktree |
 | `team-reviewer` | Agent Teams 리뷰 담당 (Read-only) | opus | - |
 
-### Skills (139개)
+### Skills (140개)
 
 모든 스킬은 `skills/` 단일 디렉토리 아래 각각의 폴더에 `SKILL.md`로 정의됩니다. v0.x의 `commands/` 디렉토리는 완전히 폐기되었으며, 모든 커맨드가 `skills/`로 통합되었습니다.
 
@@ -153,6 +153,9 @@ skills: [api-design, db-design, security-audit]
 - **Backend**: `/fastapi`, `/nestjs`, `/graphql`, `/websocket`, `/queue`, `/pagination`, `/rate-limit`
 - **DevOps**: `/docker`, `/cicd`, `/monitoring`, `/env`, `/logging`, `/backup`
 - **Quality**: `/clean-code`, `/refactoring`, `/testing`, `/code-review`, `/code-smell`, `/naming`, `/solid`
+- **Domain Modeling** (MIT, mattpocock/skills): `/grill-with-docs` — 기존 도메인 모델에 대한 1대1 인터뷰 stress-test. 용어 충돌·코드 모순을 즉시 챌린지하고 `CONTEXT.md`(도메인 어휘 사전) / ADR을 인라인 갱신. `/brainstorm`이 *새 기능 탐색*이라면 이쪽은 *기존 모델 검증*. 부속 문서: [`skills/grill-with-docs/CONTEXT-FORMAT.md`](skills/grill-with-docs/CONTEXT-FORMAT.md), [`skills/grill-with-docs/ADR-FORMAT.md`](skills/grill-with-docs/ADR-FORMAT.md). 우리 프로젝트 자체의 어휘 사전 예시는 루트 [`CONTEXT.md`](CONTEXT.md). 출처 추적: [`NOTICE.md`](NOTICE.md).
+
+> **`/brainstorm` 보강 노트**: `grill-me` 원본의 3대 행동 규칙(한 번에 한 질문 / 추천답 동반 / 코드 우선 탐색)이 기존 `/brainstorm`에 흡수되었습니다 (별도 스킬 미생성, 중복 방지).
 
 ### Automation
 
@@ -345,7 +348,7 @@ superclaude-plusplus/                # 프로젝트 저장소 (source of truth)
 ├── PATTERNS.md                     # 코드 패턴
 ├── KNOWLEDGE.md                    # 인사이트/트러블슈팅
 ├── notepad.md                      # 영구 메모
-├── skills/                         # 139개 스킬 (각각 SKILL.md)
+├── skills/                         # 140개 스킬 (각각 SKILL.md)
 │   ├── confidence-check/SKILL.md
 │   ├── verify/SKILL.md
 │   ├── tdd/SKILL.md
@@ -354,7 +357,8 @@ superclaude-plusplus/                # 프로젝트 저장소 (source of truth)
 │   ├── ui-ux-pro-max/              # AI 디자인 인텔리전스 (BM25 검색)
 │   ├── web-design-guidelines/      # UI/UX 리뷰
 │   ├── impeccable/                 # Impeccable Design Language 엔트리 (+ 17 서브)
-│   └── ...                         # 139개 스킬 디렉토리
+│   ├── grill-with-docs/            # v2.3 신규 (도메인 stress-test, MIT)
+│   └── ...                         # 140개 스킬 디렉토리
 ├── agents/                         # 23개 에이전트 (AGENT.md frontmatter)
 │   ├── backend-architect.md
 │   ├── generator.md                # v2.0 신규 (Generator+Validator)
@@ -417,7 +421,7 @@ v2.0의 핵심은 Claude의 자율 판단 의존을 줄이고, 시스템이 규�
 | 스킬 컨텍스트 | 정적 텍스트 | Dynamic Context Injection |
 | 병렬 작업 | 프롬프트 "background로" | Worktree 격리 + Agent Teams |
 | 배포 | ~~install.sh~~ | Plugin manifest (`/plugin install`) |
-| 스킬 구조 | ~~commands/~~ + skills/ 분리 | **skills/ 단일 디렉토리** (139개) |
+| 스킬 구조 | ~~commands/~~ + skills/ 분리 | **skills/ 단일 디렉토리** (140개) |
 
 ### Generator + Validator 패턴
 
@@ -672,6 +676,7 @@ rm -rf ~/.claude
 - **[cc-statusline](https://www.npmjs.com/package/@chongdashu/cc-statusline)** - 상태바 구현 참고
 - **[gstack](https://github.com/garrytan/gstack)** - Garry Tan의 Claude Code 스킬팩. Search Before Building 원칙, AI Slop Detection 체크리스트, LLM Security Audit Phase (프롬프트 인젝션, 스킬 서플라이 체인). MIT License
 - **[everything-claude-code](https://github.com/affaan-m/everything-claude-code)** - Affaan Mustafa의 에이전트 하네스 시스템. TDD RED/GREEN Gate 워크플로우, 구조화된 Session Save (What Did NOT Work), Confidence-Based Review Filtering. MIT License
+- **[mattpocock/skills](https://github.com/mattpocock/skills)** - Matt Pocock의 Claude Code 스킬 모음. **`/grill-with-docs`** (도메인 모델 stress-test, `CONTEXT.md` glossary + ADR 인라인 갱신)을 그대로 포팅. `grill-me`의 3대 행동 규칙(한 번에 한 질문 / 추천답 동반 / 코드 우선 탐색)은 기존 `/brainstorm`에 흡수됨. MIT License (Copyright (c) 2026 Matt Pocock). v2.3 통합 (2026-05-20). 상세: [`NOTICE.md`](NOTICE.md)
 - **Business Panel** - 클래식 비즈니스 문헌 기반 전문가 패널 방법론 (Christensen, Porter, Drucker 등)
 
 ### What's New in v2.0
@@ -686,11 +691,12 @@ SuperClaude++ v2.0 = v0.x + 시스템 강제 패러다임:
 - **Agent Teams**: 팀 단위 자율 작업 지원 (실험적)
 - **Dynamic Context Injection**: 스킬에 실시간 상태 주입
 - **Plugin Manifest**: `/plugin install`로 설치 자동화
-- **139개 Skills**: commands/ 통합으로 단일 디렉토리 체계 (v2.1: Impeccable 18개 추가)
+- **140개 Skills**: commands/ 통합으로 단일 디렉토리 체계 (v2.1: Impeccable 18개 추가, v2.3: `/grill-with-docs` 추가)
 - **23개 Agents**: Generator, Validator, Harness Worker, Team 에이전트 추가
 - **16개 Hook Types**: TaskCompleted, FileChanged, ConfigChange 등 전체 활용
 - **신규 스킬**: `/fix-pr` (PR 코멘트 자동 수정), `/config-doctor` (설정 검증)
 - **v2.2 `/goal` 통합**: Claude Code 2.1.139 빌트인 자율 루프를 SC++ 워크플로우에 위임. Persistence Enforcement를 네이티브로 단순화하되 Circuit Breaker · Verification Iron Law · Two-Stage Review 3중 안전망은 유지. 상세: `optional/GOAL_PATTERNS.md`
+- **v2.3 `/grill-with-docs` 통합**: 기존 도메인 모델 stress-test 스킬 신규 (MIT, mattpocock/skills). 1대1 인터뷰 + 추천답 동반 + 코드 우선 탐색으로 용어와 결정을 코드와 정렬하고 `CONTEXT.md` / ADR을 인라인 갱신. `/brainstorm`(새 기능 탐색)과 역할 분리. 루트 `CONTEXT.md`에 우리 프로젝트 자체 어휘 사전 작성. 출처는 [`NOTICE.md`](NOTICE.md)에 추적.
 
 ### What's Carried from v0.x
 - PDCA 워크플로우 및 Gap Analysis

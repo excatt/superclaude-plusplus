@@ -1,7 +1,7 @@
 {
   "name": "superclaude-plusplus",
-  "version": "2.2.0",
-  "description": "System-enforced development framework for Claude Code. 139 skills, 23 agents, 16 hook types, worktree isolation, Agent Teams support, /goal autonomous loop integration.",
+  "version": "2.3.0",
+  "description": "System-enforced development framework for Claude Code. 140 skills, 23 agents, 16 hook types, worktree isolation, Agent Teams support, /goal autonomous loop integration, /grill-with-docs domain modeling.",
   "author": "excatt",
   "license": "MIT",
   "repository": "https://github.com/excatt/superclaude-plusplus",
@@ -29,6 +29,8 @@
     "korean",
     "goal-command",
     "autonomous-loop",
-    "impeccable-design"
+    "impeccable-design",
+    "domain-modeling",
+    "grill-with-docs"
   ]
 }

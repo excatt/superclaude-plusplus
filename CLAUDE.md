@@ -17,7 +17,7 @@
 
 ## Skill System (v2.0)
 
-**139 skills unified under `skills/`. All 0-token when idle.**
+**140 skills unified under `skills/`. All 0-token when idle.**
 
 ### Skill Activation
 - **Auto-Invoke**: `UserPromptSubmit` hook in `.claude/skill-rules.json` analyzes prompts for mechanical matching (implemented in Phase 2)
@@ -38,7 +38,7 @@
 | `/learn` | Extract and save patterns |
 | `/note` | Persist memos across sessions |
 
-### Domain Skills (139 total, major categories)
+### Domain Skills (140 total, major categories)
 - **Analysis**: `/think`, `/debug`, `/code-review`, `/code-smell`, `/analyze`
 - **Architecture**: `/architecture`, `/api-design`, `/db-design`, `/design-patterns`, `/design`
 - **Security**: `/security-audit`, `/auth`, `/error-handling`
@@ -52,6 +52,7 @@
 - **Quality**: `/clean-code`, `/refactoring`, `/testing`, `/audit`
 - **Critical Review**: `/devils-advocate` (decisions, plans, architecture challenge)
 - **Workflow**: `/brainstorm`, `/implement`, `/improve`, `/explain`, `/estimate`, `/research`
+- **Domain Modeling** (MIT, mattpocock/skills): `/grill-with-docs` — 기존 도메인 모델을 stress-test하며 CONTEXT.md(도메인 어휘 사전) / ADR을 인라인 갱신. `/brainstorm`이 새 기능 *탐색*이라면 이쪽은 기존 모델의 *검증*. 출처는 [`NOTICE.md`](NOTICE.md), 어휘 사전 예시는 루트 [`CONTEXT.md`](CONTEXT.md).
 
 ### Agent System (18 agents, AGENT.md frontmatter)
 

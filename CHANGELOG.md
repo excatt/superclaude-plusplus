@@ -5,6 +5,35 @@
 형식은 [Keep a Changelog](https://keepachangelog.com/ko/1.0.0/)를 따르며,
 [Semantic Versioning](https://semver.org/lang/ko/)을 준수합니다.
 
+## [2.3.0] - 2026-05-20
+
+### Added
+- **`/grill-with-docs` 스킬 통합** (MIT, [mattpocock/skills](https://github.com/mattpocock/skills), Copyright (c) 2026 Matt Pocock) — 기존 도메인 모델 stress-test를 위한 1대1 인터뷰 스킬.
+  - `skills/grill-with-docs/SKILL.md` 신규 — 한 번에 한 질문, 추천답 동반, 코드 우선 탐색, 용어 충돌 즉시 챌린지, `CONTEXT.md` 인라인 갱신, ADR 3조건 충족 시만 제안.
+  - `skills/grill-with-docs/CONTEXT-FORMAT.md` 신규 — 도메인 어휘 사전 형식 가이드 (glossary-only, 단일/멀티 컨텍스트, 항목 형식, 금지 사항, 갱신 규칙).
+  - `skills/grill-with-docs/ADR-FORMAT.md` 신규 — `docs/adr/NNNN-slug.md` 순차 번호 + 3조건 게이트(되돌리기 어려움 / 컨텍스트 없이는 놀라움 / 진짜 트레이드오프).
+  - `skills/grill-with-docs/LICENSE` — 원본 MIT 라이선스 전문 (verbatim 보존).
+  - 루트 `CONTEXT.md` 신규 — SuperClaude++ 자체 도메인 어휘 사전 (Skill, Agent, Hook, Harness Mode/Engineering, /goal, Strong/Weak Criteria, Verification Iron Law, Confidence Check, Two-Stage Review, Difficulty Assessment, Circuit Breaker, Agent Struggle Report, Persona, MCP Server, Worktree, Generator+Validator, Goal vs Loop, NOT-skills 혼동 방지). `/grill-with-docs` 사용 시 stress-test 기준점.
+- **`/brainstorm` 보강** — `grill-me` 원본의 3대 행동 규칙(한 번에 한 질문 / 추천답 동반 / 코드 우선 탐색)을 `Interview Discipline` 절로 흡수. `/grill-with-docs`로의 See Also 링크 추가. 별도 `/grill-me` 스킬은 만들지 않음(중복 방지).
+- **`NOTICE.md` 갱신** — `grill-with-docs` 섹션 추가. 출처(mattpocock/skills), 원본 경로(`engineering/grill-with-docs/` + `productivity/grill-me/`), 라이선스(MIT), 저작권(Copyright (c) 2026 Matt Pocock), 통합 시점(2026-05-20), 통합 시 수정사항을 명시.
+- **`CLAUDE.md`** Domain Skills 섹션에 **Domain Modeling** 카테고리 신설 — `/grill-with-docs`와 `/brainstorm`의 역할 분리 명시.
+- **`README.md`** Inspirations & Integrations 섹션에 mattpocock/skills 출처 추가, What's New에 v2.3 항목 추가.
+
+### Changed
+- 총 skill 수: **139 → 140** (`CLAUDE.md`, `README.md`, `plugin.json`, 디렉토리 코멘트 일괄 갱신).
+- `plugin.json` — version `2.2.0 → 2.3.0`, description에 `/grill-with-docs domain modeling` 명시, keywords에 `domain-modeling`, `grill-with-docs` 추가.
+
+### Rationale
+- 우리 프레임워크는 이미 `/brainstorm`, `/confidence-check`, `/feature-planner`로 *새 기능 요구사항 탐색* 영역을 커버하고 있었음. 그러나 **기존 도메인 모델에 대한 stress-test**(용어 충돌, 모호한 어휘, 결정-코드 모순) 영역은 비어 있었음 — `grill-with-docs`가 이 공백을 정확히 채움.
+- `/grill-with-docs`의 진짜 차별점은 **`CONTEXT.md`(도메인 어휘 사전)와 ADR을 인라인 갱신하는 워크플로우**다. 단순히 또 하나의 인터뷰 스킬이 아님.
+- 가장 큰 함정: 빈 `CONTEXT.md` 컨벤션만 도입하고 실제로 채우지 않으면 죽은 레이어가 됨. 따라서 SuperClaude++ 레포 자체에 모범 사례로 루트 `CONTEXT.md`를 채워, 신규 사용자가 즉시 "이렇게 쓰는 거구나"를 보고 시작할 수 있게 함.
+- `grill-me` 원본 스킬은 별도 포팅하지 않음 — 기능이 `/brainstorm`과 거의 동일하기 때문. 대신 `grill-me`의 행동 규칙만 `/brainstorm`에 흡수하여 사용자가 어느 스킬을 부를지 헷갈리지 않게 함.
+
+### Attribution
+- 원본 라이선스: MIT (Copyright (c) 2026 Matt Pocock)
+- 원본 레포: https://github.com/mattpocock/skills
+- 출처 추적 위치: 루트 `NOTICE.md`, 각 신규 파일 상단 주석, 본 CHANGELOG 항목, `README.md` Inspirations & Integrations 섹션
+
 ## [2.2.0] - 2026-05-14
 
 ### Added
