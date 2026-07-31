@@ -135,8 +135,7 @@ v2.0에서 스킬 자동 활성화는 `.claude/skill-rules.json`에 선언적으
     "prompt_patterns": [
       "error TS\\d+", "Build failed",
       "빌드 에러", "빌드 실패", "에러 났어", "안 돌아가"
-    ],
-    "exit_codes": [1]
+    ]
   },
   "cooldown": 300
 }
@@ -464,16 +463,14 @@ Plan -> Design -> Do -> Check -> Act -> Report
 - **Confidence Filter**: 80% 미만 신뢰도 이슈는 Minor(informational)로 분류
 
 ### Verification Iron Law
-완료 주장 시 자동 검증 게이트:
 ```
 "NO COMPLETION CLAIMS WITHOUT FRESH VERIFICATION EVIDENCE"
 ```
 
-| 검증 타입 | 필수 증거 |
-|----------|----------|
-| 테스트 통과 | 실제 출력 로그 |
-| 기능 완료 | 각 요구사항 체크리스트 |
-| 버그 수정 | 재현 테스트 결과 |
+v3.0부터 별도 규칙 섹션이 아닙니다 — Claude 5 세대에서 검증 후 완료 선언은
+모델 내재 행동이 되었기 때문입니다. 개념은 `CONTEXT.md` 어휘 사전에
+존속하며, `/goal`의 soft check가 이 원칙을 대체하지 않는다는 경계로
+쓰입니다.
 
 ### 3+ Fixes Architecture Rule + Circuit Breaker
 동일 버그 3회 수정 실패 시:
@@ -485,12 +482,10 @@ Plan -> Design -> Do -> Check -> Act -> Report
 **Failure Classification**: Repo Gap / Architecture Issue / External Dependency / Requirement Issue / Capability Limit
 
 ### Orchestrator/Worker Pattern
-에이전트 역할 분리를 통한 효율적인 작업 분배:
-
-| 역할 | 책임 | 도구 |
-|------|------|------|
-| **Orchestrator** | 작업 분해, 에이전트 스폰, 결과 합성 | Task, AskUserQuestion, TaskCreate/Update |
-| **Worker** | 구체적 작업 실행, 결과 보고 | Read, Write, Edit, Bash, Grep |
+에이전트 역할 분리를 통한 효율적인 작업 분배. Orchestrator는 작업 분해와
+결과 합성만, Worker는 실행만 담당합니다. v3.0부터 상시 규칙이 아니라
+`CONTEXT.md` 어휘 + `optional/WORKER_TEMPLATES.md`(프롬프트 템플릿)로
+온디맨드 제공됩니다.
 
 ### Harness Engineering
 [OpenAI의 Harness Engineering](https://openai.com/index/harness-engineering/) 방법론에서 영감을 받은 에이전트 주도 개발 환경:
@@ -508,7 +503,8 @@ Intent -> Scaffold -> Implement -> Verify -> Deliver
 ```
 
 ### Memory Management
-Claude Code의 내장 Auto Memory를 활용한 세션 간 연속성:
+Claude Code의 내장 Auto Memory를 활용한 세션 간 연속성. v3.0부터 하네스가
+메모리 지침을 직접 주입하므로 CLAUDE.md의 중복 규정은 제거되었습니다:
 
 **Auto Memory** (`~/.claude/projects/<project>/memory/`):
 - 프로젝트 패턴, 디버깅 인사이트, 아키텍처 노트 자동 저장
@@ -581,13 +577,16 @@ scripts/sync-global.sh
 # Plugin 방식
 /plugin uninstall superclaude-plusplus
 
-# Manual 방식
-rm -rf ~/.claude
+# Manual 방식 — 주의: ~/.claude 전체 삭제는 메모리/세션/개인 설정까지 지웁니다.
+# 프레임워크 파일만 선택 제거:
+rm -f ~/.claude/{CLAUDE,RULES,PRINCIPLES,MODES,CONVENTIONS}.md
+rm -rf ~/.claude/optional ~/.claude/skills ~/.claude/agents
+rm -f ~/.claude/skill-rules.json
 ```
 
 ## Requirements
 
-- [Claude Code](https://docs.anthropic.com/claude-code) CLI (>= 2.1.0)
+- [Claude Code](https://docs.anthropic.com/claude-code) CLI (>= 2.1.139, `/goal` 통합 요건)
 - Claude Max/Pro 구독 또는 Anthropic API 키
 - Python 3.9+ (skill-matcher.py, injection-scanner.py 실행용)
 - `jq` (선택사항, 일부 스크립트에서 사용)
@@ -647,12 +646,22 @@ SuperClaude++ v2.0 = v0.x + 시스템 강제 패러다임:
 - **Agent Teams**: 팀 단위 자율 작업 지원 (실험적)
 - **Dynamic Context Injection**: 스킬에 실시간 상태 주입
 - **Plugin Manifest**: `/plugin install`로 설치 자동화
-- **60개 Skills**: v3.0 통폐합 — 기계 장치/큐레이션/벤더 스킬만 잔존 (v2.1: Impeccable 18개, v2.3: `/grill-with-docs`, v3.0: 79개 삭제)
-- **9개 Agents**: v3.0 통폐합 — 범용 페르소나 14개 삭제, 배선된 에이전트만 잔존
+- **140개 Skills**: commands/ 통합으로 단일 디렉토리 체계 (v2.1: Impeccable 18개 추가, v2.3: `/grill-with-docs` 추가)
+- **23개 Agents**: Generator, Validator, Harness Worker, Team 에이전트 추가
 - **16개 Hook Types**: TaskCompleted, FileChanged, ConfigChange 등 전체 활용
 - **신규 스킬**: `/fix-pr` (PR 코멘트 자동 수정), `/config-doctor` (설정 검증)
 - **v2.2 `/goal` 통합**: Claude Code 2.1.139 빌트인 자율 루프를 SC++ 워크플로우에 위임. Persistence Enforcement를 네이티브로 단순화하되 Circuit Breaker · Verification Iron Law · Two-Stage Review 3중 안전망은 유지. 상세: `optional/GOAL_PATTERNS.md`
 - **v2.3 `/grill-with-docs` 통합**: 기존 도메인 모델 stress-test 스킬 신규 (MIT, mattpocock/skills). 1대1 인터뷰 + 추천답 동반 + 코드 우선 탐색으로 용어와 결정을 코드와 정렬하고 `CONTEXT.md` / ADR을 인라인 갱신. `/brainstorm`(새 기능 탐색)과 역할 분리. 루트 `CONTEXT.md`에 우리 프로젝트 자체 어휘 사전 작성. 출처는 [`NOTICE.md`](NOTICE.md)에 추적.
+
+### What's New in v3.0
+
+v3.0 = "모델이 못 하는 것만 남긴다" (harness-aware slim):
+- **상시 로드 -66%**: @import 4개(RULES/PRINCIPLES/MODES/CONVENTIONS)로 축소, 8,994 → 3,023 단어
+- **스킬 139 → 60**: 주제 가이드 51개 + 범용 래퍼 28개 삭제 — 모델 네이티브 지식의 재포장은 순비용
+- **에이전트 23 → 9**: 범용 페르소나 삭제, 프레임워크 배선/고유 실행 구성 보유분만 잔존
+- **skill-matcher 오탐 수정**: stdin JSON 파싱, ASCII 단어 경계, 홈 디렉터리 스캔 가드
+- **KNOWLEDGE.md 제거**, FLAGS/CONTEXTS/MCP_SERVERS는 `optional/`로 이동
+- 하네스가 이미 보장하는 규칙(Verification Iron Law, Persistence, Scope Discipline 등)의 재규정 삭제 — 개념은 `CONTEXT.md` 어휘 사전에 존속
 
 ### What's Carried from v0.x
 - PDCA 워크플로우 및 Gap Analysis

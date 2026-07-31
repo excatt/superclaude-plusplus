@@ -92,7 +92,7 @@ Agent 실행 시 git worktree를 따로 만들어 메인 작업 트리와 격리
 
 ### NOT-skills (혼동 방지)
 
-- `CLAUDE.md`, `RULES.md`, `MODES.md` 등 — **frame work 문서**다. Skill이 아니다.
+- `CLAUDE.md`, `RULES.md`, `MODES.md` 등 — **framework 문서**다. Skill이 아니다.
 - `pre-commit.sh` 같은 hook 스크립트 — **Hook**이지 Skill이 아니다.
 - `business-panel-experts` — **Agent**(다중 페르소나 패널)지 Skill이 아니다. (그러나 `/business-panel`은 Skill이다 — Agent를 호출하는 Skill.)
 
