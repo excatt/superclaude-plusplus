@@ -1,20 +1,6 @@
 ---
 name: gap-analysis
-description: |
-  Analyze discrepancies between design documents and actual implementation code.
-  Core component of PDCA Check phase, calculating Match Rate and generating Gap list.
-
-  Use proactively when:
-  - Post-implementation design comparison needed
-  - "Does it match design?", "Is it correct?", "Verify" requests
-  - Pre-PR/code review verification
-  - PDCA Check phase execution
-
-  Triggers: gap analysis, design-implementation comparison, verify, validate,
-  verify implementation, compare design, check implementation,
-  design vs code
-
-  Do NOT use for: Simple code review, design document creation, bug fixes
+description: Compare design documents against implementation and compute a Match Rate with a gap list (PDCA Check phase). Use after implementation or before PR to verify design conformance.
 user-invocable: true
 argument-hint: "[feature-name]"
 ---
@@ -22,6 +8,20 @@ argument-hint: "[feature-name]"
 # Gap Analysis Skill
 
 > Analyze discrepancies between design documents and actual implementation code to calculate Match Rate.
+
+## When to Use
+
+Use proactively when:
+- Post-implementation design comparison needed
+- "Does it match design?", "Is it correct?", "Verify" requests
+- Pre-PR/code review verification
+- PDCA Check phase execution
+
+Triggers: gap analysis, design-implementation comparison, verify, validate,
+verify implementation, compare design, check implementation,
+design vs code
+
+Do NOT use for: Simple code review, design document creation, bug fixes
 
 ## Usage
 
@@ -191,4 +191,3 @@ matchRate < 90%:
 
 - `/feature-planner` - Plan phase
 - `/verify` - General verification (Gap Analysis specializes in design-implementation comparison)
-- `/code-review` - Code quality review

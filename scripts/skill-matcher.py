@@ -90,15 +90,41 @@ def is_cooldown_active(
     return (now - last) < cooldown_seconds
 
 
+_REGEX_METACHARS = set("\\^$.|?*+()[]{}")
+
+
+def compile_pattern(pattern: str) -> str:
+    """Prepare a pattern for matching.
+
+    Plain ASCII literals (no regex metacharacters) get word boundaries on
+    word-character ends so short tokens like "PR" or "fix" cannot match
+    inside "projects" or "prefix". Non-ASCII (e.g. Korean) patterns keep
+    substring semantics because verb stems match conjugations that way.
+    Patterns containing regex metacharacters pass through unchanged.
+    """
+    if not pattern.isascii() or any(c in _REGEX_METACHARS for c in pattern):
+        return pattern
+    escaped = re.escape(pattern)
+    if pattern and (pattern[0].isalnum() or pattern[0] == "_"):
+        escaped = r"\b" + escaped
+    if pattern and (pattern[-1].isalnum() or pattern[-1] == "_"):
+        escaped = escaped + r"\b"
+    return escaped
+
+
 def matches_prompt_patterns(prompt: str, patterns: list[str]) -> bool:
     """Return True if any regex pattern matches the prompt."""
     for pattern in patterns:
         try:
-            if re.search(pattern, prompt, re.IGNORECASE):
+            if re.search(compile_pattern(pattern), prompt, re.IGNORECASE):
                 return True
         except re.error:
             continue
     return False
+
+
+MAX_WALK_DEPTH = 4
+MAX_WALK_ENTRIES = 20000
 
 
 def matches_file_patterns(file_patterns: list[str], project_dir: str) -> bool:
@@ -106,22 +132,35 @@ def matches_file_patterns(file_patterns: list[str], project_dir: str) -> bool:
 
     Uses a shallow check: walks the project tree once and tests each
     filename against the patterns. Skips hidden dirs and node_modules
-    for performance.
+    for performance. Refuses to scan the home directory or filesystem
+    root (not real projects), and bounds depth/entries so a large tree
+    cannot stall the prompt hook.
     """
     import fnmatch
 
+    project = Path(project_dir).resolve()
+    if project == Path.home() or project == Path(project.anchor):
+        return False
+
     skip_dirs = {".git", "node_modules", ".next", "__pycache__", ".venv", "venv"}
-    project = Path(project_dir)
+    base_depth = len(project.parts)
+    seen = 0
 
     for pattern in file_patterns:
         # Strip leading **/ for simple filename matching
         simple_pattern = pattern.lstrip("*").lstrip("/")
 
         for root, dirs, files in os.walk(project):
-            # Prune hidden and heavy directories
-            dirs[:] = [d for d in dirs if d not in skip_dirs and not d.startswith(".")]
+            # Prune hidden, heavy, and too-deep directories
+            if len(Path(root).parts) - base_depth >= MAX_WALK_DEPTH:
+                dirs[:] = []
+            else:
+                dirs[:] = [d for d in dirs if d not in skip_dirs and not d.startswith(".")]
 
             for filename in files:
+                seen += 1
+                if seen > MAX_WALK_ENTRIES:
+                    return False
                 rel_path = os.path.relpath(os.path.join(root, filename), project)
                 if fnmatch.fnmatch(filename, simple_pattern) or fnmatch.fnmatch(
                     rel_path, pattern
@@ -247,17 +286,18 @@ def match_rules(
     return matched
 
 
-def find_project_dir() -> str:
+def find_project_dir(cwd_hint: str = "") -> str:
     """Determine the project root directory.
 
     Uses CLAUDE_PROJECT_DIR env var if available, otherwise walks up
-    from cwd looking for .claude/ or .git/.
+    from the hook payload's cwd (or the process cwd) looking for
+    .claude/ or .git/.
     """
     env_dir = os.environ.get("CLAUDE_PROJECT_DIR", "")
     if env_dir and os.path.isdir(env_dir):
         return env_dir
 
-    cwd = Path.cwd()
+    cwd = Path(cwd_hint) if cwd_hint and os.path.isdir(cwd_hint) else Path.cwd()
     for parent in [cwd, *cwd.parents]:
         if (parent / ".claude").is_dir() or (parent / ".git").is_dir():
             return str(parent)
@@ -265,17 +305,35 @@ def find_project_dir() -> str:
     return str(cwd)
 
 
+def read_hook_input() -> tuple[str, str]:
+    """Read the UserPromptSubmit payload from stdin.
+
+    Claude Code sends a JSON object like {"prompt": ..., "cwd": ...,
+    "transcript_path": ...}. Only the prompt field may be pattern-matched;
+    matching the raw payload makes patterns hit path fragments such as
+    "projects" on every message. Raw text stdin is kept as a fallback for
+    manual testing.
+    """
+    if sys.stdin.isatty():
+        return "", ""
+    raw = sys.stdin.read().strip()
+    if raw.startswith("{"):
+        try:
+            payload = json.loads(raw)
+            return str(payload.get("prompt", "")), str(payload.get("cwd", ""))
+        except json.JSONDecodeError:
+            pass
+    return raw, ""
+
+
 def main() -> None:
     try:
-        # Read prompt from stdin (non-blocking: read whatever is available)
-        prompt = ""
-        if not sys.stdin.isatty():
-            prompt = sys.stdin.read().strip()
+        prompt, cwd_hint = read_hook_input()
 
         if not prompt:
             sys.exit(0)
 
-        project_dir = find_project_dir()
+        project_dir = find_project_dir(cwd_hint)
         rules_data = load_rules(project_dir)
         if not rules_data:
             sys.exit(0)

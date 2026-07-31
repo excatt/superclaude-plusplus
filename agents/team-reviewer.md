@@ -7,7 +7,7 @@ disallowedTools: Write, Edit, Bash, Agent
 maxTurns: 10
 effort: high
 memory: project
-skills: [code-review, security-audit]
+skills: [security-audit]
 ---
 
 # Team Reviewer

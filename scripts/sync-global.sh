@@ -43,10 +43,32 @@ sync_file() {
   synced=$((synced + 1))
 }
 
-# --- Framework files ---
+# --- Framework files (always-resident set, v3.0) ---
 echo "=== Framework Files ==="
-for file in CLAUDE.md FLAGS.md RULES.md PRINCIPLES.md MODES.md MCP_SERVERS.md CONVENTIONS.md; do
+for file in CLAUDE.md RULES.md PRINCIPLES.md MODES.md CONVENTIONS.md; do
   sync_file "$PROJECT_DIR/$file" "$GLOBAL_DIR/$file" "$file"
+done
+
+# --- On-demand references ---
+echo ""
+echo "=== Optional References ==="
+for src in "$PROJECT_DIR"/optional/*.md; do
+  file="optional/$(basename "$src")"
+  sync_file "$src" "$GLOBAL_DIR/$file" "$file"
+done
+
+# --- Stale root files (moved to optional/ or removed in v3.0) ---
+echo ""
+echo "=== Stale Files ==="
+for file in FLAGS.md CONTEXTS.md MCP_SERVERS.md KNOWLEDGE.md; do
+  if [[ -f "$GLOBAL_DIR/$file" ]]; then
+    if $DRY_RUN; then
+      echo "  WOULD-RM  $file (no longer a root framework file)"
+    else
+      rm "$GLOBAL_DIR/$file"
+      echo "  RM    $file (no longer a root framework file)"
+    fi
+  fi
 done
 
 # --- Peon-ping config ---

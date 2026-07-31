@@ -1,21 +1,21 @@
 ---
 name: tdd
-description: |
-  Test-Driven Development workflow with RED-GREEN-REFACTOR cycle enforcement.
-  Ensures tests are written before production code, with Git checkpoints at each phase.
-
-  Use proactively when:
-  - New feature implementation with testable behavior
-  - Bug fix (write reproduction test first)
-  - User explicitly requests TDD approach
-
-  Triggers: TDD, test-driven, test first, red green refactor,
-  write test first, failing test, reproduction test
-
-  Do NOT use for: config changes, documentation, simple renames, UI-only changes
+description: Test-Driven Development with enforced RED-GREEN-REFACTOR cycle and Git checkpoints per phase. Use for new testable features and bug fixes (reproduction test first) — not for config, docs, or renames.
 user-invocable: true
 argument-hint: [feature-or-bug-description]
 ---
+
+## When to Use
+
+Use proactively when:
+- New feature implementation with testable behavior
+- Bug fix (write reproduction test first)
+- User explicitly requests TDD approach
+
+Triggers: TDD, test-driven, test first, red green refactor,
+write test first, failing test, reproduction test
+
+Do NOT use for: config changes, documentation, simple renames, UI-only changes
 
 ## Dynamic Context
 
@@ -174,7 +174,6 @@ Each commit is a verification artifact.
 
 ## Related Skills
 
-- `/testing` - General test strategy and patterns
 - `/pytest-runner` - Python test execution
 - `/verify` - Post-implementation verification
 - `/confidence-check` - Pre-implementation assessment

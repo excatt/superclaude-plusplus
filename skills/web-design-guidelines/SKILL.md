@@ -1,21 +1,6 @@
 ---
 name: web-design-guidelines
-description: |
-  UI code review skill based on Vercel's Web Interface Guidelines.
-  Inspects accessibility, performance, and UX with 100+ rules.
-
-  Use proactively when:
-  - UI code review requested
-  - Accessibility (a11y) check requested
-  - Design audit requested
-  - UX review requested
-  - Best practices check requested
-
-  Triggers: review UI, check accessibility, audit design, review UX,
-  check best practices, UI review, accessibility check, design review, UX review,
-  web guidelines, a11y check
-
-  Do NOT use for: backend code, API design, database
+description: UI code review against Vercel's Web Interface Guidelines (100+ accessibility/performance/UX rules). Use for UI, a11y, or UX reviews of frontend code — not for backend or API design.
 user-invocable: true
 argument-hint: <file-or-pattern>
 metadata:
@@ -27,6 +12,21 @@ metadata:
 # Web Interface Guidelines
 
 Review UI code according to Vercel Web Interface Guidelines.
+
+## When to Use
+
+Use proactively when:
+- UI code review requested
+- Accessibility (a11y) check requested
+- Design audit requested
+- UX review requested
+- Best practices check requested
+
+Triggers: review UI, check accessibility, audit design, review UX,
+check best practices, UI review, accessibility check, design review, UX review,
+web guidelines, a11y check
+
+Do NOT use for: backend code, API design, database
 
 ## Usage
 
@@ -233,6 +233,4 @@ State issue + location. Skip explanation if fix is obvious. No preamble.
 ## Related Skills
 
 - `/react-best-practices` - React/Next.js performance optimization
-- `/a11y` - Deep accessibility analysis
 - `/frontend-design` - Frontend UI generation
-- `/responsive` - Responsive design review

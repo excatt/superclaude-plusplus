@@ -1,20 +1,6 @@
 ---
 name: ui-ux-pro-max
-description: |
-  AI-powered UI/UX design intelligence with BM25 search engine.
-  67 styles, 96 color palettes, 57 font pairings, 100 reasoning rules, 13 tech stacks.
-
-  Use proactively when:
-  - Building landing pages, dashboards, or web apps
-  - Choosing UI style, colors, or typography
-  - Designing for specific industries (SaaS, fintech, healthcare, etc.)
-  - Need design system recommendations
-
-  Triggers: design system, UI style, color palette, font pairing,
-  landing page design, glassmorphism, minimalism, brutalism,
-  design intelligence, style recommendation
-
-  Do NOT use for: backend code, API design, database, code review
+description: UI/UX design intelligence with BM25 search (styles, color palettes, font pairings, per-industry reasoning). Use when choosing a design system, style, colors, or typography for a web app or landing page.
 user-invocable: true
 argument-hint: "<product_type> <industry> <keywords>"
 metadata:
@@ -26,6 +12,20 @@ metadata:
 # UI/UX Pro Max - Design Intelligence
 
 BM25 search engine-based UI/UX design intelligence for style, color, typography, layout, and UX decisions.
+
+## When to Use
+
+Use proactively when:
+- Building landing pages, dashboards, or web apps
+- Choosing UI style, colors, or typography
+- Designing for specific industries (SaaS, fintech, healthcare, etc.)
+- Need design system recommendations
+
+Triggers: design system, UI style, color palette, font pairing,
+landing page design, glassmorphism, minimalism, brutalism,
+design intelligence, style recommendation
+
+Do NOT use for: backend code, API design, database, code review
 
 ## When to Apply
 
@@ -312,8 +312,6 @@ Before delivering UI code, verify:
 
 - `/frontend-design` - Creative, production-grade UI code generation
 - `/web-design-guidelines` - UI code review with 100+ Vercel Web Interface rules
-- `/a11y` - Deep accessibility analysis
-- `/responsive` - Responsive design review
 
 ### Design Pipeline
 

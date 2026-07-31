@@ -5,6 +5,97 @@
 형식은 [Keep a Changelog](https://keepachangelog.com/ko/1.0.0/)를 따르며,
 [Semantic Versioning](https://semver.org/lang/ko/)을 준수합니다.
 
+## [3.0.0] - 2026-07-31
+
+### 철학
+Claude 5 세대(Fable/Opus 5)의 하네스·모델 내재화 행동과 중복되는 규칙을
+제거하는 "harness-aware slim" 릴리스. 상시 로드 @import 8,994 → 3,023 단어,
+스킬 139 → 60, 에이전트 23 → 9, 저장소 전체 -24,000줄. 남는 것은
+(1) 모델이 추론할 수 없는 사실, (2) 하네스 기본값 오버라이드,
+(3) 결정적 기계 장치(훅)뿐.
+
+### Fixed
+- **`skill-matcher.py` 오탐 3종 수정**
+  1. stdin 페이로드를 JSON 파싱 없이 통째로 매칭해 `transcript_path`의
+     "projects"가 `PR` 패턴과 매치, `/verify`가 모든 메시지에 오발동하던
+     버그. 이제 `prompt` 필드만 매칭.
+  2. 일반 ASCII 리터럴 패턴에 단어 경계 자동 적용 — "fix"→"prefix",
+     "auth"→"author" 부분 문자열 오탐 제거 (한국어 어간 매칭은 유지).
+  3. 파일 스캔이 홈 디렉터리 전체를 walk하던 문제 — 홈/루트 스캔 금지,
+     깊이 4단계·2만 항목 제한.
+- **`nextjs` 규칙(이후 삭제)**: 파일 존재만으로 모든 프롬프트에 auto
+  발동하던 것을 파일+프롬프트 AND 조건으로 전환.
+- 전수 리뷰에서 발견된 잔존 참조 정리: CLAUDE.md의 skills-lock.json 유령
+  참조(타 저장소 내용 혼입), 잔존 스킬 9개 본문의 삭제 스킬 참조 14건,
+  MODES.md의 미존재 `/sc:business-panel` 표기.
+
+### Changed
+- **FLAGS.md, CONTEXTS.md, MCP_SERVERS.md → `optional/`로 이동** — 상시
+  로드에서 온디맨드 로드로 전환. `@import`는 RULES/PRINCIPLES/MODES/
+  CONVENTIONS 4개만 유지.
+- **RULES.md 증류** (3,352 → ~1,100 단어): 유지 대상은 난이도 평가,
+  Two-Stage Review, PDCA, Circuit Breaker(훅 연동), Direction Correction
+  Rule, No Co-Authored-By(하네스 기본값 명시적 오버라이드), File
+  Organization, Project Rules, `/goal` 요약(상세는 GOAL_PATTERNS.md로
+  일원화).
+- **PRINCIPLES.md 증류** (657 → ~350 단어): Complexity Timing, Simplicity
+  Checks, Search Before Building, Harness Engineering만 유지.
+- **MODES.md 축소** — Quick Reference 표 + `optional/MODE_*.md` 포인터만
+  잔류 (상세 내용은 기존 optional 파일과 완전 중복이었음).
+- **자체 스킬 8개 description 압축** (composition-patterns, security-audit,
+  ui-ux-pro-max, gap-analysis, web-design-guidelines, tdd, audit,
+  feature-planner) — 스킬 메타데이터는 idle에도 상시 상주하므로 1-2문장으로
+  축소, 트리거 목록은 본문 "When to Use" 섹션으로 이동 (정보 손실 없음).
+  서드파티 벤더 스킬은 업스트림 추적성을 위해 미수정.
+- **`sync-global.sh`** — v3.0 파일 세트 반영, `optional/` 동기화 추가,
+  구버전 루트 파일(FLAGS/CONTEXTS/MCP_SERVERS/KNOWLEDGE.md) 자동 정리.
+- skill-rules.json에서 매처가 지원하지 않는 죽은 `exit_codes` 필드 제거.
+- Verification Iron Law는 규칙 섹션에서 제거되었지만 CONTEXT.md 어휘
+  정의로 존속 (개념 참조는 유효).
+- `.superclaude-metadata.json` 에이전트 목록 정정 (구버전 18개 목록의
+  실제 디렉터리 불일치도 함께 해소).
+
+### Removed
+- **하네스/모델 기본값과 중복되는 규칙** — RULES.md: Verification Iron
+  Law, Persistence Enforcement, Workflow Rules, Planning Efficiency,
+  Scope Discipline, Professional Honesty, Temporal Awareness, Tool
+  Optimization, Workspace Hygiene, Implementation Completeness, Agent
+  Orchestration/Worker/Model Selection/Error Recovery, Code Organization,
+  Code Simplicity Guard. PRINCIPLES.md: SOLID 정의, Decision Framework,
+  Quality Philosophy. CLAUDE.md: 스킬 카테고리 표, 에이전트 표, Memory
+  Management 섹션 (하네스가 매 세션 자동 주입하는 목록과 중복).
+- **KNOWLEDGE.md 삭제** — 근거 없는 ROI 수치(자체 "No unsupported
+  numbers" 규칙 위반), 모델 기본값 pitfall, MODES.md와 중복되는 표.
+- **스킬 통폐합 139 → 60**:
+  - 주제 가이드 51개 ("○○ 가이드를 실행합니다"형: a11y, api-design,
+    architecture, auth, backup, caching, cicd, clean-arch, clean-code,
+    code-smell, commit-msg, cqrs, db-design, ddd, design-patterns, docker,
+    env, error-handling, event-driven, fastapi, file-upload, git-workflow,
+    graphql, hexagonal, i18n, logging, microservices, migration,
+    monitoring, monorepo, naming, nestjs, nextjs, pagination,
+    perf-optimize, pwa, queue, rate-limit, refactoring, regex, remix,
+    responsive, scaling, seo, solid, state, svelte, testing, versioning,
+    vue, websocket) — 모델이 네이티브로 보유한 교과서 지식의 재포장.
+  - 범용 명령 래퍼 28개 (analyze, build, cleanup, code-review, debug,
+    design, document, estimate, explain, git, implement, improve, index,
+    load, orchestrate, pm, reflect, research, save, select-tool, spawn,
+    spec-panel, task, template-skill, test, think, troubleshoot,
+    workflow) — 하네스/모델 기본 동작의 얇은 래퍼 (business-panel은 고유
+    기능이라 유지).
+  - 잔존 60개 기준: ① 기계 장치·데이터(BM25, Git 체크포인트, 훅 연동)
+    ② 프레임워크 코어 ③ 검증된 큐레이션(Vercel 가이드라인 등) ④ 서드파티
+    벤더(Impeccable 18, Anthropic 문서/디자인 스킬, grill-with-docs).
+  - skill-rules.json 60 → 23 규칙, help 스킬 재작성.
+- **에이전트 통폐합 23 → 9**: 범용 페르소나 14개 삭제(backend-architect,
+  frontend-architect, system-architect, devops-architect,
+  performance-engineer, quality-engineer, python-expert,
+  refactoring-expert, requirements-analyst, root-cause-analyst,
+  technical-writer, learning-guide, socratic-mentor, pm-agent) — 하네스의
+  general-purpose + model 오버라이드로 동일 수행 가능한 역할 래퍼.
+  pm-agent는 pm 스킬 삭제로 이미 고아 상태였음. 잔존 9개 = 프레임워크
+  배선(RULES 보안 에스컬레이션, 모드, 스킬 연동) 또는 고유 실행
+  구성(worktree 격리, Agent Teams) 보유.
+
 ## [2.3.0] - 2026-05-20
 
 ### Added
@@ -825,6 +916,11 @@
 
 | 버전 | 날짜 | 주요 변경 |
 |------|------|----------|
+| 3.0.0 | 2026-07-31 | Harness-aware slim: 상시 로드 -66%, 스킬 139→60, 에이전트 23→9, skill-matcher 오탐 수정 |
+| 2.3.0 | 2026-05-20 | `/grill-with-docs` 통합 (도메인 모델 stress-test), 루트 CONTEXT.md |
+| 2.2.0 | 2026-05-14 | `/goal` 통합 (빌트인 자율 루프 위임) |
+| 2.1.0 | 2026-04-17 | Impeccable Design Language 18개 스킬 통합 |
+| 2.0.0 | 2026-04-08 | System-enforced 패러다임: skill-rules 훅, AGENT.md frontmatter, Circuit Breaker |
 | 0.9.7 | 2026-03-06 | 레포 경량화 (optional/ 중복 6파일 삭제, 코어 파일 교차 중복 제거 -13%) |
 | 0.9.5 | 2026-02-24 | Core 파일 토큰 최적화 (RULES -26%, MODES -49%, optional/ 4파일 분리) |
 | 0.9.4 | 2026-02-24 | Harness Engineering 통합 (Agent Struggle Report, Harness Mode, codebase-gc) |

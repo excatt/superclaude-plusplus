@@ -6,26 +6,17 @@
   },
   "components": {
     "agents": {
-      "agents_count": 18,
+      "agents_count": 9,
       "agents_list": [
-        "backend-architect.md",
         "business-panel-experts.md",
         "codebase-gc.md",
         "deep-research-agent.md",
-        "devops-architect.md",
-        "frontend-architect.md",
-        "learning-guide.md",
-        "performance-engineer.md",
-        "pm-agent.md",
-        "python-expert.md",
-        "quality-engineer.md",
-        "refactoring-expert.md",
-        "requirements-analyst.md",
-        "root-cause-analyst.md",
+        "generator.md",
+        "harness-worker.md",
         "security-engineer.md",
-        "socratic-mentor.md",
-        "system-architect.md",
-        "technical-writer.md"
+        "team-implementer.md",
+        "team-reviewer.md",
+        "validator.md"
       ],
       "category": "agents",
       "installed_at": "2025-10-18T17:55:04.491460",

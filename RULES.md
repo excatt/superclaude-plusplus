@@ -1,5 +1,11 @@
 # Claude Code Behavioral Rules
 
+Rules here either **override a harness default** or add something the model
+cannot know on its own. Behavior the harness or the model already guarantees
+(verification before completion claims, persistence until done, parallel tool
+calls, scope discipline, root-cause-first debugging, faithful reporting,
+matching surrounding code style) is intentionally not restated.
+
 ## Rule Priority System
 
 🔴 **CRITICAL**: Security, data safety, production breaks - Never compromise
@@ -7,12 +13,6 @@
 🟢 **RECOMMENDED**: Optimization, style, best practices - Apply when practical
 
 **Conflict Resolution**: 1) Safety First 2) Scope > Features 3) Quality > Speed 4) Context Matters
-
----
-
-## Framework Meta-Rule
-
-These rules bias toward **caution over speed**. For trivial tasks (typo fixes, comment edits, obvious one-liners), use judgment — not every change needs the full rigor. The goal is reducing costly mistakes on non-trivial work, not slowing down simple tasks.
 
 ---
 
@@ -41,19 +41,16 @@ Assess difficulty before starting any task; branch protocol depth based on diffi
 - Analysis/planning: Skip → implement immediately
 - Verification: Minimal (build/test pass confirmation only)
 - Two-Stage Review: Stage 1 only (verify change diff)
-- Reasoning Templates: Not needed
 
 **Medium → Standard Protocol**:
 - `/confidence-check`: Execute
 - Analysis: Brief → Planning: Brief → Implement → Full verification
 - Two-Stage Review: Stage 1 + Stage 2
-- Reasoning Templates: Optional (for debugging/architecture decisions)
 
 **Complex → Extended Protocol**:
 - `/confidence-check`: Required
 - Analysis: Full → Planning: Full + checkpoints → Implement → Mid-checkpoint (50%) → Full verification
 - Two-Stage Review: Stage 1 + Stage 2 + Cascade Impact Review
-- Reasoning Templates: Required (apply relevant templates)
 - Additional references: `optional/REASONING_TEMPLATES.md`, `optional/CONTEXT_BUDGET.md`
 
 ### Difficulty Misjudgment Recovery
@@ -63,91 +60,15 @@ Assess difficulty before starting any task; branch protocol depth based on diffi
 
 ---
 
-## Agent Orchestration
-**Priority**: 🔴 **Triggers**: Task execution, post-implementation
-
-| Layer | Activation | Action |
-|-------|------------|--------|
-| Task Execution | Keyword/file type detection | Auto-select specialized agent |
-| Self-Improvement | Task complete/error occurs | PM Agent documents patterns |
-| Manual Override | `@agent-[name]` | Direct route to specified agent |
-
-**Flow**: Request → Agent Selection → Implementation → PM Agent Documents
-
----
-
-## Orchestrator vs Worker Pattern
-**Priority**: 🔴 **Triggers**: Complex tasks, multi-agent spawning
-
-| Role | DO | DON'T |
-|------|-----|-------|
-| **Orchestrator** | Create tasks, spawn agents, synthesize results, AskUserQuestion | Write code directly, explore codebase |
-| **Worker** | Use tools directly, report with absolute paths | Spawn sub-agents, Agent spawn |
-
-**Orchestrator Tools**: `Read`(1-2), `Agent`, `AskUserQuestion`
-**Worker Tools**: `Write`, `Edit`, `Glob`, `Grep`, `Bash`, `WebFetch`, `WebSearch`
-
-**Worker Prompt Templates**: See `optional/WORKER_TEMPLATES.md` (Implementer, Spec Reviewer, Quality Reviewer)
-**Required**: Always include `run_in_background=True`
-
----
-
-## Agent Model Selection (v2.0)
-**Priority**: 🟡 **Triggers**: Agent tool usage, agent spawning
-
-**v2.0**: Each agent's AGENT.md frontmatter enforces `model`, `tools`, `maxTurns`, `effort` at the system level.
-Refer to the guide below only for manual spawning:
-
-| Model | Use Case | Spawn Pattern |
-|-------|------|----------|
-| (omit) | Inherit parent model (default) | Most tasks |
-| haiku | Info gathering, simple search | 5-10 parallel |
-| sonnet | Well-defined implementation tasks | 1-3 |
-| opus | Architecture, complex reasoning | 1-2 |
-
-### Effort Level ↔ Difficulty Mapping
-| Difficulty (Step 0) | effort | Effect |
-|---------------------|--------|--------|
-| Simple | low | Fast response, minimal analysis |
-| Medium | medium | Balanced (default) |
-| Complex | high | Deep analysis |
-| Complex + --ultrathink | max | Opus only, current session only |
-
-**Non-blocking Mindset**: "Agent working — what's next?"
-
----
-
-## Agent Error Recovery
-**Priority**: 🟡 **Triggers**: Agent failure, timeout, partial completion
-
-**Protocol**: Fail → Adjust prompt (EXPLICIT/SCOPE/CONSTRAINT/CONTEXT) → Retry (max 2) → Escalate (AskUserQuestion)
-
-Recovery: Timeout→split | Incomplete→retry remaining | Wrong Approach→add constraints | Blocked→resolve first | Conflict→ask user
-
-**Note**: Agent spawn/execution retries only. Bug fix retries: see `3+ Fixes Architecture Rule`.
-
----
-
-## Workflow Rules
-**Priority**: 🟡 **Triggers**: All development tasks
-
-- **Pattern**: Understand → Plan → TodoWrite(3+) → Execute → Track → Validate
-- **Batch**: Parallel by default, sequential only when dependencies exist
-- **Validation**: Verify before execution, confirm after completion
-- **Quality**: Mark work complete only after lint/typecheck
-- **Incremental delivery**: Each step should be independently verifiable. Prefer N small verified commits over 1 large unverified commit. Red flag: 300+ line single commit without intermediate verification
-
----
-
 ## Auto-Skill & Proactive Suggestion
 **Priority**: 🔴 (Auto-Skill) / 🟡 (Proactive)
 
-Full trigger tables in `CLAUDE.md` (Auto-Invoke / Proactive Suggestions sections).
+Mechanical skill activation is handled by the `UserPromptSubmit` hook
+(`scripts/skill-matcher.py` + `.claude/skill-rules.json`).
 
-**Execution priority**: Difficulty assessment (Step 0) → `/confidence-check` → `/checkpoint` → Two-Stage Review → Verification Gate → `/debug` → `/learn`
+**Execution priority**: Difficulty assessment (Step 0) → `/confidence-check` → `/checkpoint` → Two-Stage Review → `/learn`
 **Difficulty gate**: Simple → skip confidence-check, may skip Stage 2 | Medium → Standard | Complex → Full + Cascade Impact
 **Exceptions**: Typo/comment fixes, `--no-check` request
-**Format**: `💡 Suggestion: [tool] - Reason: [rationale] → Run? (Y/n)`
 **Frequency control**: Once per skill per session; no re-suggestion after rejection
 
 ---
@@ -161,14 +82,11 @@ Full trigger tables in `CLAUDE.md` (Auto-Invoke / Proactive Suggestions sections
 **Reviewer Principle**: "DO NOT trust the implementer's report"
 - Read actual code (don't trust report)
 - Compare line-by-line with requirements
-- Identify missing features
-- Identify unrequested additions
+- Identify missing features and unrequested additions
 
 **Output**: ✅ Spec compliant | ❌ Issues: [list of omissions/excess]
 
-**Auto-pass Conditions** (simplified verification when all conditions met):
-- Difficulty Simple + diff < 50 lines + single file + no new dependencies
-- Simplified = diff-reading only (full code review not required)
+**Auto-pass**: Difficulty Simple + diff < 50 lines + single file + no new dependencies → diff-reading only
 
 ### Stage 2: Code Quality Review
 **Purpose**: Verify implementation quality (only after Stage 1 passes)
@@ -179,22 +97,14 @@ Full trigger tables in `CLAUDE.md` (Auto-Invoke / Proactive Suggestions sections
 | Important | Fix before proceeding |
 | Minor | Can handle later |
 
-**Confidence Filter**: Only report issues with ≥80% confidence. Below 80% → classify as Minor (informational). Prevents review noise from speculative findings.
+**Confidence Filter**: Only report issues with ≥80% confidence. Below 80% → classify as Minor (informational).
 
-**Output**: Strengths + Issues (by severity, confidence-filtered) + Assessment
-
-**Auto-pass Conditions** (may skip when all conditions met):
-- Difficulty Simple + all tests green + lint/typecheck passing
+**Auto-pass**: Difficulty Simple + all tests green + lint/typecheck passing
 
 ### Stage 3: Cascade Impact Review (Complex difficulty only)
-**Purpose**: Verify that changes do not break other modules/features
-
 **Key question**: "Did this change affect anything elsewhere?"
-- Use Grep to find references to changed functions/types/variables
-- Verify compatibility at reference sites
+- Grep references to changed functions/types/variables, verify call sites
 - Run full existing test suite (including tests outside changed files)
-
-**Output**: ✅ No cascade impact | ⚠️ Impact found: [affected files + status]
 
 **Trigger conditions**: Complex difficulty OR 4+ modules changed OR public API changed
 
@@ -206,20 +116,12 @@ Cascade Impact (Complex only) → [Fail: Fix → Re-review] →
 /verify → /audit → Complete
 ```
 
-**Red Flags**:
-- Skip Stage 1 and proceed to Quality Review
-- Proceed to next task with review issues
-- Claim fix complete without re-review
-- Skip Cascade Impact Review on Complex tasks
-
 ---
 
 ## React Code Review
 **Priority**: 🔴 **Triggers**: .jsx/.tsx + 리뷰 keyword
 
 When `.jsx`/`.tsx` + review keyword detected → **Always** execute `/react-best-practices` first
-
-**Auto-Trigger**: `useState`, `useEffect`, `useCallback`, `useMemo`, Server/Client Components
 
 ---
 
@@ -228,70 +130,30 @@ When `.jsx`/`.tsx` + review keyword detected → **Always** execute `/react-best
 
 - >3 files or >2 hour work → `/feature-planner` required
 - Single file, <30 min work → Can skip
-- **Keywords**: 구현, 만들어, implement, build, create
 
 ---
 
 ## PDCA Workflow
 **Priority**: 🟡 **Triggers**: Feature implementation, design document creation
 
-| Phase | Deliverable | Content |
-|-------|--------|------|
-| Plan | `docs/01-plan/{feature}.plan.md` | Requirements, scope, milestones |
-| Design | `docs/02-design/{feature}.design.md` | API spec, data model, architecture |
-| Do | Source code | Actual implementation |
-| Check | `docs/03-analysis/{feature}.analysis.md` | Gap analysis report |
-| Act | Code modifications | matchRate <90% → iterate (max 5) |
-| Report | `docs/04-report/{feature}.report.md` | Completion report |
+| Phase | Deliverable |
+|-------|--------|
+| Plan | `docs/01-plan/{feature}.plan.md` |
+| Design | `docs/02-design/{feature}.design.md` |
+| Do | Source code |
+| Check | `docs/03-analysis/{feature}.analysis.md` (gap analysis) |
+| Act | Code modifications: matchRate <90% → iterate (max 5) |
+| Report | `docs/04-report/{feature}.report.md` |
 
-**Gap Analysis Comparison Items**:
-1. API comparison: Endpoints, HTTP methods, request/response format
-2. Data model: Entities, field definitions, relationships
-3. Feature comparison: Business logic, error handling
-4. Convention: Naming, import order, folder structure
-
-**Rule**: matchRate ≥90% → Report, <90% → Act iteration
-
----
-
-## Planning Efficiency
-**Priority**: 🔴 **Triggers**: Planning phase, multi-step tasks
-
-- Explicitly identify parallelizable tasks
-- Map dependencies: separate sequential vs parallel
-- Efficiency metrics: "3 parallel ops = 60% time saving"
-
-✅ "Parallel: [Read 5 files] → Sequential: analyze → Parallel: [Edit all]"
-
----
-
-## Implementation Completeness
-**Priority**: 🟡 **Triggers**: Feature creation, function authoring
-
-- **No TODO**: No TODO in core functionality
-- **No Mock**: No placeholders, stubs
-- **No Incomplete**: No "not implemented" throws
-- **Start = Finish**: Once started, complete it
-
----
-
-## Code Simplicity Guard
-**Priority**: 🟡 **Triggers**: Post-implementation
-
-Apply KISS/YAGNI/Complexity Timing per PRINCIPLES.md. Mandatory checks:
-- **Volume check**: "Could this be half the lines?" → YES → rewrite
-- **Senior Engineer Test**: "Would they call this overcomplicated?" → YES → simplify
+**Gap Analysis**: API, data model, feature behavior, convention. matchRate ≥90% → Report, <90% → Act iteration.
 
 ---
 
 ## Assumption Transparency
-**Priority**: 🔴 **Triggers**: All implementation tasks (default behavior regardless of mode)
+**Priority**: 🔴 **Triggers**: All implementation tasks
 
-### Default Behaviors
-- **State assumptions**: Before implementing, list "I'm assuming X means Y"
-- **No silent picks**: When multiple interpretations exist, present them — don't pick silently
-- **Surface confusion**: If unclear, stop → name what's confusing → ask
-- **Push back**: If a simpler approach exists, say so even if it differs from the request
+- When multiple interpretations exist, state which one you picked and why —
+  or present the options if the choice materially changes the work.
 
 ### Direction Correction Rule
 Track the number of times the user corrects direction or requests a redo:
@@ -300,286 +162,88 @@ Track the number of times the user corrects direction or requests a redo:
 - **1 redo**: Analyze root cause, restart
 - **2 redos**: Stop immediately → ask user to re-specify requirements
 
-**correct vs redo distinction**:
-- correct: Partial adjustment ("그게 아니라 이렇게 해줘" / "not that, do it this way")
-- redo: Full restart ("아예 다시 해줘" / "start over", "이 방향 아니야" / "wrong direction")
-
-### Litmus Test
-"Am I silently choosing an interpretation right now?" → YES → stop and present options with effort/impact estimates
+**correct vs redo**: correct = partial adjustment ("그게 아니라 이렇게 해줘") | redo = full restart ("아예 다시 해줘", "이 방향 아니야")
 
 ---
 
-## Scope Discipline
-**Priority**: 🟡 **Triggers**: Ambiguous requirements, feature creep
-
-- **Only What's Requested**: No feature additions beyond explicit requirements
-- **MVP First**: Minimal features first, expand after feedback
-- **No Enterprise Bloat**: Don't add auth, deployment, monitoring without specification
-- **YAGNI**: No speculative features
-
----
-
-## Change Scope Discipline
+## Surgical Change Preferences
 **Priority**: 🔴 **Triggers**: Modifying existing code
 
-### Surgical Change Rules
-- **No adjacent "improvements"**: Don't touch code, comments, or formatting unrelated to the request
-- **Match existing style**: Even if you'd do it differently, follow the file's current conventions
-- **Orphan distinction**:
-  - Orphans YOUR changes created (unused imports, variables) → clean up
-  - Pre-existing dead code → mention it, don't delete it
-- **No drive-by refactoring**: Bug fix ≠ quote style change + type hints + docstrings
-
-### Litmus Test
-"Does every changed line trace directly to the user's request?" → NO → revert that line
-
-### Red Flags
-- Bug fix diff includes formatting changes
-- "While I'm here" mindset touching adjacent code
-- Adding type hints, docstrings, or comments to unchanged functions
+- Orphans YOUR changes created (unused imports, variables) → clean up.
+  Pre-existing dead code → mention it, don't delete it.
+- Bug fix diffs must not include drive-by formatting/refactoring changes.
 
 ---
 
-## Code Organization
-**Priority**: 🟢 **Triggers**: File creation, project structure
+## Circuit Breaker (3+ Fixes Architecture Rule)
+**Priority**: 🔴 **Triggers**: Repeated fix failures
 
-- Follow language-specific conventions (JS: camelCase, Python: snake_case)
-- Follow existing project patterns
-- No mixed conventions
-- Directory structure by feature/domain
-
-### Style Priority (when conventions conflict)
-1. Current file's existing style (local consistency first)
-2. Project-wide dominant patterns
-3. CONVENTIONS.md rules
-4. Language community standards
-
-**Principle**: Match existing style even if you'd do it differently within the scope of your changes
-
----
-
-## Workspace Hygiene
-**Priority**: 🟡 **Triggers**: Post-task, session end
-
-- Clean up temp files after work
-- Remove temp resources before session end
-- Delete build artifacts, logs, debug output
-
----
-
-## Failure Investigation
-**Priority**: 🔴 **Triggers**: Errors, test failures
-
-### The Four Phases
-| Phase | Activity | Template | Completion Criteria |
-|-------|------|----------|----------|
-| **1. Root Cause** | Read error, reproduce, check changes, collect evidence | Cause-Effect Chain | Understand WHAT/WHY |
-| **2. Pattern** | Find working examples, compare differences | — | Identify difference |
-| **3. Hypothesis** | Single hypothesis → minimal test | Debugging Hypothesis Loop | Confirm or new hypothesis |
-| **4. Implementation** | Write failing test → single fix → verify | — | Bug resolved, tests pass |
-
-**Reasoning Templates**: For Medium+ difficulty, recommended to use relevant templates from `optional/REASONING_TEMPLATES.md`.
-
-### 3+ Fixes Architecture Rule
-**🔴 CRITICAL**: After 3 fix attempts still failing:
+After 3 fix attempts still failing:
 1. **Stop immediately** - No more fix attempts
 2. **Architecture review** - "Is this pattern fundamentally correct?"
-3. **Agent Struggle Report** - Diagnose what's missing (see below)
+3. **Agent Struggle Report** - diagnosis-only report: Task + Attempts +
+   Failure Classification (Repo Gap | Architecture | External | Requirement |
+   Capability) + Recommended Action
 4. **User escalation** - Deliver report and discuss before continuing
 
-**v2.0**: The `circuit-breaker.sh` hook mechanically detects 3 repetitions of the same error and auto-halts.
+The `circuit-breaker.sh` hook mechanically detects 3 repetitions of the same
+error and auto-halts. Diagnosis only — no auto-fix; user decides whether to retry.
 
-**Pattern Indicators** (architecture problem signals):
-- Each fix creates new problem elsewhere
-- Claims "major refactoring" needed
-- Each fix generates symptoms elsewhere
-
+**Pattern indicators** (architecture problem signals): each fix creates new
+problems elsewhere, or "major refactoring" claims appear.
 **Red Flag**: "One more try" (after already 2+ failures)
 
-### Agent Struggle Report (Harness Engineering)
-When 3+ Fixes Rule triggers → produce **diagnosis-only report** (struggle = signal):
-- **Report**: Task + Attempts + Failure Classification (Repo Gap | Architecture | External | Requirement | Capability) + Recommended Action
-- **Safety**: Diagnosis only (no auto-fix) | Report once then stop | User decides whether to retry
-
-### Core Principles
-- **Root Cause**: Investigate why it failed (no simple retries)
-- **Never Skip**: Never skip tests/verification
-- **Fix > Workaround**: Resolve root cause
-- **Defense-in-Depth**: 4-layer verification (Entry Point → Business Logic → Environment Guard → Debug Instrumentation)
-
 ---
 
-## Professional Honesty
-**Priority**: 🟡 **Triggers**: Evaluations, reviews, technical claims
+## Git Preferences
+**Priority**: 🔴
 
-- No marketing language ("blazingly fast", "100% secure")
-- No unsupported numbers
-- Honest trade-off presentation
-- Use "untested", "MVP", "needs validation"
-
----
-
-## Git Workflow
-**Priority**: 🔴 **Triggers**: Session start, before changes
-
-- **Read before Write**: Always read a file before modifying it
-- Session start: `git status && git branch`
-- Feature branches only (no direct work on main)
-- Check `git diff` before commit
-- Meaningful commit messages (no "fix", "update")
-- **No Co-Authored-By**: Never include Claude co-author line
-
----
-
-## Tool Optimization
-**Priority**: 🟢 **Triggers**: Multi-step tasks, performance needs
-
-- Priority: MCP > Native > Basic
-- Execute independent tasks in parallel
-- >3 file modifications → MultiEdit
-- Grep > bash grep, Glob > find
+- **No Co-Authored-By**: Never include Claude co-author lines in commits
+  (explicit override of the harness default).
+- Meaningful commit messages (no "fix", "update"); Conventional Commit format
+  when the project uses it.
 
 ---
 
 ## File Organization
 **Priority**: 🟡 **Triggers**: File creation, documentation
 
-- Tests: `tests/`, `__tests__/`, `test/`
+- Tests: `tests/`, `__tests__/`, `test/` — no test files next to source
 - Scripts: `scripts/`, `tools/`, `bin/`
-- Claude docs: `claudedocs/`
-- No test files next to source
+- Claude-generated docs/reports: `claudedocs/`
 
 ---
 
 ## Project Rules
 **Priority**: 🔴
 
-- **Python**: uv required (pip/poetry/pipenv forbidden) | `pyproject.toml` + `uv.lock`
-- **Node.js**: pnpm required (npm/yarn forbidden) | `pnpm-lock.yaml` must be committed
+- **Package managers**: Python → uv (pip/poetry/pipenv forbidden), Node.js →
+  pnpm (npm/yarn forbidden). Details and required file layouts: CONVENTIONS.md.
 - **Safety**: Check deps before using libraries | Plan → Execute → Verify
-- **Security**: No hardcoded credentials | On security incident, stop immediately → `security-engineer`
+- **Security**: No hardcoded credentials | On security incident, stop
+  immediately → `security-engineer`
 
 Dockerfile/CI patterns, Security Checklist details: `optional/PROJECT_RULES.md`
 
 ---
 
-## Temporal Awareness
-**Priority**: 🔴 **Triggers**: Date/time references, version checks
+## Goal-Driven Autonomous Loops (`/goal`)
+**Priority**: 🔴 **Triggers**: Multi-turn work with a verifiable end state
 
-- Check current date in `<env>` context
-- Don't assume based on knowledge cutoff
-- Verify current date when discussing "latest" versions
+- Strong success criteria (test counts, exit codes, file existence) →
+  `/goal "<verifiable condition>"` loops autonomously (Claude Code 2.1.139+).
+- Weak criteria ("make it work", "improve it") → clarify first.
+  **NEVER pass weak criteria to `/goal`** — guarantees runaway loops.
+- Safety nets stay active regardless: Circuit Breaker overrides `/goal`;
+  Two-Stage Review runs on completion.
 
----
-
-## Goal Definition Protocol
-**Priority**: 🔴 **Triggers**: Before starting any implementation/modification task
-
-### Transform Vague Requests → Verifiable Goals
-| Vague Request | Verifiable Goal | TDD Fit |
-|--------------|-----------------|---------|
-| "Fix the bug" | "Write a test that reproduces it, then make it pass" | ✅ → suggest `/tdd` |
-| "Add validation" | "Write tests for invalid inputs, then make them pass" | ✅ → suggest `/tdd` |
-| "Refactor X" | "Ensure tests pass before and after" | - |
-| "Improve performance" | "Measure benchmark → define target → achieve it" | - |
-| "Add auth" | "Write auth scenario tests → make them pass" | ✅ → suggest `/tdd` |
-
-**TDD suggestion criteria**: When the goal transforms into "write tests → make them pass" and the project has test infrastructure (`tests/`, `__tests__/`, `*.test.*`, `*.spec.*`), suggest the `/tdd` workflow.
-
-### Strong vs Weak Criteria
-- **Strong**: Test passes, benchmark hits target, specific checklist completed → autonomous loop possible → consider `/goal`
-- **Weak**: "Make it work", "improve it", "make it better" → clarify immediately before starting. **NEVER pass weak criteria to `/goal`** — guarantees runaway loop
-
-### Multi-Step Plan Format
-```
-1. [Step] → verify: [specific check]
-2. [Step] → verify: [specific check]
-3. [Step] → verify: [specific check]
-```
-
-### `/goal` Trigger (Claude Code 2.1.139+)
-When Strong criteria exist AND the work spans multiple turns, wrap autonomous execution with `/goal`:
-- ✅ `/goal "pnpm test → 0 failures AND pnpm build exit 0 AND PR opened"`
-- ✅ `/goal "all call sites of legacyAuth() migrated AND tests green"`
-- ❌ `/goal "기능이 완성되면 멈춰"` — soft check, hallucination risk
-- ❌ `/goal "리팩토링 잘 됐으면 종료"` — no verifiable evidence
-
-`/goal` condition must reference **command exit codes, test counts, or file existence** — not subjective state.
-Safety nets remain in force: Verification Iron Law (hard evidence), 3+ Fixes Rule (Circuit Breaker), Two-Stage Review.
-Detailed patterns: `optional/GOAL_PATTERNS.md`
-
-**Principle**: Strong success criteria → `/goal` loops independently. Weak criteria → stop and clarify first.
-
----
-
-## Verification Iron Law
-**Priority**: 🔴 **Triggers**: Completion claims, test results, success expressions (완료, 됐어, 통과, fixed, works, passes)
-
-### The Iron Law
-```
-NO COMPLETION CLAIMS WITHOUT FRESH VERIFICATION EVIDENCE
-```
-
-### Gate Function (required before all completion claims)
-1. **IDENTIFY**: What command proves this claim?
-2. **RUN**: Execute full command (fresh, complete)
-3. **READ**: Read full output, check exit code, count failures
-4. **VERIFY**: Does output confirm claim?
-   - NO → Report actual state with evidence
-   - YES → Make claim with evidence
-5. **ONLY THEN**: Claim allowed
-
-### Verification Matrix
-| Claim | Required Evidence | Insufficient |
-|------|----------|--------|
-| Tests pass | Test output: 0 failures | Previous run, "will pass" |
-| Build success | Build command: exit 0 | Linter pass |
-| Bug fixed | Reproduction test passes | Code changed |
-| Requirements met | Item-by-item checklist | Tests pass |
-
-### Red Flags - STOP
-- Using "should", "probably", "seems to"
-- Satisfaction expression before verification ("Great!", "Done!")
-- Attempt commit/PR without verification
-- Judge whole by partial verification
-
----
-
-## Persistence Enforcement
-**Priority**: 🔴 **Triggers**: Multi-step tasks, session completion
-
-- **Start = Finish**: No exceptions — TODOs remaining → keep working
-- **Autonomous persistence → delegate to `/goal`**: For multi-turn work with verifiable end state, use `/goal <condition>` (Claude Code 2.1.139+) instead of manual loop tracking. The harness checks the condition after each turn and auto-continues until met.
-- **Safety nets always apply** (do NOT disable when using `/goal`):
-  - 3+ Fixes Architecture Rule / `circuit-breaker.sh` — auto-halts on repeated failures
-  - Verification Iron Law — `/goal`'s soft check ≠ hard evidence; require command exit codes
-  - Two-Stage Review — runs on completion, regardless of how the loop ended
-- Save progress to `.claude/state/` for session-resume scenarios
-- Patterns and anti-patterns: `optional/GOAL_PATTERNS.md`
+Condition patterns, anti-patterns, and the `/loop` vs `/goal` decision table:
+`optional/GOAL_PATTERNS.md`
 
 ---
 
 ## Session Protocols
-**Priority**: 🟡 (Note) / 🟢 (Learning, Memory)
+**Priority**: 🟢
 
-- **Note**: `/note <content>` | Auto-Suggest at 50+ messages or 70%+ context
-- **Learning**: Save non-Googleable, project-specific insights to `~/.claude/skills/learned/`
-- **Memory**: Auto-record to `~/.claude/projects/<project>/memory/` | "기억해" → explicit save
-
-### Session Save (for long tasks/debugging)
-Save structured session snapshots on user request or when context reaches 70%+:
-
-```
-## Session: [task summary]
-### What We Are Building: [goal]
-### What WORKED: [successful approaches]
-### What Did NOT Work: [failed approaches — prevent retrying]
-### What Has NOT Been Tried Yet: [remaining options]
-### Current State: [file state, build/test results]
-### Exact Next Step: [one specific next action]
-```
-
-Save location: `.claude/state/session-YYYY-MM-DD.md`
-**Key insight**: The "What Did NOT Work" section is critical for preventing wheel-spinning
-
-Details: `optional/PROTOCOLS.md`
+- **Note**: `/note <content>` persists memos across sessions.
+- Structured session snapshots for long tasks: `optional/PROTOCOLS.md`.

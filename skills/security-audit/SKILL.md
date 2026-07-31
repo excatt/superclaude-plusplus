@@ -1,26 +1,24 @@
 ---
 name: security-audit
-description: |
-  Comprehensive security audit with OWASP Top 10, STRIDE threat model,
-  and LLM/AI-specific security analysis. Covers traditional web security
-  plus AI-era attack surfaces: prompt injection, tool call validation,
-  skill supply chain, and cost amplification.
-
-  Use proactively when:
-  - Security review requested
-  - Auth/authz implementation
-  - API endpoint exposure
-  - LLM/AI integration code
-  - Dependency updates
-  - Pre-deployment audit
-
-  Triggers: security audit, security review, vulnerability check,
-  pentest, threat model, OWASP, security scan
-
-  Do NOT use for: performance optimization, code style review
+description: Security audit covering OWASP Top 10, STRIDE, and LLM/AI attack surfaces (prompt injection, tool-call validation, skill supply chain). Use for security reviews, auth/API exposure, and pre-deployment audits.
 user-invocable: true
 argument-hint: [path-or-scope]
 ---
+
+## When to Use
+
+Use proactively when:
+- Security review requested
+- Auth/authz implementation
+- API endpoint exposure
+- LLM/AI integration code
+- Dependency updates
+- Pre-deployment audit
+
+Triggers: security audit, security review, vulnerability check,
+pentest, threat model, OWASP, security scan
+
+Do NOT use for: performance optimization, code style review
 
 ## Dynamic Context
 
@@ -263,7 +261,5 @@ Overall Risk: [Critical/High/Medium/Low]
 
 ## Related Skills
 
-- `/auth` - Authentication & authorization patterns
-- `/error-handling` - Secure error handling
 - `/verify` - General verification pipeline
 - `/cso` - Extended security officer review (gstack-compatible)

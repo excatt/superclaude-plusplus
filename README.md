@@ -1,6 +1,6 @@
-# SuperClaude++ v2.0
+# SuperClaude++ v3.0
 
-Claude Code를 위한 시스템 강제 개발 프레임워크 - 140개 스킬, 23개 에이전트, 16개 훅 타입으로 생산성과 코드 품질을 자동화합니다.
+Claude Code를 위한 harness-aware 개발 프레임워크 - 60개 스킬, 9개 에이전트, 16개 훅 타입. 모델이 못 하는 것만 남기고 자동화합니다.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
@@ -19,143 +19,106 @@ v0.x에서는 CLAUDE.md에 규칙을 적어두고 Claude가 이를 읽고 따르
 
 **태그라인**: Harness Engineering이 자기 자신에게 적용되는 프레임워크
 
+### v3.0 패러다임 전환
+
+```
+v2.0: "시스템이 규칙을 강제한다"           (system-enforced)
+v3.0: "모델이 못 하는 것만 남긴다"          (harness-aware slim)
+```
+
+Claude 5 세대(Fable/Opus 5)부터는 검증 후 완료 선언, 지속 실행, 스코프 절제,
+병렬 도구 호출 같은 행동이 하네스와 모델에 내재화되었습니다. v3.0은 이런
+중복 규정을 상시 로드에서 제거하고, **모델이 스스로 알 수 없는 것**(프로젝트
+사실, 컨벤션, 사용자 선호, 하네스 기본값 오버라이드)과 **결정적 기계 장치**
+(훅, Circuit Breaker)만 남깁니다. 상시 로드 ~9,000단어 → ~2,000단어.
+프로세스 지식은 `optional/`과 스킬로 강등되어 필요할 때만 로드됩니다.
+
 ## Features
 
-### Core Framework
+### Core Framework (상시 로드, v3.0에서 4+1개로 축소)
 | 파일 | 설명 |
 |------|------|
 | **CLAUDE.md** | 엔트리 포인트 및 언어 설정 (한국어) |
-| **FLAGS.md** | 행동 플래그 시스템 (`--think`, `--ultrathink`, `--uc` 등) |
-| **RULES.md** | 개발 규칙 및 자동화 트리거 (Karpathy Guidelines + Harness Engineering 통합) |
-| **PRINCIPLES.md** | SOLID, DRY, KISS, YAGNI, Search Before Building 등 엔지니어링 원칙 |
-| **MODES.md** | 상황별 행동 모드 (Brainstorming, Orchestration, Harness, Token Efficiency 등) |
-| **MCP_SERVERS.md** | MCP 서버 통합 가이드 (Context7, Magic, Serena 등) |
-| **CONTEXTS.md** | DEV/REVIEW/RESEARCH/PLANNING 컨텍스트 모드 |
+| **RULES.md** | 하네스 오버라이드 + 모델이 모르는 규칙만 (난이도 평가, Circuit Breaker, 프로젝트 규칙) |
+| **PRINCIPLES.md** | 적용 시점 선호만 (Complexity Timing, Search Before Building, Harness Engineering) |
+| **MODES.md** | 모드 Quick Reference (상세는 `optional/MODE_*.md`) |
 | **CONVENTIONS.md** | 네이밍 컨벤션 + 패키지 관리 규칙 (uv/pnpm 필수) |
-| **PATTERNS.md** | 재사용 가능한 코드 패턴 모음 |
-| **KNOWLEDGE.md** | 축적된 인사이트 및 트러블슈팅 가이드 |
 
-### Agent System (23개)
+온디맨드(`optional/`)로 이동: **FLAGS.md**(플래그 정의), **CONTEXTS.md**(컨텍스트 모드),
+**MCP_SERVERS.md**(MCP 선택 매트릭스), **PATTERNS.md**(코드 패턴).
+**KNOWLEDGE.md**는 v3.0에서 제거 (근거 없는 수치와 모델 기본값 중복).
 
-v2.0에서 에이전트는 AGENT.md frontmatter로 정의됩니다. `model`, `tools`, `maxTurns`, `effort`, `isolation` 등의 속성을 선언적으로 지정하여, 에이전트 행동이 프롬프트 의존이 아닌 시스템 수준에서 제어됩니다.
+### Agent System (9개, v3.0에서 23개 → 9개로 통폐합)
+
+에이전트는 AGENT.md frontmatter로 정의됩니다. `model`, `tools`, `maxTurns`,
+`effort`, `isolation` 등의 속성을 선언적으로 지정하여, 에이전트 행동이
+프롬프트 의존이 아닌 시스템 수준에서 제어됩니다.
+
+v3.0에서 **범용 페르소나 14개 삭제** (backend/frontend/system/devops-architect,
+performance/quality-engineer, python/refactoring-expert, root-cause-analyst,
+requirements-analyst, technical-writer, learning-guide, socratic-mentor,
+pm-agent) — 하네스의 general-purpose + model 오버라이드로 동일하게 수행
+가능한 역할 래퍼였습니다. 잔존 기준은 스킬과 동일: 프레임워크 배선(RULES/
+MODES/스킬)에 연결되어 있거나 고유한 실행 구성(worktree 격리, 팀 구성)을
+갖는 것.
 
 ```yaml
-# 예시: agents/backend-architect.md
+# 예시: agents/harness-worker.md
 ---
-name: backend-architect
-model: opus
-tools: Read, Grep, Glob, Write, Edit, Bash, WebFetch
+name: harness-worker
+model: sonnet
+tools: Read, Grep, Glob, Write, Edit, Bash
 disallowedTools: Agent
-maxTurns: 20
+maxTurns: 30
 effort: high
-skills: [api-design, db-design, security-audit]
+isolation: worktree
+skills: [verify]
 ---
 ```
 
-| Agent | 역할 | model | isolation |
-|-------|------|-------|-----------|
-| `backend-architect` | 백엔드 시스템 설계 | opus | - |
-| `frontend-architect` | UI/UX 및 프론트엔드 아키텍처 | sonnet | - |
-| `system-architect` | 시스템 아키텍처 설계 | opus | - |
-| `security-engineer` | 보안 취약점 분석 (Read-only) | opus | - |
-| `performance-engineer` | 성능 최적화 | sonnet | - |
-| `quality-engineer` | 테스트 및 QA | sonnet | - |
-| `python-expert` | Python 전문가 | sonnet | worktree |
-| `refactoring-expert` | 코드 리팩토링 | sonnet | worktree |
-| `deep-research-agent` | 심층 리서치 (WebFetch/WebSearch) | opus | - |
-| `root-cause-analyst` | 근본 원인 분석 (Read-only) | opus | - |
-| `codebase-gc` | 코드베이스 정리 (dead code, import, doc-code 동기화) | haiku | - |
-| `pm-agent` | 프로젝트 관리 | sonnet | - |
-| `technical-writer` | 기술 문서 작성 | sonnet | - |
-| `requirements-analyst` | 요구사항 분석 | sonnet | - |
-| `devops-architect` | DevOps 및 인프라 | sonnet | - |
-| `learning-guide` | 학습 가이드 | haiku | - |
-| `socratic-mentor` | 소크라틱 멘토 | sonnet | - |
-| `business-panel-experts` | 비즈니스 전략 분석 (9명의 전문가 패널) | opus | - |
-| `generator` | Generator+Validator 쌍 - 코드 생성 담당 | sonnet | worktree |
-| `validator` | Generator+Validator 쌍 - Read-only 검증 담당 | sonnet | - |
-| `harness-worker` | Harness Mode worktree 워커 | sonnet | worktree |
-| `team-implementer` | Agent Teams 구현 담당 | sonnet | worktree |
-| `team-reviewer` | Agent Teams 리뷰 담당 (Read-only) | opus | - |
+| Agent | 역할 | model | isolation | 배선 |
+|-------|------|-------|-----------|------|
+| `security-engineer` | 보안 취약점 분석 (Read-only) | opus | - | RULES.md 보안 인시던트 에스컬레이션 |
+| `deep-research-agent` | 심층 리서치 (WebFetch/WebSearch) | opus | - | Deep Research 모드 |
+| `business-panel-experts` | 비즈니스 전략 분석 (9명 전문가 패널) | opus | - | `/business-panel` 스킬 |
+| `codebase-gc` | 코드베이스 정리 (dead code, doc-code 동기화) | haiku | - | Harness 모드 세션 종료 GC |
+| `generator` | Generator+Validator 쌍 - 코드 생성 | sonnet | worktree | Orchestration 모드 |
+| `validator` | Generator+Validator 쌍 - Read-only 검증 | sonnet | - | Orchestration 모드 |
+| `harness-worker` | Harness IMPLEMENT phase 워커 | sonnet | worktree | Harness 모드 |
+| `team-implementer` | Agent Teams 구현 담당 | sonnet | worktree | Harness TEAM phase |
+| `team-reviewer` | Agent Teams 리뷰 담당 (Read-only) | opus | - | Harness VERIFY phase |
 
-### Skills (140개)
+### Skills (60개, v3.0에서 139개 → 60개로 통폐합)
 
-모든 스킬은 `skills/` 단일 디렉토리 아래 각각의 폴더에 `SKILL.md`로 정의됩니다. v0.x의 `commands/` 디렉토리는 완전히 폐기되었으며, 모든 커맨드가 `skills/`로 통합되었습니다.
+v3.0에서 모델이 네이티브로 수행하는 **주제 가이드 51개**(architecture, caching,
+docker, graphql, naming, nextjs, ... "○○ 가이드를 실행합니다"형)와 **범용 명령
+래퍼 28개**(analyze, implement, improve, think, cleanup, load/save, pm, ...)를
+삭제했습니다. 스킬 메타데이터는 idle에도 컨텍스트에 상주하므로, "모델이 이미
+할 수 있는 것"의 스킬화는 순비용이기 때문입니다.
 
-#### Core Skills
-| Skill | 설명 |
-|-------|------|
-| `/confidence-check` | 구현 전 신뢰도 평가 (>=90% 필요) |
-| `/verify` | 완료 후 6단계 검증 체크리스트 + Dynamic Context Injection |
-| `/checkpoint` | 위험 작업 전 복원 지점 생성 |
-| `/note` | 컴팩션에서 살아남는 영구 메모 시스템 |
-| `/learn` | 재사용 가능한 패턴 추출 및 저장 |
-| `/audit` | 프로젝트 고유 규칙 검증 (비즈니스 로직, 아키텍처 패턴) |
-| `/config-doctor` | SuperClaude++ 설정 유효성 검증 (v2.0 신규) |
-| `/goal` | 자율 실행 루프 — 검증 가능한 종료 조건 충족 시까지 자동 반복 (Claude Code 빌트인, v2.2 통합) |
+**잔존 기준**: ① 기계 장치·데이터 보유(BM25 검색, Git 체크포인트, 훅 연동),
+② 프레임워크 워크플로우 코어, ③ 검증된 큐레이션 콘텐츠(Vercel 가이드라인 등),
+④ 서드파티 벤더 스킬(출처 추적성 유지).
 
-#### Development Skills
-| Skill | 설명 |
-|-------|------|
-| `/react-best-practices` | React/Next.js 코드 리뷰 (40+ 규칙) |
-| `/web-design-guidelines` | Vercel UI/UX 리뷰 (100+ 규칙) + AI Slop Detection |
-| `/composition-patterns` | React Compound Components 패턴 |
-| `/python-best-practices` | Python 코드 리뷰 및 베스트 프랙티스 |
-| `/pytest-runner` | pytest 실행, 커버리지 분석 |
-| `/uv-package` | uv 패키지 관리 |
-| `/feature-planner` | 기능 구현 계획 수립 |
-| `/gap-analysis` | 설계-구현 비교, Match Rate 계산 |
-| `/tdd` | RED-GREEN-REFACTOR 주기 강제 + Git checkpoint |
-| `/ui-ux-pro-max` | AI 디자인 인텔리전스 (67 스타일, 96 팔레트, 57 폰트) + DESIGN.md 통합 |
-| `/fix-pr` | PR 코멘트 기반 자동 수정 (v2.0 신규) |
+#### Framework Core (13개)
+`confidence-check` `verify` `checkpoint` `tdd` `build-fix` `audit`
+`gap-analysis` `feature-planner` `learn` `note` `fix-pr` `config-doctor`
+`eval-harness`
 
-#### Impeccable Design Language (v2.1 신규, Apache 2.0)
+#### Review & Critique (9개)
+`devils-advocate` `business-panel` `brainstorm` `grill-with-docs`
+`security-audit` `react-best-practices` `python-best-practices`
+`composition-patterns` `web-design-guidelines`
 
-[pbakaus/impeccable](https://github.com/pbakaus/impeccable) v2.1.1 통합. "AI slop" 문제 — AI가 생성한 UI가 뻔한 AI 티를 내는 현상 — 을 해결하기 위한 디자인 어휘 시스템. 엔트리 skill + 17개 서브 커맨드.
+#### Design & Frontend (24개)
+`ui-ux-pro-max` `frontend-design` `theme-factory` `brand-guidelines`
+`canvas-design` `algorithmic-art` + Impeccable Design Language 18개
+(`impeccable` 엔트리 + 17개 서브커맨드, Apache 2.0)
 
-| Skill | 설명 |
-|-------|------|
-| `/impeccable [craft\|teach\|extract]` | 엔트리. `teach`로 프로젝트 디자인 컨텍스트(audience/use case/brand tone)를 `.impeccable.md`에 고정. 나머지 커맨드의 전제조건 |
-| `/shape` | 레이아웃·아이디어·비주얼 방향 shape-then-build. craft 진입점 |
-| `/layout` | 공간·그리드·레이아웃 구조 설계 |
-| `/typeset` | 타이포그래피 (크기·행간·계층·페어링) |
-| `/colorize` | 컬러 팔레트·대비·테마 적용 |
-| `/animate` | 모션·트랜지션·인터랙션 피드백 |
-| `/delight` | 디테일·이스터에그·감성 포인트 |
-| `/polish` | 최종 다듬기 (normalize 흡수) |
-| `/critique` | UX 관점 정성 비평 (페르소나·휴리스틱·P0-P3 점수) |
-| `/design-audit` | 기술 품질 감사 (a11y·성능·테마·반응형·안티패턴, P0-P3 스코어) |
-| `/harden` | 엣지 케이스·에러 상태·접근성 강화 |
-| `/optimize` | 성능 최적화 (번들·렌더·이미지) |
-| `/clarify` | 정보 구조·UX writing 명료화 |
-| `/distill` | 군더더기 제거, 본질 추출 |
-| `/quieter` / `/bolder` | 시각적 강도 축소 / 강화 |
-| `/adapt` | 반응형·디바이스 적응 |
-| `/overdrive` | 맥시멀리즘·극한 대담함 모드 |
-
-전제: `/impeccable teach`로 프로젝트 컨텍스트를 먼저 세팅해야 나머지 커맨드가 맥락에 맞게 동작. 기존 `/frontend-design`(Anthropic 원본)과 병렬 제공 — Impeccable이 그 계보의 확장판.
-
-> **네임스페이스 주의**: Impeccable 원본의 `audit` → SuperClaude++의 기존 `/audit`(프로젝트 룰 검증)과 충돌해 **`/design-audit`**으로 리네이밍됨. 저작권/라이선스는 `NOTICE.md` 및 `skills/impeccable/{LICENSE,NOTICE.md}` 참조.
-
-#### Document Skills
-| Skill | 설명 |
-|-------|------|
-| `/docx` | Word 문서 생성/편집 (OOXML 기반) |
-| `/pdf` | PDF 폼 처리 및 조작 |
-| `/pptx` | PowerPoint 프레젠테이션 생성 |
-| `/xlsx` | Excel 스프레드시트 처리 |
-
-#### Domain Skills
-- **Architecture**: `/architecture`, `/api-design`, `/db-design`, `/design-patterns`, `/clean-arch`, `/hexagonal`, `/ddd`, `/cqrs`
-- **Security**: `/security-audit` (OWASP + STRIDE + LLM Security), `/auth`, `/error-handling`
-- **Performance**: `/perf-optimize`, `/caching`, `/scaling`
-- **Frontend**: `/react-best-practices`, `/nextjs`, `/vue`, `/svelte`, `/remix`, `/responsive`, `/a11y`, `/seo`, `/state`
-- **Backend**: `/fastapi`, `/nestjs`, `/graphql`, `/websocket`, `/queue`, `/pagination`, `/rate-limit`
-- **DevOps**: `/docker`, `/cicd`, `/monitoring`, `/env`, `/logging`, `/backup`
-- **Quality**: `/clean-code`, `/refactoring`, `/testing`, `/code-review`, `/code-smell`, `/naming`, `/solid`
-- **Domain Modeling** (MIT, mattpocock/skills): `/grill-with-docs` — 기존 도메인 모델에 대한 1대1 인터뷰 stress-test. 용어 충돌·코드 모순을 즉시 챌린지하고 `CONTEXT.md`(도메인 어휘 사전) / ADR을 인라인 갱신. `/brainstorm`이 *새 기능 탐색*이라면 이쪽은 *기존 모델 검증*. 부속 문서: [`skills/grill-with-docs/CONTEXT-FORMAT.md`](skills/grill-with-docs/CONTEXT-FORMAT.md), [`skills/grill-with-docs/ADR-FORMAT.md`](skills/grill-with-docs/ADR-FORMAT.md). 우리 프로젝트 자체의 어휘 사전 예시는 루트 [`CONTEXT.md`](CONTEXT.md). 출처 추적: [`NOTICE.md`](NOTICE.md).
-
-> **`/brainstorm` 보강 노트**: `grill-me` 원본의 3대 행동 규칙(한 번에 한 질문 / 추천답 동반 / 코드 우선 탐색)이 기존 `/brainstorm`에 흡수되었습니다 (별도 스킬 미생성, 중복 방지).
+#### Documents & Tooling (14개)
+`pdf` `pptx` `xlsx` `document-skills` `internal-comms` `artifacts-builder`
+`slack-gif-creator` `mcp-builder` `skill-creator` `webapp-testing`
+`agent-browser` `pytest-runner` `uv-package` `help`
 
 ### Automation
 
@@ -164,7 +127,7 @@ skills: [api-design, db-design, security-audit]
 v2.0에서 스킬 자동 활성화는 `.claude/skill-rules.json`에 선언적으로 정의되고, `scripts/skill-matcher.py`가 `UserPromptSubmit` 훅으로 실행하여 프롬프트 패턴을 매칭합니다. Claude의 판단에 의존하던 v0.x와 달리, 기계적으로 트리거됩니다.
 
 ```jsonc
-// .claude/skill-rules.json (발췌) — 57 rules, 332 triggers (200 Korean + 132 English)
+// .claude/skill-rules.json (발췌) — 23 rules (v3.0: 삭제 스킬 규칙 정리)
 {
   "skill": "build-fix",
   "mode": "auto",
@@ -172,8 +135,7 @@ v2.0에서 스킬 자동 활성화는 `.claude/skill-rules.json`에 선언적으
     "prompt_patterns": [
       "error TS\\d+", "Build failed",
       "빌드 에러", "빌드 실패", "에러 났어", "안 돌아가"
-    ],
-    "exit_codes": [1]
+    ]
   },
   "cooldown": 300
 }
@@ -186,12 +148,10 @@ v2.0에서 스킬 자동 활성화는 `.claude/skill-rules.json`에 선언적으
 - `checkpoint` - 리팩토링/삭제 키워드 감지 시
 - `react-best-practices` - .jsx/.tsx + 리뷰 키워드
 - `python-best-practices` - .py + 리뷰 키워드
-- `debug` - 테스트 실패 패턴 감지 시
 
 **Suggest 스킬** (확인 후 실행):
 - `tdd` - 버그 수정 + tests/ 디렉토리 존재 시
 - `security-audit` - 보안 관련 키워드/파일 패턴 감지 시
-- `code-smell` - 50줄 이상 함수 감지 시
 
 전체 규칙은 `.claude/skill-rules.json` 참조.
 
@@ -200,9 +160,6 @@ v2.0에서 스킬 자동 활성화는 `.claude/skill-rules.json`에 선언적으
 
 | 상황 | 제안 도구 | 트리거 조건 |
 |------|----------|-------------|
-| 복잡한 함수 | `/code-review`, `/code-smell` | 50줄+ 함수 |
-| API 설계 | `/api-design`, `backend-architect` | endpoint, REST |
-| 성능 이슈 | `performance-engineer` | 느림, slow, optimize |
 | 보안 관련 | `security-engineer`, `/security-audit` | 로그인, JWT, 보안, LLM 보안 |
 | 프레임워크 | **Context7** MCP | React, Next.js, Vue |
 | UI 컴포넌트 | **Magic** MCP | button, form, modal |
@@ -267,6 +224,8 @@ peon packs use glados # 팩 변경
 ```
 
 ### Flags & Modes
+
+전체 플래그 정의는 `optional/FLAGS.md` (v3.0부터 온디맨드 로드).
 
 #### Analysis Depth
 | Flag | 토큰 | 용도 |
@@ -336,19 +295,14 @@ scripts/sync-global.sh
 
 ```
 superclaude-plusplus/                # 프로젝트 저장소 (source of truth)
-├── plugin.json                     # Plugin manifest (v2.0 설치 진입점)
+├── plugin.json                     # Plugin manifest (설치 진입점)
 ├── CLAUDE.md                       # 메인 엔트리 포인트
-├── FLAGS.md                        # 플래그 시스템
-├── RULES.md                        # 행동 규칙
-├── PRINCIPLES.md                   # 엔지니어링 원칙
-├── MODES.md                        # 행동 모드
-├── MCP_SERVERS.md                  # MCP 서버 가이드
-├── CONTEXTS.md                     # 컨텍스트 모드
+├── RULES.md                        # 행동 규칙 (v3.0: 오버라이드+비추론 사실만)
+├── PRINCIPLES.md                   # 엔지니어링 원칙 (v3.0: 적용 선호만)
+├── MODES.md                        # 행동 모드 Quick Reference
 ├── CONVENTIONS.md                  # 네이밍 컨벤션
-├── PATTERNS.md                     # 코드 패턴
-├── KNOWLEDGE.md                    # 인사이트/트러블슈팅
 ├── notepad.md                      # 영구 메모
-├── skills/                         # 140개 스킬 (각각 SKILL.md)
+├── skills/                         # 60개 스킬 (각각 SKILL.md)
 │   ├── confidence-check/SKILL.md
 │   ├── verify/SKILL.md
 │   ├── tdd/SKILL.md
@@ -358,15 +312,15 @@ superclaude-plusplus/                # 프로젝트 저장소 (source of truth)
 │   ├── web-design-guidelines/      # UI/UX 리뷰
 │   ├── impeccable/                 # Impeccable Design Language 엔트리 (+ 17 서브)
 │   ├── grill-with-docs/            # v2.3 신규 (도메인 stress-test, MIT)
-│   └── ...                         # 140개 스킬 디렉토리
-├── agents/                         # 23개 에이전트 (AGENT.md frontmatter)
-│   ├── backend-architect.md
-│   ├── generator.md                # v2.0 신규 (Generator+Validator)
-│   ├── validator.md                # v2.0 신규 (Generator+Validator)
+│   └── ...                         # 60개 스킬 디렉토리
+├── agents/                         # 9개 에이전트 (AGENT.md frontmatter)
+│   ├── security-engineer.md
+│   ├── generator.md                # Generator+Validator 쌍
+│   ├── validator.md                # Generator+Validator 쌍
 │   ├── harness-worker.md           # v2.0 신규 (Worktree 워커)
 │   ├── team-implementer.md         # v2.0 신규 (Agent Teams)
 │   ├── team-reviewer.md            # v2.0 신규 (Agent Teams)
-│   └── ...                         # 23개 에이전트 정의
+│   └── ...                         # 9개 에이전트 정의
 ├── scripts/                        # 17개 자동화 스크립트
 │   ├── skill-matcher.py            # v2.0: UserPromptSubmit hook 핸들러
 │   ├── circuit-breaker.sh          # v2.0: 에러 반복 자동 차단
@@ -386,16 +340,17 @@ superclaude-plusplus/                # 프로젝트 저장소 (source of truth)
 │   ├── settings.local.json         # 로컬 설정 오버라이드
 │   ├── context.md                  # 프로젝트 컨텍스트
 │   └── state/                      # 세션 상태 저장
-├── optional/                       # 25개 선택적 로딩 문서
+├── optional/                       # 28개 선택적 로딩 문서
+│   ├── FLAGS.md                    # v3.0 이동: 플래그 정의
+│   ├── CONTEXTS.md                 # v3.0 이동: DEV/REVIEW/RESEARCH 컨텍스트 모드
+│   ├── MCP_SERVERS.md              # v3.0 이동: MCP 선택 매트릭스
 │   ├── MCP_*.md                    # MCP 서버별 상세 가이드 (7개)
 │   ├── MODE_*.md                   # MODE별 상세 가이드 (8개)
-│   ├── BUSINESS_PANEL_EXAMPLES.md  # 비즈니스 패널 예제
-│   ├── BUSINESS_SYMBOLS.md         # 비즈니스 심볼
 │   ├── REASONING_TEMPLATES.md      # 구조화된 추론 템플릿
 │   ├── CONTEXT_BUDGET.md           # 컨텍스트 예산 관리
 │   ├── WORKER_TEMPLATES.md         # 워커 에이전트 프롬프트 템플릿
-│   ├── GOAL_PATTERNS.md            # v2.2 신규: /goal 조건 패턴, 안티 패턴, /loop vs /goal 결정표
-│   └── ...                         # 25개 문서
+│   ├── GOAL_PATTERNS.md            # /goal 조건 패턴, 안티 패턴, /loop vs /goal 결정표
+│   └── ...                         # PATTERNS, PROTOCOLS, PROJECT_RULES 등
 ├── docs/
 │   └── PLAN-v2.0.md                # v2.0 마이그레이션 계획
 └── templates/                      # PDCA + 디자인 시스템 템플릿
@@ -421,7 +376,7 @@ v2.0의 핵심은 Claude의 자율 판단 의존을 줄이고, 시스템이 규�
 | 스킬 컨텍스트 | 정적 텍스트 | Dynamic Context Injection |
 | 병렬 작업 | 프롬프트 "background로" | Worktree 격리 + Agent Teams |
 | 배포 | ~~install.sh~~ | Plugin manifest (`/plugin install`) |
-| 스킬 구조 | ~~commands/~~ + skills/ 분리 | **skills/ 단일 디렉토리** (140개) |
+| 스킬 구조 | ~~commands/~~ + skills/ 분리 | **skills/ 단일 디렉토리** (v3.0: 60개) |
 
 ### Generator + Validator 패턴
 
@@ -508,16 +463,14 @@ Plan -> Design -> Do -> Check -> Act -> Report
 - **Confidence Filter**: 80% 미만 신뢰도 이슈는 Minor(informational)로 분류
 
 ### Verification Iron Law
-완료 주장 시 자동 검증 게이트:
 ```
 "NO COMPLETION CLAIMS WITHOUT FRESH VERIFICATION EVIDENCE"
 ```
 
-| 검증 타입 | 필수 증거 |
-|----------|----------|
-| 테스트 통과 | 실제 출력 로그 |
-| 기능 완료 | 각 요구사항 체크리스트 |
-| 버그 수정 | 재현 테스트 결과 |
+v3.0부터 별도 규칙 섹션이 아닙니다 — Claude 5 세대에서 검증 후 완료 선언은
+모델 내재 행동이 되었기 때문입니다. 개념은 `CONTEXT.md` 어휘 사전에
+존속하며, `/goal`의 soft check가 이 원칙을 대체하지 않는다는 경계로
+쓰입니다.
 
 ### 3+ Fixes Architecture Rule + Circuit Breaker
 동일 버그 3회 수정 실패 시:
@@ -529,12 +482,10 @@ Plan -> Design -> Do -> Check -> Act -> Report
 **Failure Classification**: Repo Gap / Architecture Issue / External Dependency / Requirement Issue / Capability Limit
 
 ### Orchestrator/Worker Pattern
-에이전트 역할 분리를 통한 효율적인 작업 분배:
-
-| 역할 | 책임 | 도구 |
-|------|------|------|
-| **Orchestrator** | 작업 분해, 에이전트 스폰, 결과 합성 | Task, AskUserQuestion, TaskCreate/Update |
-| **Worker** | 구체적 작업 실행, 결과 보고 | Read, Write, Edit, Bash, Grep |
+에이전트 역할 분리를 통한 효율적인 작업 분배. Orchestrator는 작업 분해와
+결과 합성만, Worker는 실행만 담당합니다. v3.0부터 상시 규칙이 아니라
+`CONTEXT.md` 어휘 + `optional/WORKER_TEMPLATES.md`(프롬프트 템플릿)로
+온디맨드 제공됩니다.
 
 ### Harness Engineering
 [OpenAI의 Harness Engineering](https://openai.com/index/harness-engineering/) 방법론에서 영감을 받은 에이전트 주도 개발 환경:
@@ -552,7 +503,8 @@ Intent -> Scaffold -> Implement -> Verify -> Deliver
 ```
 
 ### Memory Management
-Claude Code의 내장 Auto Memory를 활용한 세션 간 연속성:
+Claude Code의 내장 Auto Memory를 활용한 세션 간 연속성. v3.0부터 하네스가
+메모리 지침을 직접 주입하므로 CLAUDE.md의 중복 규정은 제거되었습니다:
 
 **Auto Memory** (`~/.claude/projects/<project>/memory/`):
 - 프로젝트 패턴, 디버깅 인사이트, 아키텍처 노트 자동 저장
@@ -625,13 +577,16 @@ scripts/sync-global.sh
 # Plugin 방식
 /plugin uninstall superclaude-plusplus
 
-# Manual 방식
-rm -rf ~/.claude
+# Manual 방식 — 주의: ~/.claude 전체 삭제는 메모리/세션/개인 설정까지 지웁니다.
+# 프레임워크 파일만 선택 제거:
+rm -f ~/.claude/{CLAUDE,RULES,PRINCIPLES,MODES,CONVENTIONS}.md
+rm -rf ~/.claude/optional ~/.claude/skills ~/.claude/agents
+rm -f ~/.claude/skill-rules.json
 ```
 
 ## Requirements
 
-- [Claude Code](https://docs.anthropic.com/claude-code) CLI (>= 2.1.0)
+- [Claude Code](https://docs.anthropic.com/claude-code) CLI (>= 2.1.139, `/goal` 통합 요건)
 - Claude Max/Pro 구독 또는 Anthropic API 키
 - Python 3.9+ (skill-matcher.py, injection-scanner.py 실행용)
 - `jq` (선택사항, 일부 스크립트에서 사용)
@@ -697,6 +652,16 @@ SuperClaude++ v2.0 = v0.x + 시스템 강제 패러다임:
 - **신규 스킬**: `/fix-pr` (PR 코멘트 자동 수정), `/config-doctor` (설정 검증)
 - **v2.2 `/goal` 통합**: Claude Code 2.1.139 빌트인 자율 루프를 SC++ 워크플로우에 위임. Persistence Enforcement를 네이티브로 단순화하되 Circuit Breaker · Verification Iron Law · Two-Stage Review 3중 안전망은 유지. 상세: `optional/GOAL_PATTERNS.md`
 - **v2.3 `/grill-with-docs` 통합**: 기존 도메인 모델 stress-test 스킬 신규 (MIT, mattpocock/skills). 1대1 인터뷰 + 추천답 동반 + 코드 우선 탐색으로 용어와 결정을 코드와 정렬하고 `CONTEXT.md` / ADR을 인라인 갱신. `/brainstorm`(새 기능 탐색)과 역할 분리. 루트 `CONTEXT.md`에 우리 프로젝트 자체 어휘 사전 작성. 출처는 [`NOTICE.md`](NOTICE.md)에 추적.
+
+### What's New in v3.0
+
+v3.0 = "모델이 못 하는 것만 남긴다" (harness-aware slim):
+- **상시 로드 -66%**: @import 4개(RULES/PRINCIPLES/MODES/CONVENTIONS)로 축소, 8,994 → 3,023 단어
+- **스킬 139 → 60**: 주제 가이드 51개 + 범용 래퍼 28개 삭제 — 모델 네이티브 지식의 재포장은 순비용
+- **에이전트 23 → 9**: 범용 페르소나 삭제, 프레임워크 배선/고유 실행 구성 보유분만 잔존
+- **skill-matcher 오탐 수정**: stdin JSON 파싱, ASCII 단어 경계, 홈 디렉터리 스캔 가드
+- **KNOWLEDGE.md 제거**, FLAGS/CONTEXTS/MCP_SERVERS는 `optional/`로 이동
+- 하네스가 이미 보장하는 규칙(Verification Iron Law, Persistence, Scope Discipline 등)의 재규정 삭제 — 개념은 `CONTEXT.md` 어휘 사전에 존속
 
 ### What's Carried from v0.x
 - PDCA 워크플로우 및 Gap Analysis

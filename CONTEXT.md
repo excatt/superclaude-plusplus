@@ -68,7 +68,7 @@ Circuit Breaker가 발동했을 때 Claude가 작성하는 **진단 전용** 보
 
 ### Persona
 
-Claude가 작업 중 일시적으로 채택하는 전문가 역할(architect, security-engineer, frontend-architect 등). Agent와 달리 *독립 인스턴스가 아니라 단일 Claude의 모드 전환*이다. `/brainstorm`이 다중 페르소나 코디네이션을 수행할 때는 한 Claude가 차례로 여러 페르소나를 입었다 벗었다 한다.
+Claude가 작업 중 일시적으로 채택하는 전문가 역할(architect, security, frontend 등). Agent와 달리 *독립 인스턴스가 아니라 단일 Claude의 모드 전환*이다. `/brainstorm`이 다중 페르소나 코디네이션을 수행할 때는 한 Claude가 차례로 여러 페르소나를 입었다 벗었다 한다.
 
 ### MCP Server
 
@@ -92,7 +92,7 @@ Agent 실행 시 git worktree를 따로 만들어 메인 작업 트리와 격리
 
 ### NOT-skills (혼동 방지)
 
-- `CLAUDE.md`, `RULES.md`, `MODES.md` 등 — **frame work 문서**다. Skill이 아니다.
+- `CLAUDE.md`, `RULES.md`, `MODES.md` 등 — **framework 문서**다. Skill이 아니다.
 - `pre-commit.sh` 같은 hook 스크립트 — **Hook**이지 Skill이 아니다.
 - `business-panel-experts` — **Agent**(다중 페르소나 패널)지 Skill이 아니다. (그러나 `/business-panel`은 Skill이다 — Agent를 호출하는 Skill.)
 

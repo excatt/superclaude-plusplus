@@ -285,12 +285,6 @@ Start work
 ### With `/feature-planner`
 Auto-execute `/verify` at each Phase Quality Gate
 
-### With `/code-review`
-```
-/verify pre-pr
-/code-review  # Code review after verification passes
-```
-
 ---
 
 ## Auto-Fix Suggestions

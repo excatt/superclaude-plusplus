@@ -14,7 +14,7 @@ AI는 반박하지 않습니다. "그건 나쁜 아이디어야" 또는 "이 서
 
 ## When to Use
 
-- 다른 스킬 실행 후 리뷰 레이어로 (e.g., `/architecture` → `/devils-advocate`)
+- 다른 스킬 실행 후 리뷰 레이어로 (e.g., `/feature-planner` → `/devils-advocate`)
 - 아키텍처 결정 후 스트레스 테스트
 - Feature plan 검증
 - 코드 구현 후 놓친 부분 찾기
