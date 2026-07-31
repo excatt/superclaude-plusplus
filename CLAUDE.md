@@ -1,4 +1,4 @@
-# SuperClaude++ v2.0
+# SuperClaude++ v3.0
 
 ## Language
 - **ALWAYS respond in Korean (한글)**
@@ -6,14 +6,14 @@
 - Technical terms: English when common (WebSocket, API, etc.)
 
 ## Core Framework
-@FLAGS.md
 @RULES.md
 @PRINCIPLES.md
 @MODES.md
-@MCP_SERVERS.md
 @CONVENTIONS.md
-@CONTEXTS.md
-@KNOWLEDGE.md
+
+Always-resident context is limited to the four files above. Everything else
+loads on demand from `optional/` or as skills. Rules restate neither harness
+guarantees nor model defaults — see the preamble in RULES.md.
 
 ## Skill & Agent System
 
@@ -30,12 +30,10 @@ harness every session — they are not listed again here. Agents enforce
 ## Workflow Integration
 - **Step 0**: Difficulty Assessment (Simple/Medium/Complex) → protocol branching
 - **Pre-Implementation**: `/confidence-check` → ≥90% proceed (Medium+)
-- **Goal Lock (autonomous mode)**: When Strong success criteria exist and work spans multiple turns → `/goal "<verifiable condition>"` (Claude Code 2.1.139+). See `optional/GOAL_PATTERNS.md` for safe condition patterns.
-- **Planning**: `/feature-planner` → `/architecture` (Complex: + reasoning templates)
+- **Goal Lock (autonomous mode)**: Strong success criteria + multi-turn work → `/goal "<verifiable condition>"` (see `optional/GOAL_PATTERNS.md`)
+- **Planning**: `/feature-planner` → `/architecture`
 - **Design**: `DESIGN.md` (if exists) → `/ui-ux-pro-max` → `/frontend-design` → `/web-design-guidelines`
-- **Implementation**: Domain-specific skills (Complex: + mid-checkpoint at 50%)
 - **Review**: Two-Stage Review (Simple: Stage 1 only | Medium: Stage 1+2 | Complex: + Cascade Impact)
-- **Deployment**: `/docker`, `/cicd`, `/monitoring`
 - **Verification**: `/verify` → `/audit` (project rules)
 - **Post-Implementation**: `/learn` → `/goal clear` (if a goal was set)
 
@@ -47,15 +45,15 @@ AI 에이전트가 읽는 디자인 시스템 문서 ([Google Stitch format](htt
 | `AGENTS.md` | Coding agents | How to build the project |
 | `DESIGN.md` | Design agents | How the project should look and feel |
 
-**Usage**:
-- **Install brand design**: `npx getdesign@latest add {brand}` (66 brands: vercel, stripe, linear.app, etc.)
-- **Generate custom**: `/ui-ux-pro-max --design-system --persist`
-- **Template**: `templates/visual-design.template.md`
-- **Collection**: [VoltAgent/awesome-design-md](https://github.com/VoltAgent/awesome-design-md)
+**Usage**: `npx getdesign@latest add {brand}` (66 brands) | `/ui-ux-pro-max --design-system --persist` | Template: `templates/visual-design.template.md`
 
-## Optional References (load on demand)
-- `optional/REASONING_TEMPLATES.md` — Structured reasoning (debugging, architecture decisions, performance analysis)
-- `optional/CONTEXT_BUDGET.md` — Context budget management (file reading strategy, overflow handling)
-- `optional/GOAL_PATTERNS.md` — `/goal` condition patterns, anti-patterns, `/loop` vs `/goal` decision table
-- `optional/WORKER_TEMPLATES.md` — Worker agent 4-element prompt templates
-
+## On-Demand References (`optional/`, load when needed)
+- `FLAGS.md` — behavioral flag definitions (`--think`, `--uc`, `--delegate`, ...)
+- `CONTEXTS.md` — DEV/REVIEW/RESEARCH/PLANNING context modes
+- `MCP_SERVERS.md` — MCP server selection matrix; per-server guides in `MCP_*.md`
+- `GOAL_PATTERNS.md` — `/goal` condition patterns, anti-patterns, `/loop` vs `/goal`
+- `REASONING_TEMPLATES.md` — structured reasoning (debugging, architecture, performance)
+- `CONTEXT_BUDGET.md` — context budget management
+- `WORKER_TEMPLATES.md` — worker agent prompt templates
+- `PROTOCOLS.md` — session save/restore protocols
+- `PROJECT_RULES.md` — Dockerfile/CI patterns, security checklist

@@ -1,12 +1,6 @@
 ---
 name: audit
-description: |
-  Execute project-specific verification rules. Validates business logic,
-  architecture patterns, and naming conventions that linters cannot catch.
-  Auto-suggests bootstrap if no rules exist.
-
-  Triggers: audit, check rules, run audit, audit manage
-  Do NOT use for: build/lint/test (/verify), design vs implementation (/gap-analysis)
+description: Run project-specific verification rules (business logic, architecture patterns, naming) that linters cannot catch; bootstraps rules if none exist. Not for build/lint/test (/verify).
 user-invocable: true
 argument-hint: "[manage]"
 ---
@@ -20,6 +14,11 @@ Project-specific verification rules that generic linters cannot enforce.
 | `/verify` | Build, types, lint, test, security |
 | `/audit` | Business logic, architecture patterns, naming conventions |
 | `/gap-analysis` | Design doc vs implementation matchRate |
+
+## When to Use
+
+Triggers: audit, check rules, run audit, audit manage
+Do NOT use for: build/lint/test (/verify), design vs implementation (/gap-analysis)
 
 ## Mode Selection
 

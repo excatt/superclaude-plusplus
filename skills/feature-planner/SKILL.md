@@ -1,6 +1,6 @@
 ---
 name: feature-planner
-description: Creates phase-based feature plans with quality gates and incremental delivery structure. Use when planning features, organizing work, breaking down tasks, creating roadmaps, or structuring development strategy. Keywords: plan, planning, phases, breakdown, strategy, roadmap, organize, structure, outline.
+description: Phase-based feature planning with quality gates and incremental delivery structure. Use when breaking down features, organizing work, or structuring roadmaps.
 ---
 
 # Feature Planner

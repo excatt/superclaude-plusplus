@@ -1,4 +1,4 @@
-# SuperClaude++ v2.0
+# SuperClaude++ v3.0
 
 Claude Code를 위한 시스템 강제 개발 프레임워크 - 140개 스킬, 23개 에이전트, 16개 훅 타입으로 생산성과 코드 품질을 자동화합니다.
 
@@ -19,21 +19,34 @@ v0.x에서는 CLAUDE.md에 규칙을 적어두고 Claude가 이를 읽고 따르
 
 **태그라인**: Harness Engineering이 자기 자신에게 적용되는 프레임워크
 
+### v3.0 패러다임 전환
+
+```
+v2.0: "시스템이 규칙을 강제한다"           (system-enforced)
+v3.0: "모델이 못 하는 것만 남긴다"          (harness-aware slim)
+```
+
+Claude 5 세대(Fable/Opus 5)부터는 검증 후 완료 선언, 지속 실행, 스코프 절제,
+병렬 도구 호출 같은 행동이 하네스와 모델에 내재화되었습니다. v3.0은 이런
+중복 규정을 상시 로드에서 제거하고, **모델이 스스로 알 수 없는 것**(프로젝트
+사실, 컨벤션, 사용자 선호, 하네스 기본값 오버라이드)과 **결정적 기계 장치**
+(훅, Circuit Breaker)만 남깁니다. 상시 로드 ~9,000단어 → ~2,000단어.
+프로세스 지식은 `optional/`과 스킬로 강등되어 필요할 때만 로드됩니다.
+
 ## Features
 
-### Core Framework
+### Core Framework (상시 로드, v3.0에서 4+1개로 축소)
 | 파일 | 설명 |
 |------|------|
 | **CLAUDE.md** | 엔트리 포인트 및 언어 설정 (한국어) |
-| **FLAGS.md** | 행동 플래그 시스템 (`--think`, `--ultrathink`, `--uc` 등) |
-| **RULES.md** | 개발 규칙 및 자동화 트리거 (Karpathy Guidelines + Harness Engineering 통합) |
-| **PRINCIPLES.md** | SOLID, DRY, KISS, YAGNI, Search Before Building 등 엔지니어링 원칙 |
-| **MODES.md** | 상황별 행동 모드 (Brainstorming, Orchestration, Harness, Token Efficiency 등) |
-| **MCP_SERVERS.md** | MCP 서버 통합 가이드 (Context7, Magic, Serena 등) |
-| **CONTEXTS.md** | DEV/REVIEW/RESEARCH/PLANNING 컨텍스트 모드 |
+| **RULES.md** | 하네스 오버라이드 + 모델이 모르는 규칙만 (난이도 평가, Circuit Breaker, 프로젝트 규칙) |
+| **PRINCIPLES.md** | 적용 시점 선호만 (Complexity Timing, Search Before Building, Harness Engineering) |
+| **MODES.md** | 모드 Quick Reference (상세는 `optional/MODE_*.md`) |
 | **CONVENTIONS.md** | 네이밍 컨벤션 + 패키지 관리 규칙 (uv/pnpm 필수) |
-| **PATTERNS.md** | 재사용 가능한 코드 패턴 모음 |
-| **KNOWLEDGE.md** | 축적된 인사이트 및 트러블슈팅 가이드 |
+
+온디맨드(`optional/`)로 이동: **FLAGS.md**(플래그 정의), **CONTEXTS.md**(컨텍스트 모드),
+**MCP_SERVERS.md**(MCP 선택 매트릭스), **PATTERNS.md**(코드 패턴).
+**KNOWLEDGE.md**는 v3.0에서 제거 (근거 없는 수치와 모델 기본값 중복).
 
 ### Agent System (23개)
 
@@ -268,6 +281,8 @@ peon packs use glados # 팩 변경
 
 ### Flags & Modes
 
+전체 플래그 정의는 `optional/FLAGS.md` (v3.0부터 온디맨드 로드).
+
 #### Analysis Depth
 | Flag | 토큰 | 용도 |
 |------|------|------|
@@ -336,17 +351,12 @@ scripts/sync-global.sh
 
 ```
 superclaude-plusplus/                # 프로젝트 저장소 (source of truth)
-├── plugin.json                     # Plugin manifest (v2.0 설치 진입점)
+├── plugin.json                     # Plugin manifest (설치 진입점)
 ├── CLAUDE.md                       # 메인 엔트리 포인트
-├── FLAGS.md                        # 플래그 시스템
-├── RULES.md                        # 행동 규칙
-├── PRINCIPLES.md                   # 엔지니어링 원칙
-├── MODES.md                        # 행동 모드
-├── MCP_SERVERS.md                  # MCP 서버 가이드
-├── CONTEXTS.md                     # 컨텍스트 모드
+├── RULES.md                        # 행동 규칙 (v3.0: 오버라이드+비추론 사실만)
+├── PRINCIPLES.md                   # 엔지니어링 원칙 (v3.0: 적용 선호만)
+├── MODES.md                        # 행동 모드 Quick Reference
 ├── CONVENTIONS.md                  # 네이밍 컨벤션
-├── PATTERNS.md                     # 코드 패턴
-├── KNOWLEDGE.md                    # 인사이트/트러블슈팅
 ├── notepad.md                      # 영구 메모
 ├── skills/                         # 140개 스킬 (각각 SKILL.md)
 │   ├── confidence-check/SKILL.md
@@ -386,16 +396,17 @@ superclaude-plusplus/                # 프로젝트 저장소 (source of truth)
 │   ├── settings.local.json         # 로컬 설정 오버라이드
 │   ├── context.md                  # 프로젝트 컨텍스트
 │   └── state/                      # 세션 상태 저장
-├── optional/                       # 25개 선택적 로딩 문서
+├── optional/                       # 28개 선택적 로딩 문서
+│   ├── FLAGS.md                    # v3.0 이동: 플래그 정의
+│   ├── CONTEXTS.md                 # v3.0 이동: DEV/REVIEW/RESEARCH 컨텍스트 모드
+│   ├── MCP_SERVERS.md              # v3.0 이동: MCP 선택 매트릭스
 │   ├── MCP_*.md                    # MCP 서버별 상세 가이드 (7개)
 │   ├── MODE_*.md                   # MODE별 상세 가이드 (8개)
-│   ├── BUSINESS_PANEL_EXAMPLES.md  # 비즈니스 패널 예제
-│   ├── BUSINESS_SYMBOLS.md         # 비즈니스 심볼
 │   ├── REASONING_TEMPLATES.md      # 구조화된 추론 템플릿
 │   ├── CONTEXT_BUDGET.md           # 컨텍스트 예산 관리
 │   ├── WORKER_TEMPLATES.md         # 워커 에이전트 프롬프트 템플릿
-│   ├── GOAL_PATTERNS.md            # v2.2 신규: /goal 조건 패턴, 안티 패턴, /loop vs /goal 결정표
-│   └── ...                         # 25개 문서
+│   ├── GOAL_PATTERNS.md            # /goal 조건 패턴, 안티 패턴, /loop vs /goal 결정표
+│   └── ...                         # PATTERNS, PROTOCOLS, PROJECT_RULES 등
 ├── docs/
 │   └── PLAN-v2.0.md                # v2.0 마이그레이션 계획
 └── templates/                      # PDCA + 디자인 시스템 템플릿

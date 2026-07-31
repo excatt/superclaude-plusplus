@@ -5,6 +5,56 @@
 형식은 [Keep a Changelog](https://keepachangelog.com/ko/1.0.0/)를 따르며,
 [Semantic Versioning](https://semver.org/lang/ko/)을 준수합니다.
 
+## [3.0.0] - 2026-07-31
+
+### 철학
+Claude 5 세대(Fable/Opus 5)의 하네스·모델 내재화 행동과 중복되는 규칙을
+상시 로드에서 제거하는 "harness-aware slim" 릴리스. 상시 로드 ~9,000단어 →
+~2,000단어. 남는 것은 (1) 모델이 추론할 수 없는 사실, (2) 하네스 기본값
+오버라이드, (3) 결정적 기계 장치(훅)뿐.
+
+### Fixed
+- **`skill-matcher.py` 오탐 3종 수정** —
+  (1) stdin 페이로드를 JSON 파싱 없이 통째로 매칭해 `transcript_path`의
+  "projects"가 `PR` 패턴과 매치, `/verify`가 모든 메시지에 오발동하던 버그.
+  이제 `prompt` 필드만 매칭.
+  (2) 일반 ASCII 리터럴 패턴에 단어 경계 자동 적용 — "fix"→"prefix",
+  "auth"→"author" 부분 문자열 오탐 제거 (한국어 어간 매칭은 유지).
+  (3) 파일 스캔이 홈 디렉터리 전체를 walk하던 문제 — 홈/루트 스캔 금지,
+  깊이 4단계·2만 항목 제한.
+- **`nextjs` 규칙** — 파일 존재만으로 모든 프롬프트에 auto 발동하던 것을
+  파일+프롬프트 AND 조건으로 전환.
+
+### Removed (하네스/모델 기본값과 중복)
+- RULES.md: Verification Iron Law, Persistence Enforcement, Workflow Rules,
+  Planning Efficiency, Scope Discipline, Professional Honesty, Temporal
+  Awareness, Tool Optimization, Workspace Hygiene, Implementation
+  Completeness, Agent Orchestration/Worker/Model Selection/Error Recovery,
+  Code Organization, Code Simplicity Guard (3,352 → ~1,100 단어)
+- PRINCIPLES.md: SOLID 정의, Decision Framework, Quality Philosophy
+  (657 → ~350 단어)
+- CLAUDE.md: 스킬 카테고리 표, 에이전트 표, Memory Management 섹션
+  (하네스가 매 세션 자동 주입하는 목록과 중복)
+- **KNOWLEDGE.md 삭제** — 근거 없는 ROI 수치(자체 "No unsupported numbers"
+  규칙 위반), 모델 기본값 pitfall, MODES.md와 중복되는 표
+
+### Changed
+- **FLAGS.md, CONTEXTS.md, MCP_SERVERS.md → `optional/`로 이동** — 상시
+  로드에서 온디맨드 로드로 전환. `@import`는 RULES/PRINCIPLES/MODES/
+  CONVENTIONS 4개만 유지.
+- **MODES.md 축소** — Quick Reference 표 + `optional/MODE_*.md` 포인터만
+  잔류 (상세 내용은 기존 optional 파일과 완전 중복이었음).
+- **자체 스킬 8개 description 압축** (composition-patterns, security-audit,
+  ui-ux-pro-max, gap-analysis, web-design-guidelines, tdd, audit,
+  feature-planner) — 스킬 메타데이터는 idle에도 상시 상주하므로 1-2문장으로
+  축소, 트리거 목록은 본문 "When to Use" 섹션으로 이동 (정보 손실 없음).
+  서드파티 벤더 스킬(impeccable 계열, internal-comms)은 업스트림 추적성을
+  위해 미수정.
+- **`sync-global.sh`** — v3.0 파일 세트 반영, `optional/` 동기화 추가,
+  구버전 루트 파일(FLAGS/CONTEXTS/MCP_SERVERS/KNOWLEDGE.md) 자동 정리.
+- Verification Iron Law는 규칙 섹션에서 제거되었지만 CONTEXT.md 어휘
+  정의로 존속 (개념 참조는 유효).
+
 ## [2.3.0] - 2026-05-20
 
 ### Added

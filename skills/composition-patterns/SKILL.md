@@ -1,20 +1,6 @@
 ---
 name: composition-patterns
-description: |
-  React composition patterns - Flexible and maintainable component structure.
-  Prevent boolean prop abuse and build extensible architecture with Compound Components.
-
-  Use proactively when:
-  - Refactoring components with many boolean props
-  - Building reusable component libraries
-  - Designing flexible component APIs
-  - Reviewing component architecture
-  - Working with compound components or Context providers
-
-  Triggers: composition, compound component, boolean props, component structure,
-  architecture review, provider pattern, context, refactor component
-
-  Do NOT use for: Performance optimization (→ react-best-practices), UI/UX inspection (→ web-design-guidelines)
+description: React composition patterns — refactor boolean-prop-heavy components into compound components, flexible APIs, and Context providers. Use for component architecture design and review.
 user-invocable: true
 metadata:
   author: vercel (adapted for SuperClaude)
@@ -26,6 +12,20 @@ metadata:
 
 Composition patterns for flexible and maintainable React components.
 Avoid boolean prop abuse, use compound components, state lifting, and composing internals.
+
+## When to Use
+
+Use proactively when:
+- Refactoring components with many boolean props
+- Building reusable component libraries
+- Designing flexible component APIs
+- Reviewing component architecture
+- Working with compound components or Context providers
+
+Triggers: composition, compound component, boolean props, component structure,
+architecture review, provider pattern, context, refactor component
+
+Do NOT use for: Performance optimization (→ react-best-practices), UI/UX inspection (→ web-design-guidelines)
 
 ## Rule Categories (by Priority)
 
