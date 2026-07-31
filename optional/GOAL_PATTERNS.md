@@ -209,6 +209,7 @@ Claude Code 빌트인 명령. 완료 조건을 선언하면 매 턴 후 작은 �
 ## 참고 자료
 
 - [Claude Code Docs — Keep Claude working toward a goal](https://code.claude.com/docs/en/goal)
-- RULES.md → Goal Definition Protocol, Persistence Enforcement, Verification Iron Law, 3+ Fixes Architecture Rule
+- RULES.md → Goal-Driven Autonomous Loops, Circuit Breaker (3+ Fixes Architecture Rule)
+- CONTEXT.md → Verification Iron Law (개념 정의)
 - MODES.md → Harness Mode (Autonomous Loop via `/goal`)
 - optional/MODE_Harness.md → 상세 워크플로우
