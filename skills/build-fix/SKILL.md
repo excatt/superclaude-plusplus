@@ -271,10 +271,7 @@ if (user && user.profile) {
 | Situation | Use Instead |
 |-----------|-------------|
 | Test failures | `/verify` → Fix tests |
-| Performance issues | `/perf-optimize` |
 | Security vulnerabilities | `/security-audit` |
-| Refactoring needed | `/refactoring` |
-| Architecture change | `/architecture` |
 | Add new feature | `/feature-planner` |
 
 ---

@@ -14,7 +14,7 @@ detail file in `optional/` when a mode actually activates.
 | **Orchestration** | Tool optimization | Multi-tool, parallel execution (>3 files) | `--orchestrate` | `optional/MODE_Orchestration.md` |
 | **Task Management** | Hierarchical task management | >3-step tasks, "다듬어", "정리해" | `--task-manage` | `optional/MODE_Task_Management.md` |
 | **Token Efficiency** | Compressed communication | Context >75% | `--uc` | `optional/MODE_Token_Efficiency.md` |
-| **Business Panel** | Expert panel analysis | `/sc:business-panel` | - | `optional/MODE_Business_Panel.md` |
+| **Business Panel** | Expert panel analysis | `/business-panel` | - | `optional/MODE_Business_Panel.md` |
 | **Harness** | Agent-driven implementation | "에이전트한테 맡겨", "전부 자동으로" | `--harness` | `optional/MODE_Harness.md` |
 
 ## Context Modes (DEV / REVIEW / RESEARCH / PLANNING)

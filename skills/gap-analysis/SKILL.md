@@ -191,4 +191,3 @@ matchRate < 90%:
 
 - `/feature-planner` - Plan phase
 - `/verify` - General verification (Gap Analysis specializes in design-implementation comparison)
-- `/code-review` - Code quality review

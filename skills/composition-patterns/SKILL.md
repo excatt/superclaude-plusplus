@@ -354,4 +354,3 @@ const value = use(MyContext)
 
 - `/react-best-practices` - Performance optimization (waterfall, bundle, rendering)
 - `/web-design-guidelines` - UI/UX quality (accessibility, interaction)
-- `/design-patterns` - General design patterns

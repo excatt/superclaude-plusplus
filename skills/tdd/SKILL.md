@@ -174,7 +174,6 @@ Each commit is a verification artifact.
 
 ## Related Skills
 
-- `/testing` - General test strategy and patterns
 - `/pytest-runner` - Python test execution
 - `/verify` - Post-implementation verification
 - `/confidence-check` - Pre-implementation assessment

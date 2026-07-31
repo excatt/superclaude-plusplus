@@ -25,7 +25,7 @@ harness every session — they are not listed again here. Agents enforce
   `.claude/skill-rules.json`) — mechanical prompt/file matching
 - **Manual**: `/skill-name` | **Proactive**: suggestion with confirmation
 - **Suggestion intensity**: `--suggest-all` (default) | `--suggest-minimal` | `--suggest-off`
-- Third-party skill provenance: [`NOTICE.md`](NOTICE.md), pinned via `skills-lock.json`
+- Third-party skill provenance: [`NOTICE.md`](NOTICE.md)
 
 ## Workflow Integration
 - **Step 0**: Difficulty Assessment (Simple/Medium/Complex) → protocol branching

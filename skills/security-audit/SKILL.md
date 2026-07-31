@@ -261,7 +261,5 @@ Overall Risk: [Critical/High/Medium/Low]
 
 ## Related Skills
 
-- `/auth` - Authentication & authorization patterns
-- `/error-handling` - Secure error handling
 - `/verify` - General verification pipeline
 - `/cso` - Extended security officer review (gstack-compatible)

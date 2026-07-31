@@ -312,8 +312,6 @@ Before delivering UI code, verify:
 
 - `/frontend-design` - Creative, production-grade UI code generation
 - `/web-design-guidelines` - UI code review with 100+ Vercel Web Interface rules
-- `/a11y` - Deep accessibility analysis
-- `/responsive` - Responsive design review
 
 ### Design Pipeline
 

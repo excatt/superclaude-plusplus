@@ -233,6 +233,4 @@ State issue + location. Skip explanation if fix is obvious. No preamble.
 ## Related Skills
 
 - `/react-best-practices` - React/Next.js performance optimization
-- `/a11y` - Deep accessibility analysis
 - `/frontend-design` - Frontend UI generation
-- `/responsive` - Responsive design review
