@@ -66,7 +66,7 @@ Assess difficulty before starting any task; branch protocol depth based on diffi
 Mechanical skill activation is handled by the `UserPromptSubmit` hook
 (`scripts/skill-matcher.py` + `.claude/skill-rules.json`).
 
-**Execution priority**: Difficulty assessment (Step 0) → `/confidence-check` → `/checkpoint` → Two-Stage Review → `/debug` → `/learn`
+**Execution priority**: Difficulty assessment (Step 0) → `/confidence-check` → `/checkpoint` → Two-Stage Review → `/learn`
 **Difficulty gate**: Simple → skip confidence-check, may skip Stage 2 | Medium → Standard | Complex → Full + Cascade Impact
 **Exceptions**: Typo/comment fixes, `--no-check` request
 **Frequency control**: Once per skill per session; no re-suggestion after rejection

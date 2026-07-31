@@ -1,6 +1,6 @@
 # SuperClaude++ v3.0
 
-Claude Code를 위한 시스템 강제 개발 프레임워크 - 140개 스킬, 23개 에이전트, 16개 훅 타입으로 생산성과 코드 품질을 자동화합니다.
+Claude Code를 위한 harness-aware 개발 프레임워크 - 60개 스킬, 23개 에이전트, 16개 훅 타입. 모델이 못 하는 것만 남기고 자동화합니다.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
@@ -61,7 +61,7 @@ tools: Read, Grep, Glob, Write, Edit, Bash, WebFetch
 disallowedTools: Agent
 maxTurns: 20
 effort: high
-skills: [api-design, db-design, security-audit]
+skills: []
 ---
 ```
 
@@ -91,84 +91,37 @@ skills: [api-design, db-design, security-audit]
 | `team-implementer` | Agent Teams 구현 담당 | sonnet | worktree |
 | `team-reviewer` | Agent Teams 리뷰 담당 (Read-only) | opus | - |
 
-### Skills (140개)
+### Skills (60개, v3.0에서 139개 → 60개로 통폐합)
 
-모든 스킬은 `skills/` 단일 디렉토리 아래 각각의 폴더에 `SKILL.md`로 정의됩니다. v0.x의 `commands/` 디렉토리는 완전히 폐기되었으며, 모든 커맨드가 `skills/`로 통합되었습니다.
+v3.0에서 모델이 네이티브로 수행하는 **주제 가이드 51개**(architecture, caching,
+docker, graphql, naming, nextjs, ... "○○ 가이드를 실행합니다"형)와 **범용 명령
+래퍼 28개**(analyze, implement, improve, think, cleanup, load/save, pm, ...)를
+삭제했습니다. 스킬 메타데이터는 idle에도 컨텍스트에 상주하므로, "모델이 이미
+할 수 있는 것"의 스킬화는 순비용이기 때문입니다.
 
-#### Core Skills
-| Skill | 설명 |
-|-------|------|
-| `/confidence-check` | 구현 전 신뢰도 평가 (>=90% 필요) |
-| `/verify` | 완료 후 6단계 검증 체크리스트 + Dynamic Context Injection |
-| `/checkpoint` | 위험 작업 전 복원 지점 생성 |
-| `/note` | 컴팩션에서 살아남는 영구 메모 시스템 |
-| `/learn` | 재사용 가능한 패턴 추출 및 저장 |
-| `/audit` | 프로젝트 고유 규칙 검증 (비즈니스 로직, 아키텍처 패턴) |
-| `/config-doctor` | SuperClaude++ 설정 유효성 검증 (v2.0 신규) |
-| `/goal` | 자율 실행 루프 — 검증 가능한 종료 조건 충족 시까지 자동 반복 (Claude Code 빌트인, v2.2 통합) |
+**잔존 기준**: ① 기계 장치·데이터 보유(BM25 검색, Git 체크포인트, 훅 연동),
+② 프레임워크 워크플로우 코어, ③ 검증된 큐레이션 콘텐츠(Vercel 가이드라인 등),
+④ 서드파티 벤더 스킬(출처 추적성 유지).
 
-#### Development Skills
-| Skill | 설명 |
-|-------|------|
-| `/react-best-practices` | React/Next.js 코드 리뷰 (40+ 규칙) |
-| `/web-design-guidelines` | Vercel UI/UX 리뷰 (100+ 규칙) + AI Slop Detection |
-| `/composition-patterns` | React Compound Components 패턴 |
-| `/python-best-practices` | Python 코드 리뷰 및 베스트 프랙티스 |
-| `/pytest-runner` | pytest 실행, 커버리지 분석 |
-| `/uv-package` | uv 패키지 관리 |
-| `/feature-planner` | 기능 구현 계획 수립 |
-| `/gap-analysis` | 설계-구현 비교, Match Rate 계산 |
-| `/tdd` | RED-GREEN-REFACTOR 주기 강제 + Git checkpoint |
-| `/ui-ux-pro-max` | AI 디자인 인텔리전스 (67 스타일, 96 팔레트, 57 폰트) + DESIGN.md 통합 |
-| `/fix-pr` | PR 코멘트 기반 자동 수정 (v2.0 신규) |
+#### Framework Core (13개)
+`confidence-check` `verify` `checkpoint` `tdd` `build-fix` `audit`
+`gap-analysis` `feature-planner` `learn` `note` `fix-pr` `config-doctor`
+`eval-harness`
 
-#### Impeccable Design Language (v2.1 신규, Apache 2.0)
+#### Review & Critique (9개)
+`devils-advocate` `business-panel` `brainstorm` `grill-with-docs`
+`security-audit` `react-best-practices` `python-best-practices`
+`composition-patterns` `web-design-guidelines`
 
-[pbakaus/impeccable](https://github.com/pbakaus/impeccable) v2.1.1 통합. "AI slop" 문제 — AI가 생성한 UI가 뻔한 AI 티를 내는 현상 — 을 해결하기 위한 디자인 어휘 시스템. 엔트리 skill + 17개 서브 커맨드.
+#### Design & Frontend (24개)
+`ui-ux-pro-max` `frontend-design` `theme-factory` `brand-guidelines`
+`canvas-design` `algorithmic-art` + Impeccable Design Language 18개
+(`impeccable` 엔트리 + 17개 서브커맨드, Apache 2.0)
 
-| Skill | 설명 |
-|-------|------|
-| `/impeccable [craft\|teach\|extract]` | 엔트리. `teach`로 프로젝트 디자인 컨텍스트(audience/use case/brand tone)를 `.impeccable.md`에 고정. 나머지 커맨드의 전제조건 |
-| `/shape` | 레이아웃·아이디어·비주얼 방향 shape-then-build. craft 진입점 |
-| `/layout` | 공간·그리드·레이아웃 구조 설계 |
-| `/typeset` | 타이포그래피 (크기·행간·계층·페어링) |
-| `/colorize` | 컬러 팔레트·대비·테마 적용 |
-| `/animate` | 모션·트랜지션·인터랙션 피드백 |
-| `/delight` | 디테일·이스터에그·감성 포인트 |
-| `/polish` | 최종 다듬기 (normalize 흡수) |
-| `/critique` | UX 관점 정성 비평 (페르소나·휴리스틱·P0-P3 점수) |
-| `/design-audit` | 기술 품질 감사 (a11y·성능·테마·반응형·안티패턴, P0-P3 스코어) |
-| `/harden` | 엣지 케이스·에러 상태·접근성 강화 |
-| `/optimize` | 성능 최적화 (번들·렌더·이미지) |
-| `/clarify` | 정보 구조·UX writing 명료화 |
-| `/distill` | 군더더기 제거, 본질 추출 |
-| `/quieter` / `/bolder` | 시각적 강도 축소 / 강화 |
-| `/adapt` | 반응형·디바이스 적응 |
-| `/overdrive` | 맥시멀리즘·극한 대담함 모드 |
-
-전제: `/impeccable teach`로 프로젝트 컨텍스트를 먼저 세팅해야 나머지 커맨드가 맥락에 맞게 동작. 기존 `/frontend-design`(Anthropic 원본)과 병렬 제공 — Impeccable이 그 계보의 확장판.
-
-> **네임스페이스 주의**: Impeccable 원본의 `audit` → SuperClaude++의 기존 `/audit`(프로젝트 룰 검증)과 충돌해 **`/design-audit`**으로 리네이밍됨. 저작권/라이선스는 `NOTICE.md` 및 `skills/impeccable/{LICENSE,NOTICE.md}` 참조.
-
-#### Document Skills
-| Skill | 설명 |
-|-------|------|
-| `/docx` | Word 문서 생성/편집 (OOXML 기반) |
-| `/pdf` | PDF 폼 처리 및 조작 |
-| `/pptx` | PowerPoint 프레젠테이션 생성 |
-| `/xlsx` | Excel 스프레드시트 처리 |
-
-#### Domain Skills
-- **Architecture**: `/architecture`, `/api-design`, `/db-design`, `/design-patterns`, `/clean-arch`, `/hexagonal`, `/ddd`, `/cqrs`
-- **Security**: `/security-audit` (OWASP + STRIDE + LLM Security), `/auth`, `/error-handling`
-- **Performance**: `/perf-optimize`, `/caching`, `/scaling`
-- **Frontend**: `/react-best-practices`, `/nextjs`, `/vue`, `/svelte`, `/remix`, `/responsive`, `/a11y`, `/seo`, `/state`
-- **Backend**: `/fastapi`, `/nestjs`, `/graphql`, `/websocket`, `/queue`, `/pagination`, `/rate-limit`
-- **DevOps**: `/docker`, `/cicd`, `/monitoring`, `/env`, `/logging`, `/backup`
-- **Quality**: `/clean-code`, `/refactoring`, `/testing`, `/code-review`, `/code-smell`, `/naming`, `/solid`
-- **Domain Modeling** (MIT, mattpocock/skills): `/grill-with-docs` — 기존 도메인 모델에 대한 1대1 인터뷰 stress-test. 용어 충돌·코드 모순을 즉시 챌린지하고 `CONTEXT.md`(도메인 어휘 사전) / ADR을 인라인 갱신. `/brainstorm`이 *새 기능 탐색*이라면 이쪽은 *기존 모델 검증*. 부속 문서: [`skills/grill-with-docs/CONTEXT-FORMAT.md`](skills/grill-with-docs/CONTEXT-FORMAT.md), [`skills/grill-with-docs/ADR-FORMAT.md`](skills/grill-with-docs/ADR-FORMAT.md). 우리 프로젝트 자체의 어휘 사전 예시는 루트 [`CONTEXT.md`](CONTEXT.md). 출처 추적: [`NOTICE.md`](NOTICE.md).
-
-> **`/brainstorm` 보강 노트**: `grill-me` 원본의 3대 행동 규칙(한 번에 한 질문 / 추천답 동반 / 코드 우선 탐색)이 기존 `/brainstorm`에 흡수되었습니다 (별도 스킬 미생성, 중복 방지).
+#### Documents & Tooling (14개)
+`pdf` `pptx` `xlsx` `document-skills` `internal-comms` `artifacts-builder`
+`slack-gif-creator` `mcp-builder` `skill-creator` `webapp-testing`
+`agent-browser` `pytest-runner` `uv-package` `help`
 
 ### Automation
 
@@ -177,7 +130,7 @@ skills: [api-design, db-design, security-audit]
 v2.0에서 스킬 자동 활성화는 `.claude/skill-rules.json`에 선언적으로 정의되고, `scripts/skill-matcher.py`가 `UserPromptSubmit` 훅으로 실행하여 프롬프트 패턴을 매칭합니다. Claude의 판단에 의존하던 v0.x와 달리, 기계적으로 트리거됩니다.
 
 ```jsonc
-// .claude/skill-rules.json (발췌) — 57 rules, 332 triggers (200 Korean + 132 English)
+// .claude/skill-rules.json (발췌) — 23 rules (v3.0: 삭제 스킬 규칙 정리)
 {
   "skill": "build-fix",
   "mode": "auto",
@@ -199,12 +152,10 @@ v2.0에서 스킬 자동 활성화는 `.claude/skill-rules.json`에 선언적으
 - `checkpoint` - 리팩토링/삭제 키워드 감지 시
 - `react-best-practices` - .jsx/.tsx + 리뷰 키워드
 - `python-best-practices` - .py + 리뷰 키워드
-- `debug` - 테스트 실패 패턴 감지 시
 
 **Suggest 스킬** (확인 후 실행):
 - `tdd` - 버그 수정 + tests/ 디렉토리 존재 시
 - `security-audit` - 보안 관련 키워드/파일 패턴 감지 시
-- `code-smell` - 50줄 이상 함수 감지 시
 
 전체 규칙은 `.claude/skill-rules.json` 참조.
 
@@ -213,8 +164,7 @@ v2.0에서 스킬 자동 활성화는 `.claude/skill-rules.json`에 선언적으
 
 | 상황 | 제안 도구 | 트리거 조건 |
 |------|----------|-------------|
-| 복잡한 함수 | `/code-review`, `/code-smell` | 50줄+ 함수 |
-| API 설계 | `/api-design`, `backend-architect` | endpoint, REST |
+| API 설계 | `backend-architect` | endpoint, REST |
 | 성능 이슈 | `performance-engineer` | 느림, slow, optimize |
 | 보안 관련 | `security-engineer`, `/security-audit` | 로그인, JWT, 보안, LLM 보안 |
 | 프레임워크 | **Context7** MCP | React, Next.js, Vue |
@@ -358,7 +308,7 @@ superclaude-plusplus/                # 프로젝트 저장소 (source of truth)
 ├── MODES.md                        # 행동 모드 Quick Reference
 ├── CONVENTIONS.md                  # 네이밍 컨벤션
 ├── notepad.md                      # 영구 메모
-├── skills/                         # 140개 스킬 (각각 SKILL.md)
+├── skills/                         # 60개 스킬 (각각 SKILL.md)
 │   ├── confidence-check/SKILL.md
 │   ├── verify/SKILL.md
 │   ├── tdd/SKILL.md
@@ -368,7 +318,7 @@ superclaude-plusplus/                # 프로젝트 저장소 (source of truth)
 │   ├── web-design-guidelines/      # UI/UX 리뷰
 │   ├── impeccable/                 # Impeccable Design Language 엔트리 (+ 17 서브)
 │   ├── grill-with-docs/            # v2.3 신규 (도메인 stress-test, MIT)
-│   └── ...                         # 140개 스킬 디렉토리
+│   └── ...                         # 60개 스킬 디렉토리
 ├── agents/                         # 23개 에이전트 (AGENT.md frontmatter)
 │   ├── backend-architect.md
 │   ├── generator.md                # v2.0 신규 (Generator+Validator)
@@ -432,7 +382,7 @@ v2.0의 핵심은 Claude의 자율 판단 의존을 줄이고, 시스템이 규�
 | 스킬 컨텍스트 | 정적 텍스트 | Dynamic Context Injection |
 | 병렬 작업 | 프롬프트 "background로" | Worktree 격리 + Agent Teams |
 | 배포 | ~~install.sh~~ | Plugin manifest (`/plugin install`) |
-| 스킬 구조 | ~~commands/~~ + skills/ 분리 | **skills/ 단일 디렉토리** (140개) |
+| 스킬 구조 | ~~commands/~~ + skills/ 분리 | **skills/ 단일 디렉토리** (v3.0: 60개) |
 
 ### Generator + Validator 패턴
 
@@ -702,7 +652,7 @@ SuperClaude++ v2.0 = v0.x + 시스템 강제 패러다임:
 - **Agent Teams**: 팀 단위 자율 작업 지원 (실험적)
 - **Dynamic Context Injection**: 스킬에 실시간 상태 주입
 - **Plugin Manifest**: `/plugin install`로 설치 자동화
-- **140개 Skills**: commands/ 통합으로 단일 디렉토리 체계 (v2.1: Impeccable 18개 추가, v2.3: `/grill-with-docs` 추가)
+- **60개 Skills**: v3.0 통폐합 — 기계 장치/큐레이션/벤더 스킬만 잔존 (v2.1: Impeccable 18개, v2.3: `/grill-with-docs`, v3.0: 79개 삭제)
 - **23개 Agents**: Generator, Validator, Harness Worker, Team 에이전트 추가
 - **16개 Hook Types**: TaskCompleted, FileChanged, ConfigChange 등 전체 활용
 - **신규 스킬**: `/fix-pr` (PR 코멘트 자동 수정), `/config-doctor` (설정 검증)

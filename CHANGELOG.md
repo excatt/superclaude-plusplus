@@ -38,6 +38,28 @@ Claude 5 세대(Fable/Opus 5)의 하네스·모델 내재화 행동과 중복되
 - **KNOWLEDGE.md 삭제** — 근거 없는 ROI 수치(자체 "No unsupported numbers"
   규칙 위반), 모델 기본값 pitfall, MODES.md와 중복되는 표
 
+### Removed (스킬 통폐합: 139 → 60)
+- **주제 가이드 스킬 51개 삭제** — "○○ 가이드를 실행합니다"형
+  (architecture, api-design, auth, caching, cicd, clean-arch, clean-code,
+  code-smell, cqrs, db-design, ddd, design-patterns, docker, env,
+  error-handling, event-driven, fastapi, graphql, hexagonal, i18n, logging,
+  microservices, migration, monitoring, monorepo, naming, nestjs, nextjs,
+  pagination, perf-optimize, pwa, queue, rate-limit, refactoring, regex,
+  remix, responsive, scaling, seo, solid, state, svelte, testing, versioning,
+  vue, websocket, a11y, backup, commit-msg, file-upload, git-workflow) —
+  모델이 네이티브로 보유한 교과서 지식의 재포장.
+- **범용 명령 래퍼 28개 삭제** — analyze, build, cleanup, code-review,
+  debug, design, document, estimate, explain, git, implement, improve,
+  index, load, orchestrate, pm, reflect, research, save, select-tool,
+  spawn, spec-panel, task, template-skill, test, think, troubleshoot,
+  workflow — 하네스/모델 기본 동작의 얇은 래퍼 (business-panel은 고유
+  기능이라 유지).
+- **잔존 60개 기준**: ① 기계 장치·데이터(BM25, Git 체크포인트, 훅 연동)
+  ② 프레임워크 코어 ③ 검증된 큐레이션(Vercel 가이드라인 등) ④ 서드파티
+  벤더(Impeccable 18, Anthropic 문서/디자인 스킬, grill-with-docs).
+- skill-rules.json 60 → 23 규칙, 에이전트 frontmatter 9개에서 삭제 스킬
+  참조 제거, help 스킬 재작성.
+
 ### Changed
 - **FLAGS.md, CONTEXTS.md, MCP_SERVERS.md → `optional/`로 이동** — 상시
   로드에서 온디맨드 로드로 전환. `@import`는 RULES/PRINCIPLES/MODES/

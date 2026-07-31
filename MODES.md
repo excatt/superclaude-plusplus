@@ -9,7 +9,7 @@ detail file in `optional/` when a mode actually activates.
 | Mode | Purpose | Trigger | Flag | Details |
 |------|---------|---------|------|---------|
 | **Brainstorming** | Requirements exploration | "maybe", "생각중인데", vague requests | `--brainstorm` | `optional/MODE_Brainstorming.md` |
-| **Deep Research** | Systematic investigation | `/sc:research`, "조사해줘", "알아봐줘" | `--research` | `optional/MODE_DeepResearch.md` |
+| **Deep Research** | Systematic investigation | "조사해줘", "알아봐줘", deep-research-agent | `--research` | `optional/MODE_DeepResearch.md` |
 | **Introspection** | Metacognitive analysis | Error recovery, "내 추론 분석해봐" | `--introspect` | `optional/MODE_Introspection.md` |
 | **Orchestration** | Tool optimization | Multi-tool, parallel execution (>3 files) | `--orchestrate` | `optional/MODE_Orchestration.md` |
 | **Task Management** | Hierarchical task management | >3-step tasks, "다듬어", "정리해" | `--task-manage` | `optional/MODE_Task_Management.md` |

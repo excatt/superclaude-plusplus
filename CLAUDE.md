@@ -31,7 +31,7 @@ harness every session — they are not listed again here. Agents enforce
 - **Step 0**: Difficulty Assessment (Simple/Medium/Complex) → protocol branching
 - **Pre-Implementation**: `/confidence-check` → ≥90% proceed (Medium+)
 - **Goal Lock (autonomous mode)**: Strong success criteria + multi-turn work → `/goal "<verifiable condition>"` (see `optional/GOAL_PATTERNS.md`)
-- **Planning**: `/feature-planner` → `/architecture`
+- **Planning**: `/feature-planner`
 - **Design**: `DESIGN.md` (if exists) → `/ui-ux-pro-max` → `/frontend-design` → `/web-design-guidelines`
 - **Review**: Two-Stage Review (Simple: Stage 1 only | Medium: Stage 1+2 | Complex: + Cascade Impact)
 - **Verification**: `/verify` → `/audit` (project rules)

@@ -7,7 +7,7 @@ disallowedTools: Agent
 maxTurns: 20
 effort: high
 memory: project
-skills: [api-design, db-design]
+skills: []
 ---
 
 # Backend Architect

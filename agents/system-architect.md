@@ -7,7 +7,7 @@ disallowedTools: Agent
 maxTurns: 20
 effort: high
 memory: project
-skills: [architecture]
+skills: []
 ---
 
 # System Architect

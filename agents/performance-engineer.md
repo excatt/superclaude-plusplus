@@ -7,7 +7,7 @@ disallowedTools: Agent
 maxTurns: 15
 effort: high
 memory: project
-skills: [perf-optimize]
+skills: []
 ---
 
 # Performance Engineer

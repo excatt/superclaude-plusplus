@@ -8,7 +8,7 @@ maxTurns: 20
 effort: high
 isolation: worktree
 memory: project
-skills: [refactoring, clean-code]
+skills: []
 ---
 
 # Refactoring Expert

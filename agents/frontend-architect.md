@@ -7,7 +7,7 @@ disallowedTools: Agent
 maxTurns: 15
 effort: high
 memory: project
-skills: [react-best-practices, a11y]
+skills: [react-best-practices]
 ---
 
 # Frontend Architect

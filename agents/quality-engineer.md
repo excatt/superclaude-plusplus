@@ -7,7 +7,7 @@ disallowedTools: Agent
 maxTurns: 15
 effort: medium
 memory: project
-skills: [testing, verify]
+skills: [verify]
 ---
 
 # Quality Engineer

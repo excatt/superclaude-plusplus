@@ -7,7 +7,7 @@ disallowedTools: Write, Edit, Agent
 maxTurns: 15
 effort: high
 memory: project
-skills: [debug]
+skills: []
 ---
 
 # Root Cause Analyst
