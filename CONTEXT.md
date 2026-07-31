@@ -68,7 +68,7 @@ Circuit Breaker가 발동했을 때 Claude가 작성하는 **진단 전용** 보
 
 ### Persona
 
-Claude가 작업 중 일시적으로 채택하는 전문가 역할(architect, security-engineer, frontend-architect 등). Agent와 달리 *독립 인스턴스가 아니라 단일 Claude의 모드 전환*이다. `/brainstorm`이 다중 페르소나 코디네이션을 수행할 때는 한 Claude가 차례로 여러 페르소나를 입었다 벗었다 한다.
+Claude가 작업 중 일시적으로 채택하는 전문가 역할(architect, security, frontend 등). Agent와 달리 *독립 인스턴스가 아니라 단일 Claude의 모드 전환*이다. `/brainstorm`이 다중 페르소나 코디네이션을 수행할 때는 한 Claude가 차례로 여러 페르소나를 입었다 벗었다 한다.
 
 ### MCP Server
 

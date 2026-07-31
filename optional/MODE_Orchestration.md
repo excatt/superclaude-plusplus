@@ -77,9 +77,9 @@ Chain agents sequentially to handle complex tasks systematically.
 | Workflow | Agent Chain | Use Case |
 |----------|-------------|----------|
 | **Feature** | planner → tdd-guide → code-reviewer → security-reviewer | New feature development |
-| **Bugfix** | root-cause-analyst → tdd-guide → code-reviewer | Bug fix |
-| **Refactor** | system-architect → code-reviewer → tdd-guide | Refactoring |
-| **Security** | security-engineer → code-reviewer → system-architect | Security review |
+| **Bugfix** | root-cause diagnosis → tdd-guide → code-reviewer | Bug fix |
+| **Refactor** | architect → code-reviewer → tdd-guide | Refactoring |
+| **Security** | security-engineer → code-reviewer → architect | Security review |
 
 ### Handoff Document Template
 

@@ -1,6 +1,6 @@
 # SuperClaude++ v3.0
 
-Claude Code를 위한 harness-aware 개발 프레임워크 - 60개 스킬, 23개 에이전트, 16개 훅 타입. 모델이 못 하는 것만 남기고 자동화합니다.
+Claude Code를 위한 harness-aware 개발 프레임워크 - 60개 스킬, 9개 에이전트, 16개 훅 타입. 모델이 못 하는 것만 남기고 자동화합니다.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
@@ -48,48 +48,45 @@ Claude 5 세대(Fable/Opus 5)부터는 검증 후 완료 선언, 지속 실행, 
 **MCP_SERVERS.md**(MCP 선택 매트릭스), **PATTERNS.md**(코드 패턴).
 **KNOWLEDGE.md**는 v3.0에서 제거 (근거 없는 수치와 모델 기본값 중복).
 
-### Agent System (23개)
+### Agent System (9개, v3.0에서 23개 → 9개로 통폐합)
 
-v2.0에서 에이전트는 AGENT.md frontmatter로 정의됩니다. `model`, `tools`, `maxTurns`, `effort`, `isolation` 등의 속성을 선언적으로 지정하여, 에이전트 행동이 프롬프트 의존이 아닌 시스템 수준에서 제어됩니다.
+에이전트는 AGENT.md frontmatter로 정의됩니다. `model`, `tools`, `maxTurns`,
+`effort`, `isolation` 등의 속성을 선언적으로 지정하여, 에이전트 행동이
+프롬프트 의존이 아닌 시스템 수준에서 제어됩니다.
+
+v3.0에서 **범용 페르소나 14개 삭제** (backend/frontend/system/devops-architect,
+performance/quality-engineer, python/refactoring-expert, root-cause-analyst,
+requirements-analyst, technical-writer, learning-guide, socratic-mentor,
+pm-agent) — 하네스의 general-purpose + model 오버라이드로 동일하게 수행
+가능한 역할 래퍼였습니다. 잔존 기준은 스킬과 동일: 프레임워크 배선(RULES/
+MODES/스킬)에 연결되어 있거나 고유한 실행 구성(worktree 격리, 팀 구성)을
+갖는 것.
 
 ```yaml
-# 예시: agents/backend-architect.md
+# 예시: agents/harness-worker.md
 ---
-name: backend-architect
-model: opus
-tools: Read, Grep, Glob, Write, Edit, Bash, WebFetch
+name: harness-worker
+model: sonnet
+tools: Read, Grep, Glob, Write, Edit, Bash
 disallowedTools: Agent
-maxTurns: 20
+maxTurns: 30
 effort: high
-skills: []
+isolation: worktree
+skills: [verify]
 ---
 ```
 
-| Agent | 역할 | model | isolation |
-|-------|------|-------|-----------|
-| `backend-architect` | 백엔드 시스템 설계 | opus | - |
-| `frontend-architect` | UI/UX 및 프론트엔드 아키텍처 | sonnet | - |
-| `system-architect` | 시스템 아키텍처 설계 | opus | - |
-| `security-engineer` | 보안 취약점 분석 (Read-only) | opus | - |
-| `performance-engineer` | 성능 최적화 | sonnet | - |
-| `quality-engineer` | 테스트 및 QA | sonnet | - |
-| `python-expert` | Python 전문가 | sonnet | worktree |
-| `refactoring-expert` | 코드 리팩토링 | sonnet | worktree |
-| `deep-research-agent` | 심층 리서치 (WebFetch/WebSearch) | opus | - |
-| `root-cause-analyst` | 근본 원인 분석 (Read-only) | opus | - |
-| `codebase-gc` | 코드베이스 정리 (dead code, import, doc-code 동기화) | haiku | - |
-| `pm-agent` | 프로젝트 관리 | sonnet | - |
-| `technical-writer` | 기술 문서 작성 | sonnet | - |
-| `requirements-analyst` | 요구사항 분석 | sonnet | - |
-| `devops-architect` | DevOps 및 인프라 | sonnet | - |
-| `learning-guide` | 학습 가이드 | haiku | - |
-| `socratic-mentor` | 소크라틱 멘토 | sonnet | - |
-| `business-panel-experts` | 비즈니스 전략 분석 (9명의 전문가 패널) | opus | - |
-| `generator` | Generator+Validator 쌍 - 코드 생성 담당 | sonnet | worktree |
-| `validator` | Generator+Validator 쌍 - Read-only 검증 담당 | sonnet | - |
-| `harness-worker` | Harness Mode worktree 워커 | sonnet | worktree |
-| `team-implementer` | Agent Teams 구현 담당 | sonnet | worktree |
-| `team-reviewer` | Agent Teams 리뷰 담당 (Read-only) | opus | - |
+| Agent | 역할 | model | isolation | 배선 |
+|-------|------|-------|-----------|------|
+| `security-engineer` | 보안 취약점 분석 (Read-only) | opus | - | RULES.md 보안 인시던트 에스컬레이션 |
+| `deep-research-agent` | 심층 리서치 (WebFetch/WebSearch) | opus | - | Deep Research 모드 |
+| `business-panel-experts` | 비즈니스 전략 분석 (9명 전문가 패널) | opus | - | `/business-panel` 스킬 |
+| `codebase-gc` | 코드베이스 정리 (dead code, doc-code 동기화) | haiku | - | Harness 모드 세션 종료 GC |
+| `generator` | Generator+Validator 쌍 - 코드 생성 | sonnet | worktree | Orchestration 모드 |
+| `validator` | Generator+Validator 쌍 - Read-only 검증 | sonnet | - | Orchestration 모드 |
+| `harness-worker` | Harness IMPLEMENT phase 워커 | sonnet | worktree | Harness 모드 |
+| `team-implementer` | Agent Teams 구현 담당 | sonnet | worktree | Harness TEAM phase |
+| `team-reviewer` | Agent Teams 리뷰 담당 (Read-only) | opus | - | Harness VERIFY phase |
 
 ### Skills (60개, v3.0에서 139개 → 60개로 통폐합)
 
@@ -164,8 +161,6 @@ v2.0에서 스킬 자동 활성화는 `.claude/skill-rules.json`에 선언적으
 
 | 상황 | 제안 도구 | 트리거 조건 |
 |------|----------|-------------|
-| API 설계 | `backend-architect` | endpoint, REST |
-| 성능 이슈 | `performance-engineer` | 느림, slow, optimize |
 | 보안 관련 | `security-engineer`, `/security-audit` | 로그인, JWT, 보안, LLM 보안 |
 | 프레임워크 | **Context7** MCP | React, Next.js, Vue |
 | UI 컴포넌트 | **Magic** MCP | button, form, modal |
@@ -319,14 +314,14 @@ superclaude-plusplus/                # 프로젝트 저장소 (source of truth)
 │   ├── impeccable/                 # Impeccable Design Language 엔트리 (+ 17 서브)
 │   ├── grill-with-docs/            # v2.3 신규 (도메인 stress-test, MIT)
 │   └── ...                         # 60개 스킬 디렉토리
-├── agents/                         # 23개 에이전트 (AGENT.md frontmatter)
-│   ├── backend-architect.md
-│   ├── generator.md                # v2.0 신규 (Generator+Validator)
-│   ├── validator.md                # v2.0 신규 (Generator+Validator)
+├── agents/                         # 9개 에이전트 (AGENT.md frontmatter)
+│   ├── security-engineer.md
+│   ├── generator.md                # Generator+Validator 쌍
+│   ├── validator.md                # Generator+Validator 쌍
 │   ├── harness-worker.md           # v2.0 신규 (Worktree 워커)
 │   ├── team-implementer.md         # v2.0 신규 (Agent Teams)
 │   ├── team-reviewer.md            # v2.0 신규 (Agent Teams)
-│   └── ...                         # 23개 에이전트 정의
+│   └── ...                         # 9개 에이전트 정의
 ├── scripts/                        # 17개 자동화 스크립트
 │   ├── skill-matcher.py            # v2.0: UserPromptSubmit hook 핸들러
 │   ├── circuit-breaker.sh          # v2.0: 에러 반복 자동 차단
@@ -653,7 +648,7 @@ SuperClaude++ v2.0 = v0.x + 시스템 강제 패러다임:
 - **Dynamic Context Injection**: 스킬에 실시간 상태 주입
 - **Plugin Manifest**: `/plugin install`로 설치 자동화
 - **60개 Skills**: v3.0 통폐합 — 기계 장치/큐레이션/벤더 스킬만 잔존 (v2.1: Impeccable 18개, v2.3: `/grill-with-docs`, v3.0: 79개 삭제)
-- **23개 Agents**: Generator, Validator, Harness Worker, Team 에이전트 추가
+- **9개 Agents**: v3.0 통폐합 — 범용 페르소나 14개 삭제, 배선된 에이전트만 잔존
 - **16개 Hook Types**: TaskCompleted, FileChanged, ConfigChange 등 전체 활용
 - **신규 스킬**: `/fix-pr` (PR 코멘트 자동 수정), `/config-doctor` (설정 검증)
 - **v2.2 `/goal` 통합**: Claude Code 2.1.139 빌트인 자율 루프를 SC++ 워크플로우에 위임. Persistence Enforcement를 네이티브로 단순화하되 Circuit Breaker · Verification Iron Law · Two-Stage Review 3중 안전망은 유지. 상세: `optional/GOAL_PATTERNS.md`

@@ -1,7 +1,7 @@
 {
   "name": "superclaude-plusplus",
   "version": "3.0.0",
-  "description": "Harness-aware slim development framework for Claude Code. 60 skills, 23 agents, 16 hook types. v3.0: always-resident context cut ~80% by removing rules the harness/model already guarantee; process knowledge demoted to optional/ and skills.",
+  "description": "Harness-aware slim development framework for Claude Code. 60 skills, 9 agents, 16 hook types. v3.0: always-resident context cut ~80% by removing rules the harness/model already guarantee; process knowledge demoted to optional/ and skills.",
   "author": "excatt",
   "license": "MIT",
   "repository": "https://github.com/excatt/superclaude-plusplus",

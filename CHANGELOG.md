@@ -38,6 +38,22 @@ Claude 5 세대(Fable/Opus 5)의 하네스·모델 내재화 행동과 중복되
 - **KNOWLEDGE.md 삭제** — 근거 없는 ROI 수치(자체 "No unsupported numbers"
   규칙 위반), 모델 기본값 pitfall, MODES.md와 중복되는 표
 
+### Removed (에이전트 통폐합: 23 → 9)
+- **범용 페르소나 에이전트 14개 삭제** — backend-architect,
+  frontend-architect, system-architect, devops-architect,
+  performance-engineer, quality-engineer, python-expert,
+  refactoring-expert, requirements-analyst, root-cause-analyst,
+  technical-writer, learning-guide, socratic-mentor, pm-agent.
+  하네스의 general-purpose + model 오버라이드로 동일 수행 가능한 역할
+  래퍼. pm-agent는 pm 스킬 삭제로 이미 고아 상태였음.
+- **잔존 9개 기준**: 프레임워크 배선(RULES 보안 에스컬레이션, 모드,
+  스킬 연동) 또는 고유 실행 구성(worktree 격리, Agent Teams 구성) 보유 —
+  security-engineer, deep-research-agent, business-panel-experts,
+  codebase-gc, generator, validator, harness-worker, team-implementer,
+  team-reviewer.
+- `.superclaude-metadata.json` 에이전트 목록 갱신 (구버전 18개 목록도
+  실제 디렉터리와 불일치했던 것을 함께 정정).
+
 ### Removed (스킬 통폐합: 139 → 60)
 - **주제 가이드 스킬 51개 삭제** — "○○ 가이드를 실행합니다"형
   (architecture, api-design, auth, caching, cicd, clean-arch, clean-code,
