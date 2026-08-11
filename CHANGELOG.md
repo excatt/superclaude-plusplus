@@ -5,6 +5,20 @@
 형식은 [Keep a Changelog](https://keepachangelog.com/ko/1.0.0/)를 따르며,
 [Semantic Versioning](https://semver.org/lang/ko/)을 준수합니다.
 
+## [3.1.1] - 2026-08-11
+
+### Fixed
+- **`scripts/sync-global.sh` — `settings.json`을 덮어쓰기에서 최상위 키 병합으로 변경**. 기존 구현은 프로젝트 `config/settings.json`을 `~/.claude/settings.json`에 통째로 복사해, **글로벌에만 존재하는 머신 로컬 설정을 조용히 삭제**했다. 실제 삭제 대상이던 키: `model`(`claude-fable-5[1m]`), `skipDangerousModePermissionPrompt`, `agentPushNotifEnabled`.
+  - **병합 규칙**: 최상위 키 단위로 프로젝트가 정의한 키는 프로젝트가 이기고, 프로젝트에 없는 글로벌 전용 키는 보존.
+  - **변경 내역 출력**: `+ added` / `~ replaced` / `= preserved` 3분류로 매 실행 시 무엇이 바뀌는지 표시 — 조용한 변경 제거.
+  - **손상된 글로벌 JSON 방어**: 파싱 실패 시 덮어쓰기를 거부하고 종료(기존에는 그대로 밀어버림).
+  - **키 순서 결정성**: 프로젝트 키 순서 + 글로벌 전용 키 순으로 고정하여 재실행 시 churn 없음. 비교는 텍스트가 아니라 파싱된 값 기준이라 포매팅 차이로 인한 불필요한 쓰기가 발생하지 않음.
+  - 구현은 `python3` 힙독(`scripts/statusline.sh`의 기존 패턴 재사용) — 신규 의존성 없음(`jq` 미사용, `python3`는 `skill-matcher.py` 등으로 이미 필수).
+  - **의도적 비목표**: 중첩 병합은 하지 않는다. `permissions.allow` 같은 배열의 병합 의미(합집합 vs 교체)가 모호하므로, 추측하는 대신 교체 사실을 보고하는 쪽을 택했다. 결과적으로 프로젝트에서 삭제한 키는 글로벌에 잔존하므로 수동 정리가 필요하다.
+
+### Verified
+- 격리된 가짜 `HOME`에서 6개 시나리오 검증: 글로벌 전용 키 보존 / 공유 키 교체 / `~` 확장 / 멱등성(재실행 시 `already in sync`) / 손상 JSON 덮어쓰기 거부 / 글로벌 파일 부재 시 신규 생성. 실제 `~/.claude/settings.json`은 백업 대비 무변경 확인.
+
 ## [3.1.0] - 2026-08-11
 
 ### Added
