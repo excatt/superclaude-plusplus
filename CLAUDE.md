@@ -52,6 +52,7 @@ AI 에이전트가 읽는 디자인 시스템 문서 ([Google Stitch format](htt
 - `CONTEXTS.md` — DEV/REVIEW/RESEARCH/PLANNING context modes
 - `MCP_SERVERS.md` — MCP server selection matrix; per-server guides in `MCP_*.md`
 - `GOAL_PATTERNS.md` — `/goal` condition patterns, anti-patterns, `/loop` vs `/goal`
+- `OVERENGINEERING_TRAPS.md` — Build Ladder application rules + rung 3 native-feature catalog
 - `REASONING_TEMPLATES.md` — structured reasoning (debugging, architecture, performance)
 - `CONTEXT_BUDGET.md` — context budget management
 - `WORKER_TEMPLATES.md` — worker agent prompt templates

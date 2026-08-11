@@ -18,12 +18,22 @@ how* they get applied.
 - Senior Engineer Test: "Would they call this overcomplicated?" → YES → simplify
 - Implement current requirements only; no speculative features
 
-## Search Before Building
-Always search before implementing from scratch:
-- **Layer 1 — Tried-and-true**: Well-maintained library or built-in API that solves this? Use it
-- **Layer 2 — New-and-popular**: Recent, community-validated approach? Evaluate and adopt
-- **Layer 3 — First-principles**: Only build from scratch when Layer 1-2 genuinely don't fit
-- **Eureka gate**: First-principles is justified only when existing solutions are provably wrong or missing — not when they're merely unfamiliar
+## Build Ladder (Search Before Building)
+Stop at the first rung that applies. Each rung that fires removes work the later rungs would have created.
+
+| # | Gate | Action |
+|---|------|--------|
+| 0 | Does this need to exist at all? | Skip it — YAGNI |
+| 1 | Already in this codebase? | Reuse it. Grep before writing |
+| 2 | Stdlib / built-in API? | Use it |
+| 3 | Native platform feature? | Use it |
+| 4 | Already-installed dependency? | Use it |
+| 5 | Tried-and-true library? | Adopt it (Layer 1) |
+| 6 | New-and-popular, community-validated? | Evaluate, then adopt (Layer 2) |
+| 7 | None of the above | Build the minimum that works (Layer 3) |
+
+- **Eureka gate**: Rung 7 is justified only when existing solutions are provably wrong or missing — not when they're merely unfamiliar
+- Scope limit, ordering rule, rung 3 case catalog: `optional/OVERENGINEERING_TRAPS.md`
 
 ## Harness Engineering
 

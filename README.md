@@ -40,7 +40,7 @@ Claude 5 세대(Fable/Opus 5)부터는 검증 후 완료 선언, 지속 실행, 
 |------|------|
 | **CLAUDE.md** | 엔트리 포인트 및 언어 설정 (한국어) |
 | **RULES.md** | 하네스 오버라이드 + 모델이 모르는 규칙만 (난이도 평가, Circuit Breaker, 프로젝트 규칙) |
-| **PRINCIPLES.md** | 적용 시점 선호만 (Complexity Timing, Search Before Building, Harness Engineering) |
+| **PRINCIPLES.md** | 적용 시점 선호만 (Complexity Timing, Build Ladder, Harness Engineering) |
 | **MODES.md** | 모드 Quick Reference (상세는 `optional/MODE_*.md`) |
 | **CONVENTIONS.md** | 네이밍 컨벤션 + 패키지 관리 규칙 (uv/pnpm 필수) |
 
@@ -340,7 +340,7 @@ superclaude-plusplus/                # 프로젝트 저장소 (source of truth)
 │   ├── settings.local.json         # 로컬 설정 오버라이드
 │   ├── context.md                  # 프로젝트 컨텍스트
 │   └── state/                      # 세션 상태 저장
-├── optional/                       # 28개 선택적 로딩 문서
+├── optional/                       # 29개 선택적 로딩 문서
 │   ├── FLAGS.md                    # v3.0 이동: 플래그 정의
 │   ├── CONTEXTS.md                 # v3.0 이동: DEV/REVIEW/RESEARCH 컨텍스트 모드
 │   ├── MCP_SERVERS.md              # v3.0 이동: MCP 선택 매트릭스
@@ -350,6 +350,7 @@ superclaude-plusplus/                # 프로젝트 저장소 (source of truth)
 │   ├── CONTEXT_BUDGET.md           # 컨텍스트 예산 관리
 │   ├── WORKER_TEMPLATES.md         # 워커 에이전트 프롬프트 템플릿
 │   ├── GOAL_PATTERNS.md            # /goal 조건 패턴, 안티 패턴, /loop vs /goal 결정표
+│   ├── OVERENGINEERING_TRAPS.md    # v3.1 신규: Build Ladder 적용 규칙 3종 + rung 3 사례 카탈로그
 │   └── ...                         # PATTERNS, PROTOCOLS, PROJECT_RULES 등
 ├── docs/
 │   └── PLAN-v2.0.md                # v2.0 마이그레이션 계획
@@ -629,9 +630,10 @@ rm -f ~/.claude/skill-rules.json
 - **[oh-my-agent](https://github.com/first-fluke/oh-my-agent)** - 멀티 에이전트 하네스의 공유 프로토콜 (`_shared/`). 난이도 분기(difficulty-guide), 추론 템플릿(reasoning-templates), 컨텍스트 예산(context-budget/loading), 4요소 프롬프트(prompt-structure), Phase Gate 자동통과(phase-gates), Cascade Impact Review(multi-review-protocol), Clarification Debt(session-metrics). MIT License
 - **[oh-my-claudecode](https://github.com/Yeachan-Heo/oh-my-claudecode)** - 자동화 훅 및 워크플로우 아이디어
 - **[cc-statusline](https://www.npmjs.com/package/@chongdashu/cc-statusline)** - 상태바 구현 참고
-- **[gstack](https://github.com/garrytan/gstack)** - Garry Tan의 Claude Code 스킬팩. Search Before Building 원칙, AI Slop Detection 체크리스트, LLM Security Audit Phase (프롬프트 인젝션, 스킬 서플라이 체인). MIT License
+- **[gstack](https://github.com/garrytan/gstack)** - Garry Tan의 Claude Code 스킬팩. Search Before Building 원칙(v3.1에서 **Build Ladder** 8단으로 확장), AI Slop Detection 체크리스트, LLM Security Audit Phase (프롬프트 인젝션, 스킬 서플라이 체인). MIT License
 - **[everything-claude-code](https://github.com/affaan-m/everything-claude-code)** - Affaan Mustafa의 에이전트 하네스 시스템. TDD RED/GREEN Gate 워크플로우, 구조화된 Session Save (What Did NOT Work), Confidence-Based Review Filtering. MIT License
 - **[mattpocock/skills](https://github.com/mattpocock/skills)** - Matt Pocock의 Claude Code 스킬 모음. **`/grill-with-docs`** (도메인 모델 stress-test, `CONTEXT.md` glossary + ADR 인라인 갱신)을 그대로 포팅. `grill-me`의 3대 행동 규칙(한 번에 한 질문 / 추천답 동반 / 코드 우선 탐색)은 기존 `/brainstorm`에 흡수됨. MIT License (Copyright (c) 2026 Matt Pocock). v2.3 통합 (2026-05-20). 상세: [`NOTICE.md`](NOTICE.md)
+- **[ponytail](https://github.com/DietrichGebert/ponytail)** - "가장 게으른 시니어 개발자" 플러그인. **개념 2건만 차용, 코드는 미포함** — (1) Decision Ladder의 순서화된 조기 종료 구조(특히 rung 0 "존재할 필요가 있는가"와 "래더는 문제를 *이해한 후에* 돈다"는 단서) → `PRINCIPLES.md` **Build Ladder** 표로 병합, (2) 과설계 함정 사례 → `optional/OVERENGINEERING_TRAPS.md` 신규. 훅 11개·항시 주입·`ponytail:` 부채 마커·6개 스킬은 v3.0 감량 기조 및 기존 배선과 충돌하여 **의도적으로 제외**. 원본 벤치마크 수치("54% less code" 등)는 Haiku 4.5 단일 모델 n=4 기준이라 인용하지 않음. MIT License. v3.1 통합 (2026-08-11). 제외 사유 상세: [`NOTICE.md`](NOTICE.md)
 - **Business Panel** - 클래식 비즈니스 문헌 기반 전문가 패널 방법론 (Christensen, Porter, Drucker 등)
 
 ### What's New in v2.0
@@ -662,6 +664,12 @@ v3.0 = "모델이 못 하는 것만 남긴다" (harness-aware slim):
 - **skill-matcher 오탐 수정**: stdin JSON 파싱, ASCII 단어 경계, 홈 디렉터리 스캔 가드
 - **KNOWLEDGE.md 제거**, FLAGS/CONTEXTS/MCP_SERVERS는 `optional/`로 이동
 - 하네스가 이미 보장하는 규칙(Verification Iron Law, Persistence, Scope Discipline 등)의 재규정 삭제 — 개념은 `CONTEXT.md` 어휘 사전에 존속
+
+### What's New in v3.1
+- **Build Ladder**: gstack 유래 Search Before Building을 **8단(rung 0–7) 조기 종료 표**로 재작성. rung 0 "존재할 필요가 있는가"(YAGNI) 신설, 기존 Layer 1/2/3는 rung 5/6/7로 편입. v3.0 감량 기조를 지켜 **상시 로드는 표만(+12줄)**, 적용 규칙 3종(ordering rule / scope limit / no-compression)은 `optional/`로 분리
+- **`optional/OVERENGINEERING_TRAPS.md` 신규**: rung 3 "네이티브 플랫폼 기능" 사례 카탈로그 — HTML·CSS·JS stdlib·Python stdlib·백엔드 5개 영역 대응표, "라이브러리가 정답인 경우" 역함정 5조건, 측정 한계 명시
+- **디버깅 제외 명문화**: 최소 diff 편향은 증상 패치를 유발하므로 래더를 root-cause 조사에 적용하지 않는다. root-cause-first는 v3.0에서 하네스 보장 항목으로 승격됐으므로 규칙 재진술 대신 래더 쪽에 scope limit을 둠
+- 스킬 0개 추가, 훅 0개 추가 — 문서 재작성만 (착안: ponytail, MIT, 개념만)
 
 ### What's Carried from v0.x
 - PDCA 워크플로우 및 Gap Analysis

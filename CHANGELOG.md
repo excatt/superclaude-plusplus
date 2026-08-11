@@ -5,6 +5,41 @@
 형식은 [Keep a Changelog](https://keepachangelog.com/ko/1.0.0/)를 따르며,
 [Semantic Versioning](https://semver.org/lang/ko/)을 준수합니다.
 
+## [3.1.0] - 2026-08-11
+
+### Added
+- **`optional/OVERENGINEERING_TRAPS.md` 신규** — Build Ladder의 적용 규칙 3종 + rung 3("네이티브 플랫폼 기능이 있는가") 사례 카탈로그.
+  - **적용 규칙 3종** (v3.0 감량 기조에 따라 `PRINCIPLES.md`가 아니라 이쪽에 배치): ① Ordering rule — 래더는 문제를 *이해한 후에* 돈다, rung 0만 코드를 읽지 않고 답할 수 있다 ② Scope limit — 디버깅에는 적용하지 않는다(`transfer()`만 고치고 공유 `_debit()`을 방치해 `withdraw()`가 여전히 초과 인출되는 사례) ③ No compression rung — 래더는 *삭제*를 보상하지 *밀도*를 보상하지 않는다.
+  - **사례 카탈로그 5개 영역**: HTML 네이티브(date/color picker, `<details>`, `<dialog>`, `popover`, `<progress>` 등 12항목), CSS 네이티브(scroll-snap, sticky, `@container` 등 8항목), JS stdlib(`Intl.*`, `structuredClone`, `AbortController`, `crypto.randomUUID` 등 11항목), Python stdlib(`argparse`, `dataclasses`, `functools.lru_cache` 등 10항목), 백엔드·인프라 6항목.
+  - **역함정 절** — "항상 네이티브를 써라"로 읽히면 rung 3이 rung 0~2보다 강해져 새로운 과설계가 된다. 라이브러리가 정답인 5가지 경우(디자인 시스템 준수 요구, 네이티브를 넘는 a11y 요구, 타깃 브라우저 미지원, 동작이 실제로 다름, 이미 그 의존성 사용 중=rung 4 우선)를 명시.
+  - **근거와 한계 절** — 실측 2건(date picker 404→23줄, color picker 287→23줄)만 인용하고 나머지는 일반화임을 밝힘.
+
+### Changed
+- **`PRINCIPLES.md` — Search Before Building을 `Build Ladder` 8단(rung 0–7) 표로 재작성**.
+  - 기존 gstack 유래 Layer 1/2/3(tried-and-true / new-and-popular / first-principles)를 rung 5/6/7로 편입하고 앞에 rung 0–4 신설: `0. 존재할 필요가 있는가(YAGNI)` → `1. 이미 이 코드베이스에 있는가` → `2. stdlib` → `3. 네이티브 플랫폼 기능` → `4. 이미 설치된 의존성`.
+  - **v3.0 상시 로드 감량 기조 준수** — 상주분은 표 + Eureka gate + optional 포인터로 제한(+12줄). 설명 3종은 `optional/`로 분리.
+  - Eureka gate는 rung 7 조건으로 유지.
+- `CLAUDE.md` On-Demand References에 `OVERENGINEERING_TRAPS.md` 등록.
+- `NOTICE.md`에 **Ponytail 항목 추가** — 차용 2건, **제외 5건과 그 사유**, 인용 시 필수 캐비엇.
+- `README.md` — Core Framework 표의 PRINCIPLES.md 설명 갱신, Inspirations에 ponytail 추가, gstack 항목에 Build Ladder 확장 표기, `optional/` 28→29개, What's New in v3.1 신설.
+- `plugin.json` — version `3.0.0 → 3.1.0`, description에 Build Ladder 명시, keywords에 `build-ladder`, `yagni` 추가.
+- 스킬 **60개 · 에이전트 9개 변동 없음** — 신규 스킬 0개, 신규 훅 0개.
+
+### Rationale
+- [ponytail](https://github.com/DietrichGebert/ponytail)(MIT)을 `/devils-advocate`로 검토한 결과 **플러그인 통째 설치는 기각**하고 개념 2건만 흡수했다. 기각 사유:
+  - **훅 이중화** — ponytail의 11개 훅(특히 매 프롬프트 주입하는 `ponytail-instructions.js`)이 `skill-matcher.py` · `circuit-breaker.sh`와 실행 순서가 정의되지 않고, 상시 로드를 8,994→3,023 단어로 줄인 v3.0 직후에 매 프롬프트 주입을 되돌리는 것은 방향 역행이다.
+  - **항시 주입 × 증상 패치 편향** — 원본 이슈 #245가 보고한 misplaced laziness("patch the nearest symptom instead of tracing end to end")는 root-cause-first 디버깅과 충돌한다. v3.0은 root-cause-first를 하네스 보장 항목으로 보고 규칙에서 삭제했으므로, 규칙을 되살리는 대신 **Build Ladder 쪽에 scope limit을 박아 넣는 방식**을 택했다. 저자의 수정은 Sonnet 4.6/Opus 4.8에서 1/6→6/6이지만 Haiku 4.5에서는 0~2/6으로 모델 의존적이다.
+  - **`ponytail:` 부채 마커** — 상환 강제 장치 없는 원장은 접두어만 바뀐 TODO다.
+  - **스킬 중복** — v3.0이 스킬을 139→60으로 감축한 직후에 `/ponytail-review`·`/ponytail-audit` 등 6개를 추가하는 것은 `/distill`·`/audit`·`codebase-gc`와 중복이며 `skill-matcher.py` 오발화만 늘린다.
+- **벤치마크 수치는 채택하지 않았다.** "54% less code / 20% cheaper / 27% faster"는 저자 자체 벤치마크(Haiku 4.5 단일 모델, 태스크당 n=4, 표준편차·신뢰구간 미보고, timeout 데이터 손실 4건)이고, 12개 태스크 중 date/color picker 2건이 평균을 지배하며, 백엔드 태스크는 전 arm이 17–44줄로 수렴해 이득이 없다. 저자 본인도 *"Bigger models may close the over-build gap ... or widen it"* 이라 유보했다.
+- **원칙이 아니라 사례가 행동을 바꾼다.** "YAGNI를 지켜라"는 이미 모두 알고 있고 그럼에도 date picker를 400줄로 만든다. 바뀌는 건 "이건 `<input type="date">`다"라는 구체적 대응 관계를 알 때다. 따라서 카탈로그는 원칙 문서가 아니라 점검 목록으로 설계했다.
+- **역함정 절이 핵심 안전장치다.** 카탈로그가 "네이티브 강제"로 읽히면 디자인 시스템 요구·a11y 요구·브라우저 지원을 무시하는 새 실패 모드를 만든다. 라이브러리를 *고르는* 것은 정상이고 고르지 않고 *미끄러져 들어가는* 것이 함정이라는 구분을 명시했다.
+
+### Attribution
+- 착안 출처: https://github.com/DietrichGebert/ponytail (MIT License)
+- **코드 미포함** — 원본의 `skills/`, `hooks/`, `commands/` 중 복제한 파일 없음. 개념 차용만이므로 MIT 고지 의무는 발생하지 않으나 SC++ 출처 추적 관례에 따라 기록.
+- 출처 추적 위치: 루트 `NOTICE.md`(차용/제외 상세), `optional/OVERENGINEERING_TRAPS.md` "근거와 한계" 절, 본 CHANGELOG 항목, `README.md` Inspirations & Integrations.
+
 ## [3.0.0] - 2026-07-31
 
 ### 철학
