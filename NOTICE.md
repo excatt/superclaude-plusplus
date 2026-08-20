@@ -88,6 +88,30 @@ Impeccable은 Anthropic의 frontend-design skill에서 파생되었으며, 해�
 
 ---
 
+## fluent-korean (Korean Output Style — 외부 플러그인 의존성)
+
+- **출처 (upstream)**: https://github.com/snflkd/fluent-korean
+- **라이선스**: MIT License
+- **저작권**: snflkd
+- **통합 시점**: 2026-08-20 (SuperClaude++ v3.2.0)
+
+### 통합 방식: 참조 선언 (코드 미포함)
+Impeccable·grill-with-docs와 달리 **파일을 벤더링하지 않는다**. `config/settings.json`의
+`extraKnownMarketplaces` + `enabledPlugins` 선언만 포함하며, 실제 플러그인은 Claude Code가
+업스트림에서 직접 설치한다. 따라서 본 저장소는 fluent-korean의 코드를 재배포하지 않는다.
+
+**Why 참조 선언**: ① 업스트림이 활발한 플러그인이라 벤더링하면 업데이트에서 이탈
+② Build Ladder rung 5(tried-and-true 재사용) 준수 ③ output-style은 스킬과 달리
+plugin 마켓플레이스 설치가 공식 배포 경로.
+
+### 역할
+`CLAUDE.md` Language 규칙("ALWAYS respond in Korean")의 문체 품질 계층을 담당 —
+LLM이 토큰 절약을 위해 한국어를 압축할 때 발생하는 조사 탈락·어미 생략·번역투를 교정.
+기본 output-style은 `fluent-korean`(코딩 지침 유지 버전)이며, `fluent-korean-not-coding`
+(비코딩 버전)도 함께 설치된다.
+
+---
+
 ## 기타 선재 통합 구성요소
 
 본 NOTICE는 Impeccable 통합 시점(2026-04-17)에 추가되었습니다. `skills/` 내 다른 외부 유래 skill (예: `frontend-design`, `ui-ux-pro-max`, `brand-guidelines`, `algorithmic-art`, `canvas-design`, `slack-gif-creator`, `artifacts-builder`, `pptx`, `xlsx`, `pdf`, `webapp-testing`, `agent-browser`, `mcp-builder`, `skill-creator`, `theme-factory`, `internal-comms` 등)의 출처·라이선스는 각 skill 디렉터리 내 `LICENSE`/`SKILL.md`에 기록되어 있으며, 추후 본 파일에 순차적으로 통합 예정.

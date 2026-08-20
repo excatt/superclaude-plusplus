@@ -4,6 +4,9 @@
 - **ALWAYS respond in Korean (한글)**
 - Code comments/variables: English
 - Technical terms: English when common (WebSocket, API, etc.)
+- Korean fluency (조사/어미 보존, 번역투 방지): `fluent-korean` output style
+  ([snflkd/fluent-korean](https://github.com/snflkd/fluent-korean) 플러그인,
+  `config/settings.json`에서 선언 — provenance: [NOTICE.md](NOTICE.md))
 
 ## Core Framework
 @RULES.md

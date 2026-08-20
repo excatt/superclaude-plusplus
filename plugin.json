@@ -1,6 +1,6 @@
 {
   "name": "superclaude-plusplus",
-  "version": "3.1.1",
+  "version": "3.2.0",
   "description": "Harness-aware slim development framework for Claude Code. 60 skills, 9 agents, 16 hook types. v3.0: always-resident context cut ~80% by removing rules the harness/model already guarantee; process knowledge demoted to optional/ and skills. v3.1: 8-rung Build Ladder.",
   "author": "excatt",
   "license": "MIT",
@@ -33,6 +33,8 @@
     "domain-modeling",
     "grill-with-docs",
     "build-ladder",
-    "yagni"
+    "yagni",
+    "fluent-korean",
+    "output-style"
   ]
 }

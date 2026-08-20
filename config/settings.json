@@ -280,6 +280,7 @@
     "padding": 0
   },
   "language": "한국어",
+  "outputStyle": "fluent-korean",
   "alwaysThinkingEnabled": true,
   "mcpServers": {
     "peon-ping": {
@@ -288,5 +289,16 @@
         "~/.claude/hooks/peon-ping/mcp/peon-mcp.js"
       ]
     }
+  },
+  "extraKnownMarketplaces": {
+    "fluent-korean": {
+      "source": {
+        "source": "github",
+        "repo": "snflkd/fluent-korean"
+      }
+    }
+  },
+  "enabledPlugins": {
+    "fluent-korean@fluent-korean": true
   }
 }

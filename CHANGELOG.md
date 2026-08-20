@@ -5,6 +5,21 @@
 형식은 [Keep a Changelog](https://keepachangelog.com/ko/1.0.0/)를 따르며,
 [Semantic Versioning](https://semver.org/lang/ko/)을 준수합니다.
 
+## [3.2.0] - 2026-08-20
+
+### Added
+- **fluent-korean output style 통합 (외부 플러그인 의존성)** — [snflkd/fluent-korean](https://github.com/snflkd/fluent-korean) (MIT)을 프레임워크 기본 output-style로 선언. LLM이 토큰 절약을 위해 한국어를 압축할 때 발생하는 조사 탈락·어미 생략·번역투를 교정하여, `CLAUDE.md` Language 규칙("ALWAYS respond in Korean")의 문체 품질 계층을 담당.
+  - **통합 방식은 벤더링이 아니라 참조 선언**: `config/settings.json`에 `extraKnownMarketplaces`(snflkd/fluent-korean) + `enabledPlugins`(`fluent-korean@fluent-korean`) + `outputStyle`(`"fluent-korean"`) 3개 최상위 키만 추가. 실제 플러그인은 Claude Code가 시작 시 업스트림에서 직접 설치하므로 본 저장소는 코드를 재배포하지 않음. 근거: ① 업스트림이 활발해 벤더링 시 업데이트 이탈 ② Build Ladder rung 5(tried-and-true 재사용) ③ output-style은 plugin 마켓플레이스가 공식 배포 경로.
+  - 기본값은 `fluent-korean`(코딩 지침 유지 버전). 비코딩 작업용 `fluent-korean-not-coding`도 함께 설치되며 `/output-style`로 전환 가능.
+  - output-style 특성상 `sync-global.sh` 배포 후 **새 세션 또는 `/clear`부터 적용**.
+- `NOTICE.md`에 fluent-korean 항목 추가 — 참조 선언 방식(코드 미포함)임을 명시.
+
+### Changed
+- `CLAUDE.md` Language 섹션에 fluent-korean output style 연동 명시.
+- `README.md` — "설치 후" 절에 fluent-korean 자동 설치·적용 안내 추가.
+- `plugin.json` — version `3.1.1 → 3.2.0`, keywords에 `fluent-korean`, `output-style` 추가.
+- 스킬 **60개 · 에이전트 9개 변동 없음** — 신규 스킬 0개, 신규 훅 0개.
+
 ## [3.1.1] - 2026-08-11
 
 ### Fixed

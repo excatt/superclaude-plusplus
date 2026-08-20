@@ -290,6 +290,11 @@ scripts/sync-global.sh
 2. `/config-doctor` - 설정 유효성 검증
 3. `/note --show` - 노트 시스템 확인
 4. 기존 `settings.json`이 있었다면 hooks 설정 병합 필요
+5. **fluent-korean output style 자동 적용** (v3.2.0+) - `settings.json`의
+   `enabledPlugins` 선언에 따라 [snflkd/fluent-korean](https://github.com/snflkd/fluent-korean)
+   플러그인이 자동 설치되고 `fluent-korean` output-style이 기본 적용됨 (한국어
+   조사/어미 보존, 번역투 교정). 비코딩 작업용은 `/output-style`에서
+   `fluent-korean-not-coding` 선택. 상세: [NOTICE.md](NOTICE.md)
 
 ## Directory Structure
 
