@@ -187,9 +187,19 @@
         "source": "github",
         "repo": "snflkd/fluent-korean"
       }
+    },
+    "claude-plugins-official": {
+      "source": {
+        "source": "github",
+        "repo": "anthropics/claude-plugins-official"
+      }
     }
   },
   "enabledPlugins": {
-    "fluent-korean@fluent-korean": true
+    "fluent-korean@fluent-korean": true,
+    "security-guidance@claude-plugins-official": true,
+    "pyright-lsp@claude-plugins-official": true,
+    "typescript-lsp@claude-plugins-official": true,
+    "context7@claude-plugins-official": true
   }
 }

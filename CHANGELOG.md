@@ -42,6 +42,7 @@
 - `optional/PATTERNS.md` — API 응답 형식·페이지네이션 같은 범용 코드 패턴 모음. 어디서도 참조되지 않았고, v3.0이 삭제한 "모델이 네이티브로 아는 주제 가이드" 기준에 해당. optional/ 29 → 28.
 
 ### Added
+- **Anthropic 공식 플러그인 4종 참조 선언** — `config/settings.json`에 `claude-plugins-official` 마켓플레이스와 `security-guidance`(상시 보안 리뷰 3계층), `pyright-lsp`, `typescript-lsp`, `context7`(원격 MCP) 활성화 선언. fluent-korean과 같은 참조 선언 방식(코드 미재배포). 291개 중 Anthropic 직접 제작 53개를 검토했고 미채택 사유는 `NOTICE.md`. LSP 2종은 로컬 바이너리(`pyright`, `typescript-language-server`, `typescript`) 설치가 전제.
 - `tests/hooks/run.sh` + `tests/hooks/fixtures/*.json` — 실제 Claude Code 이벤트 JSON을 각 훅에 먹여 exit code와 stdout 계약을 검증하는 28개 테스트. `timeout` 없는 macOS에서도 동작.
 - `.github/workflows/ci.yml` — shellcheck + `config-doctor.sh` + 훅 테스트.
 

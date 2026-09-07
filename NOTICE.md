@@ -138,6 +138,26 @@ v3.3(2026-09-07)에 `skills/document-skills/` 중첩 위치에서 `skills/{docx,
 
 ---
 
+## Anthropic 공식 플러그인 4종 — 참조 선언 (코드 미포함)
+
+[anthropics/claude-plugins-official](https://github.com/anthropics/claude-plugins-official) 마켓플레이스의
+플러그인을 fluent-korean과 같은 방식으로 `config/settings.json`의 `extraKnownMarketplaces` +
+`enabledPlugins`에만 선언한다(v3.3, 2026-09-07). 코드는 Claude Code가 시작 시 업스트림에서
+직접 설치하므로 본 저장소는 재배포하지 않는다. 라이선스는 각 플러그인 디렉터리의 `LICENSE`.
+
+| 플러그인 | 역할 | 이 프레임워크와의 관계 |
+|----------|------|------------------------|
+| `security-guidance` | Edit/Write 시 위험 패턴 경고, Stop 시 diff LLM 보안 리뷰, `git commit` 시 파일 간 데이터 흐름 추적 | 수동 `/security-audit`를 상시 계층으로 보완. 겹치는 훅 없음 |
+| `pyright-lsp` | Python 언어 서버 | 로컬 `pyright` 바이너리 필요 |
+| `typescript-lsp` | TypeScript/JavaScript 언어 서버 | 로컬 `typescript-language-server`·`typescript` 필요. `scripts/type-check.sh` 훅과 역할이 겹치므로 LSP가 안정되면 훅 제거 검토 |
+| `context7` | Context7 원격 MCP(로컬 설치 불필요) | `optional/MCP_SERVERS.md`가 "설치 시에만 유효"라고 적은 서버를 전역 활성화 |
+
+검토 후 **미채택**: `code-review`/`pr-review-toolkit`/`feature-dev`(Two-Stage Review·`/feature-planner`와 중복),
+`ralph-loop`(`/goal`·`todo-continuation.sh` Stop 훅과 충돌), `commit-commands`(Git 규칙 충돌 가능),
+`skill-creator`/`frontend-design`(벤더링본이 `skill-rules.json` 로컬 경로를 전제), `claude-md-management`(아래).
+
+---
+
 ## claude-md-management (Anthropic, Apache 2.0) — 기준 차용
 
 [anthropics/claude-plugins-official](https://github.com/anthropics/claude-plugins-official/tree/main/plugins/claude-md-management)의

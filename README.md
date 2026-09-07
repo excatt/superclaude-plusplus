@@ -283,6 +283,13 @@ scripts/sync-global.sh
    플러그인이 자동 설치되고 `fluent-korean` output-style이 기본 적용됨 (한국어
    조사/어미 보존, 번역투 교정). 비코딩 작업용은 `/output-style`에서
    `fluent-korean-not-coding` 선택. 상세: [NOTICE.md](NOTICE.md)
+6. **Anthropic 공식 플러그인 4종 자동 설치** (v3.3.0+) - `enabledPlugins`의
+   `security-guidance`(편집 시 보안 패턴 경고 + Stop/commit 시 LLM 보안 리뷰),
+   `pyright-lsp`, `typescript-lsp`, `context7`. LSP 2종은 로컬 바이너리가 필요:
+   ```bash
+   pnpm add -g pyright typescript typescript-language-server
+   ```
+   출처·미채택 목록: [`NOTICE.md`](NOTICE.md)
 
 ## Directory Structure
 
