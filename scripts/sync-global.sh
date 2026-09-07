@@ -3,7 +3,11 @@
 # Usage: bash scripts/sync-global.sh [--dry-run]
 #
 # Direction: project (source of truth) → global (~/.claude/)
-# Syncs: framework .md files
+# Syncs: framework .md files, optional/*.md
+#        scripts/ (hook scripts + lib/, made executable)
+#        agents/*.md, skills/<name>/ (only the skills this repo ships —
+#          user-installed skills/agents in ~/.claude are left alone)
+#        .claude/skill-rules.json
 #        settings.json (top-level MERGE + ~ path expansion — global-only keys survive)
 
 set -euo pipefail
@@ -43,6 +47,39 @@ sync_file() {
   synced=$((synced + 1))
 }
 
+# sync_tree <src_dir> <dst_dir> <label>
+# Mirrors ONE directory (files added/updated/removed inside it). Used per
+# skill / per script so that neighbours the repo does not own are untouched.
+sync_tree() {
+  local src="$1" dst="$2" label="$3"
+
+  if [[ ! -d "$src" ]]; then
+    echo "  SKIP  $label (not found in project)"
+    skipped=$((skipped + 1))
+    return
+  fi
+
+  if [[ -d "$dst" ]] && diff -rq "$src" "$dst" > /dev/null 2>&1; then
+    skipped=$((skipped + 1))
+    return
+  fi
+
+  if $DRY_RUN; then
+    echo "  WOULD $label/"
+  else
+    mkdir -p "$dst"
+    if command -v rsync > /dev/null 2>&1; then
+      rsync -a --delete --exclude '__pycache__' "$src/" "$dst/"
+    else
+      rm -rf "$dst"
+      cp -R "$src" "$dst"
+      find "$dst" -name '__pycache__' -type d -prune -exec rm -rf {} + 2>/dev/null || true
+    fi
+    echo "  SYNC  $label/"
+  fi
+  synced=$((synced + 1))
+}
+
 # --- Framework files (always-resident set, v3.0) ---
 echo "=== Framework Files ==="
 for file in CLAUDE.md RULES.md PRINCIPLES.md MODES.md CONVENTIONS.md; do
@@ -57,16 +94,56 @@ for src in "$PROJECT_DIR"/optional/*.md; do
   sync_file "$src" "$GLOBAL_DIR/$file" "$file"
 done
 
+# --- Hook scripts (settings.json hooks point at ~/.claude/scripts/*) ---
+echo ""
+echo "=== Scripts ==="
+for src in "$PROJECT_DIR"/scripts/*.sh "$PROJECT_DIR"/scripts/*.py; do
+  file="scripts/$(basename "$src")"
+  sync_file "$src" "$GLOBAL_DIR/$file" "$file"
+done
+sync_tree "$PROJECT_DIR/scripts/lib" "$GLOBAL_DIR/scripts/lib" "scripts/lib"
+if ! $DRY_RUN; then
+  chmod +x "$GLOBAL_DIR"/scripts/*.sh "$GLOBAL_DIR"/scripts/*.py 2>/dev/null || true
+fi
+
+# --- Agents ---
+echo ""
+echo "=== Agents ==="
+for src in "$PROJECT_DIR"/agents/*.md; do
+  file="agents/$(basename "$src")"
+  sync_file "$src" "$GLOBAL_DIR/$file" "$file"
+done
+
+# --- Skills (per-skill mirror; skills not shipped by this repo are kept) ---
+echo ""
+echo "=== Skills ==="
+skill_count=0
+for src in "$PROJECT_DIR"/skills/*/; do
+  src="${src%/}"
+  [[ -f "$src/SKILL.md" ]] || continue
+  name="$(basename "$src")"
+  sync_tree "$src" "$GLOBAL_DIR/skills/$name" "skills/$name"
+  skill_count=$((skill_count + 1))
+done
+echo "  ($skill_count skills checked)"
+
+# --- Skill auto-activation rules (skill-matcher.py fallback path) ---
+echo ""
+echo "=== Skill Rules ==="
+sync_file "$PROJECT_DIR/.claude/skill-rules.json" "$GLOBAL_DIR/skill-rules.json" "skill-rules.json"
+
 # --- Stale root files (moved to optional/ or removed in v3.0) ---
 echo ""
 echo "=== Stale Files ==="
-for file in FLAGS.md CONTEXTS.md MCP_SERVERS.md KNOWLEDGE.md; do
+# Root .md files moved to optional/ (v3.0) and scripts removed in v3.3.
+for file in FLAGS.md CONTEXTS.md MCP_SERVERS.md KNOWLEDGE.md \
+            scripts/post-write-check.sh scripts/pre-compact-save.sh scripts/checklist.sh; do
   if [[ -f "$GLOBAL_DIR/$file" ]]; then
     if $DRY_RUN; then
-      echo "  WOULD-RM  $file (no longer a root framework file)"
+      echo "  WOULD-RM  $file (removed from framework)"
     else
       rm "$GLOBAL_DIR/$file"
-      echo "  RM    $file (no longer a root framework file)"
+      echo "  RM    $file (removed from framework)"
     fi
   fi
 done
@@ -79,11 +156,16 @@ done
 # silently deletes them.
 #
 # Merge rule: per TOP-LEVEL key — project wins where it defines a key, global-only
-# keys are preserved. Every replaced/preserved key is reported, so nothing changes
-# silently. Nested merging is deliberately NOT attempted: array semantics (union vs
-# replace for permissions.allow) are ambiguous, and reporting the replacement is
-# more honest than guessing. Consequence: a key deleted from the project settings
-# lingers in global until removed by hand.
+# keys are preserved. A few keys hold machine-local state INSIDE them and get a
+# nested policy instead of wholesale replacement:
+#   permissions.allow / .deny   → union (global entries kept)
+#   permissions.defaultMode     → global wins (per-machine preference)
+#   extraKnownMarketplaces,
+#   enabledPlugins, env         → dict union, project wins on shared keys
+#   hooks (and everything else) → project replaces (framework-owned)
+# Every replaced/preserved key is reported, so nothing changes silently.
+# Consequence: a key deleted from the project settings lingers in global until
+# removed by hand.
 echo ""
 echo "=== Settings.json ==="
 SETTINGS_SRC="$PROJECT_DIR/config/settings.json"
@@ -111,8 +193,38 @@ if os.path.isfile(dst):
         print("        Refusing to overwrite — fix or move the global file, then re-run.")
         sys.exit(2)
 
+def merge_permissions(proj, glob):
+    out = dict(glob)
+    out.update(proj)
+    for key in ("allow", "deny"):
+        if key in proj or key in glob:
+            seen, union = set(), []
+            for item in list(proj.get(key, [])) + list(glob.get(key, [])):
+                if item not in seen:
+                    seen.add(item)
+                    union.append(item)
+            out[key] = union
+    if "defaultMode" in glob:
+        out["defaultMode"] = glob["defaultMode"]
+    return out
+
+def merge_dict_union(proj, glob):
+    out = dict(glob)
+    out.update(proj)
+    return out
+
+NESTED_POLICY = {
+    "permissions": merge_permissions,
+    "extraKnownMarketplaces": merge_dict_union,
+    "enabledPlugins": merge_dict_union,
+    "env": merge_dict_union,
+}
+
 # Project order first, then global-only keys — deterministic across runs.
 merged = dict(project)
+for key, policy in NESTED_POLICY.items():
+    if key in project and isinstance(project[key], dict) and isinstance(existing.get(key), dict):
+        merged[key] = policy(project[key], existing[key])
 preserved = [k for k in existing if k not in project]
 for key in preserved:
     merged[key] = existing[key]
@@ -121,7 +233,7 @@ def canon(value):
     return json.dumps(value, sort_keys=True)
 
 added = [k for k in project if k not in existing]
-replaced = [k for k in project if k in existing and canon(existing[k]) != canon(project[k])]
+replaced = [k for k in project if k in existing and canon(existing[k]) != canon(merged[k])]
 
 if existing == merged:
     print("  OK    settings.json (already in sync)")

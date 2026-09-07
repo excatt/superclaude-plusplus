@@ -17,18 +17,9 @@ if command -v jq >/dev/null 2>&1; then
   HAS_JQ=1
 fi
 
-# ---- logging ----
+# ---- logging (lightweight: trigger line only) ----
 {
   echo "[$TIMESTAMP] Status line triggered (cc-statusline v${STATUSLINE_VERSION})"
-  echo "[$TIMESTAMP] Input:"
-  if [ "$HAS_JQ" -eq 1 ]; then
-    echo "$input" | jq . 2>/dev/null || echo "$input"
-    echo "[$TIMESTAMP] Using jq for JSON parsing"
-  else
-    echo "$input"
-    echo "[$TIMESTAMP] WARNING: jq not found, using bash fallback for JSON parsing"
-  fi
-  echo "---"
 } >> "$LOG_FILE" 2>/dev/null
 
 # ---- color helpers (force colors for Claude Code) ----
@@ -117,28 +108,38 @@ extract_json_string() {
 
 # ---- basics ----
 if [ "$HAS_JQ" -eq 1 ]; then
-  current_dir=$(echo "$input" | jq -r '.workspace.current_dir // .cwd // "unknown"' 2>/dev/null | sed "s|^$HOME|~|g")
-  project_dir_raw=$(echo "$input" | jq -r '.workspace.project_dir // .workspace.current_dir // .cwd // "unknown"' 2>/dev/null)
-  model_name=$(echo "$input" | jq -r '.model.display_name // "Claude"' 2>/dev/null)
-  model_version=$(echo "$input" | jq -r '.model.version // ""' 2>/dev/null)
-  session_id=$(echo "$input" | jq -r '.session_id // ""' 2>/dev/null)
-  cc_version=$(echo "$input" | jq -r '.version // ""' 2>/dev/null)
-  output_style=$(echo "$input" | jq -r '.output_style.name // ""' 2>/dev/null)
-  lines_added=$(echo "$input" | jq -r '.cost.total_lines_added // 0' 2>/dev/null)
-  lines_removed=$(echo "$input" | jq -r '.cost.total_lines_removed // 0' 2>/dev/null)
-  exceeds_200k=$(echo "$input" | jq -r '.exceeds_200k_tokens // false' 2>/dev/null)
-  model_id=$(echo "$input" | jq -r '.model.id // ""' 2>/dev/null)
-  vim_mode=$(echo "$input" | jq -r '.vim.mode // ""' 2>/dev/null)
-  agent_name=$(echo "$input" | jq -r '.agent.name // ""' 2>/dev/null)
-  transcript_path=$(echo "$input" | jq -r '.transcript_path // ""' 2>/dev/null)
-  api_duration_ms=$(echo "$input" | jq -r '.cost.total_api_duration_ms // ""' 2>/dev/null)
-  ctx_used_pct=$(echo "$input" | jq -r '.context_window.used_percentage // ""' 2>/dev/null)
-  ctx_remaining_pct=$(echo "$input" | jq -r '.context_window.remaining_percentage // ""' 2>/dev/null)
-  ctx_window_size=$(echo "$input" | jq -r '.context_window.context_window_size // ""' 2>/dev/null)
-  ctx_input_tokens=$(echo "$input" | jq -r '.context_window.current_usage.input_tokens // ""' 2>/dev/null)
-  ctx_output_tokens=$(echo "$input" | jq -r '.context_window.current_usage.output_tokens // ""' 2>/dev/null)
-  ctx_cache_creation=$(echo "$input" | jq -r '.context_window.current_usage.cache_creation_input_tokens // ""' 2>/dev/null)
-  ctx_cache_read=$(echo "$input" | jq -r '.context_window.current_usage.cache_read_input_tokens // ""' 2>/dev/null)
+  # Single jq call extracts every field at once (was 22+ separate jq invocations per render).
+  # Delimiter is the Unit Separator (0x1f), NOT tab: a whitespace IFS makes `read` collapse
+  # consecutive empty fields and misalign every following value.
+  _fields=$(echo "$input" | jq -r '[
+    (.workspace.current_dir // .cwd // "unknown"),
+    (.workspace.project_dir // .workspace.current_dir // .cwd // "unknown"),
+    (.model.display_name // "Claude"),
+    (.model.version // ""),
+    (.session_id // ""),
+    (.version // ""),
+    (.output_style.name // ""),
+    (.cost.total_lines_added // 0),
+    (.cost.total_lines_removed // 0),
+    (.model.id // ""),
+    (.vim.mode // ""),
+    (.agent.name // ""),
+    (.transcript_path // ""),
+    (.cost.total_api_duration_ms // ""),
+    (.context_window.used_percentage // ""),
+    (.context_window.remaining_percentage // ""),
+    (.context_window.context_window_size // ""),
+    (.context_window.current_usage.input_tokens // ""),
+    (.context_window.current_usage.output_tokens // ""),
+    (.context_window.current_usage.cache_creation_input_tokens // ""),
+    (.context_window.current_usage.cache_read_input_tokens // "")
+  ] | map(tostring) | join("\u001f")' 2>/dev/null)
+  IFS=$'\x1f' read -r current_dir project_dir_raw model_name model_version session_id \
+    cc_version output_style lines_added lines_removed model_id vim_mode \
+    agent_name transcript_path api_duration_ms ctx_used_pct ctx_remaining_pct \
+    ctx_window_size ctx_input_tokens ctx_output_tokens ctx_cache_creation ctx_cache_read \
+    <<< "$_fields"
+  current_dir=$(echo "$current_dir" | sed "s|^$HOME|~|g")
 else
   # Bash fallback for JSON extraction
   # Extract current_dir from workspace object - look for the pattern workspace":{"current_dir":"..."}
@@ -169,9 +170,6 @@ else
   lines_removed=$(echo "$input" | grep -o '"total_lines_removed"[[:space:]]*:[[:space:]]*[0-9]*' | sed 's/.*:[[:space:]]*\([0-9]*\).*/\1/')
   [ -z "$lines_added" ] && lines_added=0
   [ -z "$lines_removed" ] && lines_removed=0
-  # 200K warning
-  exceeds_200k=$(echo "$input" | grep -o '"exceeds_200k_tokens"[[:space:]]*:[[:space:]]*[a-z]*' | sed 's/.*:[[:space:]]*\([a-z]*\).*/\1/')
-  [ -z "$exceeds_200k" ] && exceeds_200k="false"
   model_id=""
   vim_mode=""
   agent_name=""
@@ -316,84 +314,14 @@ todo_inprogress=0
 todo_total=0
 
 # Check Claude's internal todo system
+# (display removed — counting loop deleted to avoid per-render jq calls)
 TODOS_DIR="$HOME/.claude/todos"
-if [ -d "$TODOS_DIR" ] && [ "$HAS_JQ" -eq 1 ]; then
-  for todo_file in "$TODOS_DIR"/*.json; do
-    if [ -f "$todo_file" ]; then
-      completed=$(jq '[.[] | select(.status == "completed")] | length' "$todo_file" 2>/dev/null || echo "0")
-      pending=$(jq '[.[] | select(.status == "pending")] | length' "$todo_file" 2>/dev/null || echo "0")
-      inprogress=$(jq '[.[] | select(.status == "in_progress")] | length' "$todo_file" 2>/dev/null || echo "0")
-      todo_complete=$((todo_complete + completed))
-      todo_pending=$((todo_pending + pending))
-      todo_inprogress=$((todo_inprogress + inprogress))
-    fi
-  done
-  todo_total=$((todo_complete + todo_pending + todo_inprogress))
-fi
 
-# Extract cost data from Claude Code input
-if [ "$HAS_JQ" -eq 1 ]; then
-  # Get cost data from Claude Code's input
-  cost_usd=$(echo "$input" | jq -r '.cost.total_cost_usd // empty' 2>/dev/null)
-  total_duration_ms=$(echo "$input" | jq -r '.cost.total_duration_ms // empty' 2>/dev/null)
-  
-  # Calculate burn rate ($/hour) from cost and duration
-  if [ -n "$cost_usd" ] && [ -n "$total_duration_ms" ] && [ "$total_duration_ms" -gt 0 ]; then
-    # Convert ms to hours and calculate rate
-    cost_per_hour=$(echo "$cost_usd $total_duration_ms" | awk '{printf "%.2f", $1 * 3600000 / $2}')
-  fi
-else
-  # Bash fallback for cost extraction
-  cost_usd=$(echo "$input" | grep -o '"total_cost_usd"[[:space:]]*:[[:space:]]*[0-9.]*' | sed 's/.*:[[:space:]]*\([0-9.]*\).*/\1/')
-  total_duration_ms=$(echo "$input" | grep -o '"total_duration_ms"[[:space:]]*:[[:space:]]*[0-9]*' | sed 's/.*:[[:space:]]*\([0-9]*\).*/\1/')  
-  
-  # Calculate burn rate ($/hour) from cost and duration
-  if [ -n "$cost_usd" ] && [ -n "$total_duration_ms" ] && [ "$total_duration_ms" -gt 0 ]; then
-    # Convert ms to hours and calculate rate
-    cost_per_hour=$(echo "$cost_usd $total_duration_ms" | awk '{printf "%.2f", $1 * 3600000 / $2}')
-  fi
-fi
+# Cost/token/session metrics below were computed but are no longer displayed
+# (Line 3 render section was removed). Heavy extraction deleted to stay light:
+# - per-render cost jq calls removed
+# - ccusage CLI (node) invocation removed
 
-# Get token data and session info from ccusage if available
-if command -v ccusage >/dev/null 2>&1 && [ "$HAS_JQ" -eq 1 ]; then
-  blocks_output=""
-  
-  # Try ccusage with timeout for token data and session info
-  if command -v timeout >/dev/null 2>&1; then
-    blocks_output=$(timeout 5s ccusage blocks --json 2>/dev/null)
-  elif command -v gtimeout >/dev/null 2>&1; then
-    # macOS with coreutils installed
-    blocks_output=$(gtimeout 5s ccusage blocks --json 2>/dev/null)
-  else
-    # No timeout available, run directly (ccusage should be fast)
-    blocks_output=$(ccusage blocks --json 2>/dev/null)
-  fi
-  if [ -n "$blocks_output" ]; then
-    active_block=$(echo "$blocks_output" | jq -c '.blocks[] | select(.isActive == true)' 2>/dev/null | head -n1)
-    if [ -n "$active_block" ]; then
-      # Get token count from ccusage
-      tot_tokens=$(echo "$active_block" | jq -r '.totalTokens // empty')
-      # Get tokens per minute from ccusage
-      tpm=$(echo "$active_block" | jq -r '.burnRate.tokensPerMinute // empty')
-      
-      # Session time calculation from ccusage
-      reset_time_str=$(echo "$active_block" | jq -r '.usageLimitResetTime // .endTime // empty')
-      start_time_str=$(echo "$active_block" | jq -r '.startTime // empty')
-      
-      if [ -n "$reset_time_str" ] && [ -n "$start_time_str" ]; then
-        start_sec=$(to_epoch "$start_time_str"); end_sec=$(to_epoch "$reset_time_str"); now_sec=$(date +%s)
-        total=$(( end_sec - start_sec )); (( total<1 )) && total=1
-        elapsed=$(( now_sec - start_sec )); (( elapsed<0 ))&&elapsed=0; (( elapsed>total ))&&elapsed=$total
-        session_pct=$(( elapsed * 100 / total ))
-        remaining=$(( end_sec - now_sec )); (( remaining<0 )) && remaining=0
-        rh=$(( remaining / 3600 )); rm=$(( (remaining % 3600) / 60 ))
-        end_hm=$(fmt_time_hm "$end_sec")
-        session_txt="$(printf '%dh %dm until reset at %s (%d%%)' "$rh" "$rm" "$end_hm" "$session_pct")"
-        session_bar=$(progress_bar "$session_pct" 10)
-      fi
-    fi
-  fi
-fi
 
 # ---- log extracted data ----
 {
@@ -506,7 +434,7 @@ if [ -n "$lines_added" ] || [ -n "$lines_removed" ]; then
   printf '  📝 %s+%s%s/%s-%s%s' "$(lines_add_color)" "${lines_added:-0}" "$(rst)" "$(lines_del_color)" "${lines_removed:-0}" "$(rst)"
 fi
 
-# Line 2: Context and 200K warning only
+# Line 2: Context only
 line2=""
 if [ -n "$context_pct" ]; then
   # Context temperature indicator
@@ -533,14 +461,7 @@ if [ -n "$context_pct" ]; then
 fi
 # DELETED: Token usage breakdown (input/output/cache) removed per user request
 # DELETED: Session ID removed per user request
-# 200K token warning
-if [ "$exceeds_200k" = "true" ]; then
-  if [ -n "$line2" ]; then
-    line2="$line2  🚨 $(warning_color)EXCEEDS 200K TOKENS$(rst)"
-  else
-    line2="🚨 $(warning_color)EXCEEDS 200K TOKENS$(rst)"
-  fi
-fi
+# DELETED: 200K token warning removed per user request
 # DELETED: Session time removed per user request
 if [ -z "$line2" ] && [ -z "$context_pct" ]; then
   line2="🧠 $(context_color)Context Remaining: TBD$(rst)"
