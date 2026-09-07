@@ -39,6 +39,7 @@
 - `.superclaude-metadata.json` — v2.0 설치 메타데이터(MCP 서버 8종 "installed" 등), `/config-doctor`가 여기서 "2.0.0"을 읽고 있었음.
 - `docs/PLAN-v2.0.md` — 완료된 마이그레이션 계획.
 - `scripts/post-write-check.sh`(4종 훅이 stdin을 직접 읽으므로 불필요), `scripts/pre-compact-save.sh`(어디에도 연결되지 않은 스냅샷), `scripts/checklist.sh`(참조 없음).
+- `scripts/type-check.sh` PostToolUse 훅 — 매 편집마다 프로젝트 전체 `tsc --noEmit`을 돌리던 훅. `typescript-lsp`/`pyright-lsp` 플러그인이 언어 서버로 같은 정보를 더 정확하고 즉시 제공하므로 제거. `agents/harness-worker.md`의 동일 훅 선언도 제거. 훅 17 → 16.
 - `optional/PATTERNS.md` — API 응답 형식·페이지네이션 같은 범용 코드 패턴 모음. 어디서도 참조되지 않았고, v3.0이 삭제한 "모델이 네이티브로 아는 주제 가이드" 기준에 해당. optional/ 29 → 28.
 
 ### Added

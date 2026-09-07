@@ -21,7 +21,7 @@ Current framework version:
 ```bash
 bash scripts/config-doctor.sh          # 전체 진단 (❌ 있으면 exit 1)
 bash scripts/config-doctor.sh --quiet  # ❌/⚠️ 만 출력
-bash tests/hooks/run.sh                # 훅 계약 픽스처 테스트 (28 cases)
+bash tests/hooks/run.sh                # 훅 계약 픽스처 테스트 (27 cases)
 ```
 
 ## Checks (config-doctor.sh)

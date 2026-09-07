@@ -35,11 +35,6 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.claude/scripts/type-check.sh",
-            "timeout": 10
-          },
-          {
-            "type": "command",
             "command": "~/.claude/scripts/console-log-check.sh",
             "timeout": 5
           },

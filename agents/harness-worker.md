@@ -10,11 +10,6 @@ isolation: worktree
 background: true
 memory: project
 skills: [verify]
-hooks:
-  PostToolUse:
-    - matcher: "Edit|Write"
-      type: command
-      command: "~/.claude/scripts/type-check.sh"
 ---
 
 # Harness Worker

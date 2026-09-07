@@ -149,7 +149,7 @@ v3.3(2026-09-07)에 `skills/document-skills/` 중첩 위치에서 `skills/{docx,
 |----------|------|------------------------|
 | `security-guidance` | Edit/Write 시 위험 패턴 경고, Stop 시 diff LLM 보안 리뷰, `git commit` 시 파일 간 데이터 흐름 추적 | 수동 `/security-audit`를 상시 계층으로 보완. 겹치는 훅 없음 |
 | `pyright-lsp` | Python 언어 서버 | 로컬 `pyright` 바이너리 필요 |
-| `typescript-lsp` | TypeScript/JavaScript 언어 서버 | 로컬 `typescript-language-server`·`typescript` 필요. `scripts/type-check.sh` 훅과 역할이 겹치므로 LSP가 안정되면 훅 제거 검토 |
+| `typescript-lsp` | TypeScript/JavaScript 언어 서버 | 로컬 `typescript-language-server`·`typescript` 필요. 같은 역할이던 `scripts/type-check.sh` 훅은 v3.3에서 제거 |
 | `context7` | Context7 원격 MCP(로컬 설치 불필요) | `optional/MCP_SERVERS.md`가 "설치 시에만 유효"라고 적은 서버를 전역 활성화 |
 
 검토 후 **미채택**: `code-review`/`pr-review-toolkit`/`feature-dev`(Two-Stage Review·`/feature-planner`와 중복),

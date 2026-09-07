@@ -2,7 +2,7 @@
 
 ## 핵심 정보 (항상 로드)
 - **기술 스택**: Markdown documentation framework for Claude Code
-- **아키텍처**: Plugin-based distribution (60 skills, 9 agents, 9 hook events / 17 hooks)
+- **아키텍처**: Plugin-based distribution (60 skills, 9 agents, 9 hook events / 16 hooks)
 - **컨벤션**: Korean responses, English code, pnpm/uv required
 
 ## 진행 중인 작업

@@ -171,9 +171,9 @@ v2.0에서 스킬 자동 활성화는 `.claude/skill-rules.json`에 선언적으
 
 **제안 강도 플래그**: `--suggest-all` (기본) | `--suggest-minimal` | `--suggest-off`
 
-#### Hook System (9개 이벤트, 17개 훅)
+#### Hook System (9개 이벤트, 16개 훅)
 
-`config/settings.json`에서 9개 훅 이벤트에 17개 훅을 연결해 자동화를 구성합니다.
+`config/settings.json`에서 9개 훅 이벤트에 16개 훅을 연결해 자동화를 구성합니다.
 모든 훅 스크립트는 Claude Code의 훅 계약을 따릅니다 — stdin으로 이벤트 JSON을
 받고, `hookSpecificOutput.additionalContext`(컨텍스트 주입) 또는
 `decision: block`(Stop 차단)으로 응답합니다. 공통 파서는
@@ -182,7 +182,7 @@ v2.0에서 스킬 자동 활성화는 `.claude/skill-rules.json`에 선언적으
 | Hook Event | 역할 |
 |------------|------|
 | `UserPromptSubmit` | skill-matcher 실행, `/compact` 직전 노트 저장 확인 |
-| `PostToolUse` (Edit\|Write) | 타입 체크, console.log 감지, Prettier 포맷팅, 네이밍 컨벤션 체크 |
+| `PostToolUse` (Edit\|Write) | console.log 감지, Prettier 포맷팅, 네이밍 컨벤션 체크 (타입 체크는 `typescript-lsp`/`pyright-lsp` 플러그인이 담당) |
 | `PostToolUse` (mcp__*) | MCP 응답 prompt injection / 시크릿 유출 스캔 |
 | `PreToolUse` | 도구 호출 50회 도달 시 노트 저장 + 컴팩션 제안 |
 | `Stop` | TODO 미완료 시 계속 진행, 세션 학습 신호, 세션 요약, circuit breaker |
@@ -321,21 +321,20 @@ superclaude-plusplus/                # 프로젝트 저장소 (source of truth)
 │   ├── team-implementer.md         # v2.0 신규 (Agent Teams)
 │   ├── team-reviewer.md            # v2.0 신규 (Agent Teams)
 │   └── ...                         # 9개 에이전트 정의
-├── scripts/                        # 17개 스크립트 (훅 13 + sync/doctor/lint/statusline)
+├── scripts/                        # 16개 스크립트 (훅 12 + sync/doctor/lint/statusline)
 │   ├── lib/hook-common.sh          # 훅 공통: stdin JSON 파싱, 출력 계약
 │   ├── skill-matcher.py            # UserPromptSubmit: 스킬 자동 활성화
 │   ├── circuit-breaker.sh          # Stop: 동일 에러 3회 반복 차단
 │   ├── todo-continuation.sh        # Stop: TODO 미완료 시 계속 진행
 │   ├── injection-scanner.py        # PostToolUse(mcp__*): injection 방어
 │   ├── convention-check.sh         # PostToolUse: 네이밍 컨벤션 체크
-│   ├── type-check.sh               # PostToolUse: tsc 타입 체크
 │   ├── auto-format.sh              # PostToolUse: Prettier
 │   ├── session-summary.py          # Stop: 세션 요약 → ~/.claude/projects/*/memory/
 │   ├── config-doctor.sh            # 설정 정합성 진단 (/config-doctor, CI)
 │   ├── lint.sh                     # 로컬 CI: shellcheck + doctor + 훅 테스트
 │   ├── sync-global.sh              # 프로젝트 → ~/.claude 동기화
 │   └── statusline.sh               # 상태바 (cc-statusline 기반)
-├── tests/                          # hooks/run.sh (훅 계약 28건), test_skill_matcher.py (10건)
+├── tests/                          # hooks/run.sh (훅 계약 27건), test_skill_matcher.py (10건)
 ├── .github/workflows/ci.yml        # shellcheck + config-doctor + 훅 테스트
 ├── config/                         # 설정 파일
 │   └── settings.json               # 9개 hook 이벤트 + 권한 설정

@@ -75,13 +75,11 @@ json_get "$OUT" .hookSpecificOutput.additionalContext | grep -q "camelCase" && o
 run_hook convention-check.sh "$FX/posttooluse-nofile.json"
 [[ $CODE -eq 0 && -z "$OUT" ]] && ok "silent when file_path missing" || bad "exit $CODE out=$OUT"
 
-echo "▶ PostToolUse: type-check.sh / auto-format.sh terminate on relative paths"
-for s in type-check.sh auto-format.sh; do
-  # No tsconfig / prettier anywhere above → must exit 0 quickly, not loop
-  ( cd "$TMP/proj" && printf '{"tool_input":{"file_path":"src/App.tsx"}}' | with_timeout 5 bash "$SCRIPTS/$s" >/dev/null 2>&1 )
-  c=$?
-  [[ $c -eq 0 ]] && ok "$s exits 0 (no infinite dirname loop)" || bad "$s exit $c (124 = timeout)"
-done
+echo "▶ PostToolUse: auto-format.sh terminates on relative paths"
+# No prettier config anywhere above → must exit 0 quickly, not loop on dirname
+( cd "$TMP/proj" && printf '{"tool_input":{"file_path":"src/App.tsx"}}' | with_timeout 5 bash "$SCRIPTS/auto-format.sh" >/dev/null 2>&1 )
+c=$?
+[[ $c -eq 0 ]] && ok "auto-format.sh exits 0 (no infinite dirname loop)" || bad "auto-format.sh exit $c (124 = timeout)"
 
 echo "▶ PostToolUse: injection-scanner.py"
 run_hook_py() { OUT="$(python3 "$SCRIPTS/$1" < "$2" 2>/dev/null)"; CODE=$?; }
