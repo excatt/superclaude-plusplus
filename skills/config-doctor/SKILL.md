@@ -1,124 +1,56 @@
 ---
 name: config-doctor
-description: SuperClaude++ 설정 유효성 검증. AGENT.md frontmatter, skill-rules.json, hook 스크립트 경로 등 전체 설정을 진단합니다.
+description: SuperClaude++ 설정 정합성 진단. scripts/config-doctor.sh를 실행해 에이전트/스킬 frontmatter, skill-rules 참조, 훅 스크립트 존재·계약, 버전·개수 정합, 문서 참조를 검사합니다.
 user-invocable: true
 ---
 
 # Config Doctor
 
 ## Purpose
-SuperClaude++ v2.0 프레임워크의 설정 무결성을 검증합니다.
+SuperClaude++ 설정의 무결성을 **기계적으로** 검증합니다. 모든 검사는
+`scripts/config-doctor.sh` 한 스크립트에 있고, 같은 스크립트가 CI에서도 돕니다.
+문서와 코드가 어긋나면(개수, 버전, 존재하지 않는 스크립트 경로) 여기서 잡힙니다.
 
 ## Dynamic Context
 
 Current framework version:
-!`cat .superclaude-metadata.json 2>/dev/null | python3 -c "import sys,json; print(json.load(sys.stdin).get('framework',{}).get('version','unknown'))" 2>/dev/null || echo "metadata not found"`
+!`python3 -c "import json; print(json.load(open('plugin.json'))['version'])" 2>/dev/null || echo "plugin.json not found (run from repo root)"`
 
-## Checks
-
-### 1. Agent Frontmatter Validation
-모든 `agents/*.md` 파일에 필수 frontmatter 필드 존재 확인:
-- `name` (필수)
-- `description` (필수)
-- `model` (필수: haiku | sonnet | opus)
-- `tools` (필수)
-- `maxTurns` (필수)
-- `effort` (필수: low | medium | high | max)
+## Run
 
 ```bash
-for f in agents/*.md; do
-  echo "Checking $f..."
-  head -20 "$f" | grep -q "^model:" || echo "  ❌ Missing: model"
-  head -20 "$f" | grep -q "^tools:" || echo "  ❌ Missing: tools"
-  head -20 "$f" | grep -q "^maxTurns:" || echo "  ❌ Missing: maxTurns"
-  head -20 "$f" | grep -q "^effort:" || echo "  ❌ Missing: effort"
-done
+bash scripts/config-doctor.sh          # 전체 진단 (❌ 있으면 exit 1)
+bash scripts/config-doctor.sh --quiet  # ❌/⚠️ 만 출력
+bash tests/hooks/run.sh                # 훅 계약 픽스처 테스트 (28 cases)
 ```
 
-### 2. Skill Rules Validation
-`.claude/skill-rules.json` 문법 및 참조 검증:
-- JSON 파싱 가능 여부
-- 각 rule의 `skill` 이 `skills/` 에 실제 존재하는지
-- regex 패턴 유효성
+## Checks (config-doctor.sh)
 
-```bash
-python3 -c "
-import json, os, re
-rules = json.load(open('.claude/skill-rules.json'))
-for rule in rules.get('rules', []):
-    skill = rule['skill']
-    if not os.path.isdir(f'skills/{skill}'):
-        print(f'  ❌ Skill not found: {skill}')
-    for pat in rule.get('triggers', {}).get('prompt_patterns', []):
-        try:
-            re.compile(pat)
-        except re.error as e:
-            print(f'  ❌ Invalid regex in {skill}: {pat} ({e})')
-print('Skill rules validation complete.')
-"
-```
+| # | 검사 | 실패 시 |
+|---|------|---------|
+| 1 | `agents/*.md` frontmatter — `name` `description` `model` `tools` `maxTurns` `effort`, name == 파일명 | ❌ |
+| 2 | `skills/*/SKILL.md` 존재 + frontmatter(`description` 필수), name == 디렉터리 | ❌ / ⚠️ |
+| 3 | `.claude/skill-rules.json` — 파싱, 중복 rule, 대상 스킬 존재, regex 컴파일 | ❌ |
+| 4 | `config/settings.json` hooks — `~/.claude/scripts/*` 명령이 저장소에 존재(❌)·설치됨(⚠️), `timeout` > 600이면 ms 오기(❌), `CLAUDE_*` 환경변수 의존(❌), statusLine 경로 | ❌ / ⚠️ |
+| 5 | 버전·개수 — `plugin.json` == CHANGELOG 최상단 == CHANGELOG 표 행, README/CLAUDE.md 제목 major.minor, README 헤드라인·`### Skills (N개` == 실제 스킬/에이전트 수, `InstructionsLoaded` 배너 | ❌ / ⚠️ |
+| 6 | 참조 파일 — CLAUDE.md On-Demand 목록의 `optional/*.md`, MODES/RULES가 가리키는 `optional/`, 문서가 언급하는 `scripts/*.sh|py`, 스킬 심볼릭 링크 | ❌ |
+| 7 | 문법 — `bash -n`, `py_compile`, JSON 파싱, shellcheck(설치 시) | ❌ / ⚠️ |
 
-### 3. Hook Script Path Validation
-`config/settings.json`의 모든 hook command 경로가 유효한지 확인:
-
-```bash
-python3 -c "
-import json, os
-settings = json.load(open('config/settings.json'))
-for hook_type, entries in settings.get('hooks', {}).items():
-    for entry in entries:
-        for hook in entry.get('hooks', []):
-            cmd = hook.get('command', '')
-            if cmd and not cmd.startswith('echo') and not cmd.startswith('python3'):
-                script = cmd.split()[0].replace('~', os.path.expanduser('~'))
-                if not os.path.exists(script):
-                    print(f'  ⚠️ {hook_type}: Script not found: {script}')
-print('Hook path validation complete.')
-"
-```
-
-### 4. Skills Directory Integrity
-모든 `skills/*/` 디렉토리에 `SKILL.md`가 존재하는지:
-
-```bash
-for d in skills/*/; do
-  [ ! -f "$d/SKILL.md" ] && echo "  ⚠️ Missing SKILL.md: $d"
-done
-```
-
-### 5. MCP Server Connectivity
-설정된 MCP 서버의 실행 가능 여부:
-
-```bash
-python3 -c "
-import json, os
-settings = json.load(open('config/settings.json'))
-for name, config in settings.get('mcpServers', {}).items():
-    cmd = config.get('command', '')
-    print(f'  MCP {name}: command={cmd}')
-"
-```
-
-## Output Format
+## Output
 
 ```
-╔══════════════════════════════════════════════╗
-║          🏥 CONFIG DOCTOR REPORT             ║
-╠══════════════════════════════════════════════╣
-║ 1. Agent Frontmatter    ✅/❌ (N issues)     ║
-║ 2. Skill Rules          ✅/❌ (N issues)     ║
-║ 3. Hook Scripts         ✅/❌ (N issues)     ║
-║ 4. Skills Integrity     ✅/❌ (N issues)     ║
-║ 5. MCP Servers          ✅/❌ (N issues)     ║
-╠══════════════════════════════════════════════╣
-║ Total Issues: N                              ║
-║ Framework Health: HEALTHY / DEGRADED / BROKEN║
-╚══════════════════════════════════════════════╝
+▶ 1. Agent frontmatter (agents/*.md)
+  · 9 agents checked
+...
+════════════════════════════════════════
+ Config Doctor: 0 error(s), 1 warning(s)
+ Framework Health: HEALTHY
+════════════════════════════════════════
 ```
 
-## Usage
+`HEALTHY`가 아니면 ❌ 항목을 먼저 고치세요. ⚠️는 CI를 막지 않습니다.
 
-```bash
-/config-doctor          # Full diagnostic
-/config-doctor --quick  # Checks 1-4 only (skip MCP)
-```
+## Adding a check
+새 드리프트 유형을 발견하면 `scripts/config-doctor.sh`의 해당 섹션에 `err`/`warn` 한 줄을
+추가합니다. 문서에 규칙을 적는 것보다 스크립트가 잡는 쪽이 유지됩니다(PRINCIPLES.md
+"Machine-readable Constraints").

@@ -5,6 +5,42 @@
 형식은 [Keep a Changelog](https://keepachangelog.com/ko/1.0.0/)를 따르며,
 [Semantic Versioning](https://semver.org/lang/ko/)을 준수합니다.
 
+## [3.3.0] - 2026-09-07
+
+### Fixed
+- **훅 시스템 전면 정상화 — 문서가 약속한 훅의 상당수가 실제로는 동작하지 않았다.** 2026-09-07 감사에서 확인된 결함과 수정:
+  - **PostToolUse 4종(`type-check` `console-log-check` `auto-format` `convention-check`)이 영구 no-op** — 존재하지 않는 `CLAUDE_FILE_PATH` 환경변수에 의존. Claude Code는 이벤트 컨텍스트를 stdin JSON으로만 전달한다. 신규 `scripts/lib/hook-common.sh`(stdin 파싱, `hookSpecificOutput.additionalContext` / `decision:block` 출력, jq→python3 폴백)를 도입하고 4종 모두 이를 사용하도록 재작성. 경고는 stderr가 아니라 `additionalContext`로 Claude에 실제 전달됨.
+  - **`todo-continuation.sh`가 의도와 반대로 동작** — "계속 작업"을 뜻하려던 `"continue": false`는 Claude를 정지시키는 신호. Stop 훅 계약인 `{"decision":"block","reason":…}`으로 교체. 또한 `~/.claude/todos/*.json` 전체를 세던 것을 현재 `session_id` 파일로 한정(다른 프로젝트의 미완료 todo가 이 세션 종료를 막던 문제), `stop_hook_active=true`면 재차단하지 않음.
+  - **`circuit-breaker.sh`가 절대 발동하지 않음** — 에러 패턴 키로 Stop 이벤트 JSON 전체를 사용해 매번 고유 키가 됨. `last_assistant_message`만 분석하고, 로그에 `session_id`를 포함해 세션 간 누출 차단, 키에서 `|` 제거·200자 제한, 상태 디렉토리를 이벤트의 `cwd` 기준 절대경로로, `stop_hook_active` 가드 추가.
+  - **`suggest-compact.sh` 카운터가 증가하지 않음** — 파일명에 `$$`(매 호출 새 PID) 사용으로 항상 1이었고 `/tmp`에 고아 파일 844개 누적. `~/.claude/state/tool-counter-<session_id>`로 교체, 1일 경과 파일 자동 정리.
+  - **`grep -c … || echo 0` 패턴이 `0\n0` 생성** — `evaluate-session.sh` 3곳, `pre-compact-note.sh` 1곳에서 숫자 비교·JSON 출력 파손. `count_matches` 헬퍼로 교체.
+  - **`evaluate-session.sh` / `session-summary.py`가 존재하지 않는 `CLAUDE_TRANSCRIPT_PATH`에 의존** — 이벤트 JSON의 `transcript_path` 사용. `session-summary.py`의 "머신 전체에서 가장 최근 .jsonl" 폴백(다른 프로젝트 세션을 요약할 수 있고 매 Stop마다 전 transcript stat) 제거.
+  - **UserPromptSubmit / PreToolUse 훅 출력 형식 오류** — `{"continue":true,"message":…}`는 계약에 없는 필드라 원시 JSON이 그대로 컨텍스트로 주입됨. `hookSpecificOutput.additionalContext`로 교체.
+  - **`settings.json` 훅 `timeout`이 밀리초로 기재** — 필드 단위는 초. `10000`(≈2.8시간) 등을 `10`/`5`/`3`/`2`/`1`초로 정정.
+  - **`injection-scanner.py`가 어디에도 연결돼 있지 않았음** — README는 활성 보안 장치로 소개. `PostToolUse` `mcp__.*` matcher에 연결하고, 봉투 전체가 아니라 `tool_response`만 스캔(자기 필드명 오탐 제거), 결과를 `additionalContext`로 출력.
+- **`scripts/sync-global.sh`가 훅 스크립트를 설치하지 않았음** — `.md`와 `settings.json`만 복사했으므로 새로 clone한 사용자는 모든 훅이 조용히 실패. `scripts/`(+`lib/`, 실행권한), `agents/`, 이 저장소가 배포하는 `skills/<name>/`(다른 스킬은 불변), `.claude/skill-rules.json` 동기화 추가.
+  - `settings.json` 병합에 중첩 정책 추가: `permissions.allow/deny`·`enabledPlugins`·`extraKnownMarketplaces`·`env`는 합집합, `permissions.defaultMode`는 글로벌 유지. 3.1.1의 최상위 키 병합만으로는 `defaultMode: auto`, figma 플러그인 등록 등 머신 로컬 값이 sync마다 지워졌다.
+- **statusLine 경로 불일치** — `~/.claude/statusline.sh`(동기화 대상 아님) → `~/.claude/scripts/statusline.sh`. 글로벌에 있던 최신본(단일 jq 호출 최적화, 경량 로깅)을 `scripts/statusline.sh`로 역반영.
+- **스킬 frontmatter 누락 6건** (`algorithmic-art` `artifacts-builder` `brand-guidelines` `canvas-design` `slack-gif-creator` `webapp-testing`) — upstream(anthropics/skills) frontmatter 이식. 이들 스킬이 참조하던 누락 자산(`algorithmic-art/templates/viewer.html`, `artifacts-builder/scripts/{init,bundle}-artifact.sh` + `shadcn-components.tar.gz`, `webapp-testing/scripts/with_server.py`)을 upstream에서 가져옴.
+
+### Changed
+- **문서 스킬 평탄화** — `skills/document-skills/{docx,pdf,pptx,xlsx}`(하네스가 발견하지 못하는 중첩 위치)를 `skills/{docx,pdf,pptx,xlsx}`로 이동하고, 이를 가리던 1파일 스텁 `pdf`/`pptx`/`xlsx`(존재하지 않는 `recalc.py` 요구 등) 삭제. `/docx`가 새로 호출 가능. 바이트 단위로 동일했던 `pptx/ooxml`(1.1MB)을 `docx/ooxml`로의 심볼릭 링크로 대체.
+- **`/config-doctor`를 실행 가능한 스크립트로** — `scripts/config-doctor.sh`. 에이전트 frontmatter, 스킬 frontmatter, skill-rules 참조·regex, 훅 명령이 가리키는 스크립트의 저장소/설치 존재 여부, `timeout` 단위, `CLAUDE_*` 환경변수 의존, statusLine 경로, plugin.json/CHANGELOG/README/CLAUDE.md 버전·개수 정합, 문서 참조 파일 존재, 심볼릭 링크, `bash -n`/`py_compile`/shellcheck. 에러 시 exit 1 → CI 게이트.
+- **README** — 훅 표를 실제 `settings.json`(9 이벤트·17 훅)과 일치시킴(peon-ping 제거 잔재 7행 삭제), 헤드라인 "16개 훅 타입"→"9개 훅 이벤트", 디렉토리 구조·설치/삭제 안내 갱신, `document-skills`→`docx`.
+- `plugin.json` version `3.2.0 → 3.3.0`; `InstructionsLoaded` 배너 `v2.0`→`v3.3`; CHANGELOG 요약 표에 3.1.0/3.1.1/3.2.0 누락 행 보충.
+- `NOTICE.md` — vercel-labs 유래 3종(`react-best-practices` `web-design-guidelines` `composition-patterns`)과 anthropics/skills 유래 문서 스킬 4종 출처 명시.
+- `.gitignore` — `.claude/settings.local.json`, `.claude/state/`, `.claude/agent-memory/`, `scripts/__pycache__/` 명시(기존에는 글로벌 git ignore에 의존).
+
+### Removed
+- `templates/hooks.json`(v1.1 유물), `templates/settings.json`(skill-matcher·circuit-breaker 누락된 드리프트 사본) — 훅 설정 정본은 `config/settings.json` 하나.
+- `.superclaude-metadata.json` — v2.0 설치 메타데이터(MCP 서버 8종 "installed" 등), `/config-doctor`가 여기서 "2.0.0"을 읽고 있었음.
+- `docs/PLAN-v2.0.md` — 완료된 마이그레이션 계획.
+- `scripts/post-write-check.sh`(4종 훅이 stdin을 직접 읽으므로 불필요), `scripts/pre-compact-save.sh`(어디에도 연결되지 않은 스냅샷), `scripts/checklist.sh`(참조 없음).
+
+### Added
+- `tests/hooks/run.sh` + `tests/hooks/fixtures/*.json` — 실제 Claude Code 이벤트 JSON을 각 훅에 먹여 exit code와 stdout 계약을 검증하는 28개 테스트. `timeout` 없는 macOS에서도 동작.
+- `.github/workflows/ci.yml` — shellcheck + `config-doctor.sh` + 훅 테스트.
+
 ## [3.2.0] - 2026-08-20
 
 ### Added
@@ -980,6 +1016,10 @@ Claude 5 세대(Fable/Opus 5)의 하네스·모델 내재화 행동과 중복되
 
 | 버전 | 날짜 | 주요 변경 |
 |------|------|----------|
+| 3.3.0 | 2026-09-07 | 훅 계약 전면 수정 (stdin JSON/additionalContext/decision:block), sync-global 스크립트·스킬 설치, config-doctor.sh, 훅 테스트+CI |
+| 3.2.0 | 2026-08-20 | fluent-korean output style 참조 선언 통합 |
+| 3.1.1 | 2026-08-11 | sync-global.sh settings.json 최상위 키 병합 |
+| 3.1.0 | 2026-08-11 | Build Ladder 8단 + 과설계 함정 카탈로그 |
 | 3.0.0 | 2026-07-31 | Harness-aware slim: 상시 로드 -66%, 스킬 139→60, 에이전트 23→9, skill-matcher 오탐 수정 |
 | 2.3.0 | 2026-05-20 | `/grill-with-docs` 통합 (도메인 모델 stress-test), 루트 CONTEXT.md |
 | 2.2.0 | 2026-05-14 | `/goal` 통합 (빌트인 자율 루프 위임) |

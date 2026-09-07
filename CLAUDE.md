@@ -1,4 +1,4 @@
-# SuperClaude++ v3.0
+# SuperClaude++ v3.3
 
 ## Language
 - **ALWAYS respond in Korean (한글)**

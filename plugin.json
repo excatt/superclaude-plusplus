@@ -1,7 +1,7 @@
 {
   "name": "superclaude-plusplus",
-  "version": "3.2.0",
-  "description": "Harness-aware slim development framework for Claude Code. 60 skills, 9 agents, 16 hook types. v3.0: always-resident context cut ~80% by removing rules the harness/model already guarantee; process knowledge demoted to optional/ and skills. v3.1: 8-rung Build Ladder.",
+  "version": "3.3.0",
+  "description": "Harness-aware slim development framework for Claude Code. 60 skills, 9 agents, 9 hook events (17 hooks). v3.0: always-resident context cut ~80% by removing rules the harness/model already guarantee; process knowledge demoted to optional/ and skills. v3.1: 8-rung Build Ladder. v3.3: hooks rewritten to the Claude Code hook contract (stdin JSON / additionalContext / decision:block), sync-global.sh installs scripts+agents+skills, config-doctor.sh + hook contract tests.",
   "author": "excatt",
   "license": "MIT",
   "repository": "https://github.com/excatt/superclaude-plusplus",
@@ -15,7 +15,9 @@
   },
   "configuration": {
     "skillRules": ".claude/skill-rules.json",
-    "scripts": "scripts/"
+    "scripts": "scripts/",
+    "tests": "tests/hooks/run.sh",
+    "doctor": "scripts/config-doctor.sh"
   },
   "keywords": [
     "framework",

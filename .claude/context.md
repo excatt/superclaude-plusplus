@@ -2,7 +2,7 @@
 
 ## 핵심 정보 (항상 로드)
 - **기술 스택**: Markdown documentation framework for Claude Code
-- **아키텍처**: Plugin-based distribution (60 skills, 9 agents, 16 hook types)
+- **아키텍처**: Plugin-based distribution (60 skills, 9 agents, 9 hook events / 17 hooks)
 - **컨벤션**: Korean responses, English code, pnpm/uv required
 
 ## 진행 중인 작업
@@ -25,4 +25,4 @@
 - 2026-07-31: v3.0.0 릴리스 (Harness-Aware Slim)
 
 ---
-Last updated: 2026-07-31
+Last updated: 2026-09-07

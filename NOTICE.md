@@ -112,9 +112,36 @@ LLM이 토큰 절약을 위해 한국어를 압축할 때 발생하는 조사 �
 
 ---
 
+## Vercel Labs 스킬 3종 (MIT)
+
+- **`skills/react-best-practices/`**, **`skills/composition-patterns/`** —
+  [vercel-labs/agent-skills](https://github.com/vercel-labs/agent-skills) (MIT)
+- **`skills/web-design-guidelines/`** —
+  [vercel-labs/web-interface-guidelines](https://github.com/vercel-labs/web-interface-guidelines) (MIT)
+
+각 `SKILL.md` frontmatter의 `source:` 필드가 정확한 upstream 경로를 가리킨다.
+
+---
+
+## Anthropic 공개 스킬 (anthropics/skills)
+
+[anthropics/skills](https://github.com/anthropics/skills)에서 벤더링. 문서 스킬 4종은
+v3.3(2026-09-07)에 `skills/document-skills/` 중첩 위치에서 `skills/{docx,pdf,pptx,xlsx}/`로
+평탄화되었고(하네스가 중첩 스킬을 발견하지 못했음), `pptx/ooxml`은 바이트 동일한
+`docx/ooxml`로의 심볼릭 링크다.
+
+| 스킬 | 라이선스 | 비고 |
+|------|----------|------|
+| `docx` `pdf` `pptx` `xlsx` | 각 디렉터리 `LICENSE.txt` (Proprietary) | upstream 원문 그대로 |
+| `algorithmic-art` `brand-guidelines` `canvas-design` `slack-gif-creator` `webapp-testing` `theme-factory` `internal-comms` `mcp-builder` `skill-creator` `frontend-design` | 각 디렉터리 `LICENSE.txt` | v3.3에서 누락 frontmatter·번들 자산(viewer.html, with_server.py) upstream에서 보충 |
+| `artifacts-builder` | `LICENSE.txt` | upstream 이름은 `web-artifacts-builder`; `scripts/{init,bundle}-artifact.sh`, `shadcn-components.tar.gz` v3.3에서 보충 |
+
+---
+
 ## 기타 선재 통합 구성요소
 
-본 NOTICE는 Impeccable 통합 시점(2026-04-17)에 추가되었습니다. `skills/` 내 다른 외부 유래 skill (예: `frontend-design`, `ui-ux-pro-max`, `brand-guidelines`, `algorithmic-art`, `canvas-design`, `slack-gif-creator`, `artifacts-builder`, `pptx`, `xlsx`, `pdf`, `webapp-testing`, `agent-browser`, `mcp-builder`, `skill-creator`, `theme-factory`, `internal-comms` 등)의 출처·라이선스는 각 skill 디렉터리 내 `LICENSE`/`SKILL.md`에 기록되어 있으며, 추후 본 파일에 순차적으로 통합 예정.
+`skills/` 내 위에 나열되지 않은 외부 유래 skill(`ui-ux-pro-max`, `agent-browser` 등)의
+출처·라이선스는 각 skill 디렉터리 내 `LICENSE`/`SKILL.md`에 기록되어 있다.
 
 ---
 

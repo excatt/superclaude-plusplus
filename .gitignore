@@ -18,3 +18,9 @@ __pycache__/
 
 # Temp
 *.tmp
+
+# Claude Code local state (machine-specific, never commit)
+.claude/settings.local.json
+.claude/state/
+.claude/agent-memory/
+scripts/__pycache__/

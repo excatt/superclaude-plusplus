@@ -1,6 +1,6 @@
-# SuperClaude++ v3.0
+# SuperClaude++ v3.3
 
-Claude Code를 위한 harness-aware 개발 프레임워크 - 60개 스킬, 9개 에이전트, 16개 훅 타입. 모델이 못 하는 것만 남기고 자동화합니다.
+Claude Code를 위한 harness-aware 개발 프레임워크 - 60개 스킬, 9개 에이전트, 9개 훅 이벤트. 모델이 못 하는 것만 남기고 자동화합니다.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
@@ -116,7 +116,7 @@ docker, graphql, naming, nextjs, ... "○○ 가이드를 실행합니다"형)�
 (`impeccable` 엔트리 + 17개 서브커맨드, Apache 2.0)
 
 #### Documents & Tooling (14개)
-`pdf` `pptx` `xlsx` `document-skills` `internal-comms` `artifacts-builder`
+`pdf` `pptx` `xlsx` `docx` `internal-comms` `artifacts-builder`
 `slack-gif-creator` `mcp-builder` `skill-creator` `webapp-testing`
 `agent-browser` `pytest-runner` `uv-package` `help`
 
@@ -170,28 +170,26 @@ v2.0에서 스킬 자동 활성화는 `.claude/skill-rules.json`에 선언적으
 
 **제안 강도 플래그**: `--suggest-all` (기본) | `--suggest-minimal` | `--suggest-off`
 
-#### Hook System (16개 타입)
+#### Hook System (9개 이벤트, 17개 훅)
 
-`config/settings.json`에서 16개 훅 타입을 통해 자동화를 구성합니다.
+`config/settings.json`에서 9개 훅 이벤트에 17개 훅을 연결해 자동화를 구성합니다.
+모든 훅 스크립트는 Claude Code의 훅 계약을 따릅니다 — stdin으로 이벤트 JSON을
+받고, `hookSpecificOutput.additionalContext`(컨텍스트 주입) 또는
+`decision: block`(Stop 차단)으로 응답합니다. 공통 파서는
+`scripts/lib/hook-common.sh`, 계약 테스트는 `tests/hooks/run.sh`.
 
-| Hook Type | 역할 |
-|-----------|------|
-| `UserPromptSubmit` | 프롬프트 제출 시 skill-matcher 실행, 사전 노트 저장 |
-| `PostToolUse` | 파일 작성 후 타입 체크, 포맷팅, 컨벤션 체크, injection 스캔 |
-| `PreToolUse` | 편집 전 컴팩션 제안 |
-| `Stop` | TODO 미완료 방지, 세션 평가, circuit breaker |
-| `SessionStart` | 세션 시작 알림 |
-| `SessionEnd` | 세션 종료 알림 |
-| `SubagentStart` | 서브에이전트 시작 알림 |
-| `SubagentStop` | 서브에이전트 종료 + 결과 품질 게이트 |
-| `TaskCompleted` | 자동 Two-Stage Review 트리거 |
-| `PreCompact` | 컴팩션 전 상태 보존 |
-| `Notification` | 알림 이벤트 |
-| `PermissionRequest` | 권한 요청 이벤트 |
-| `PostToolUseFailure` | 도구 실행 실패 시 알림 |
-| `FileChanged` | .env 파일 등 민감 파일 변경 경고 |
-| `ConfigChange` | 설정 변경 시 유효성 검증 |
-| `InstructionsLoaded` | 프로젝트별 설정 자동 적용 |
+| Hook Event | 역할 |
+|------------|------|
+| `UserPromptSubmit` | skill-matcher 실행, `/compact` 직전 노트 저장 확인 |
+| `PostToolUse` (Edit\|Write) | 타입 체크, console.log 감지, Prettier 포맷팅, 네이밍 컨벤션 체크 |
+| `PostToolUse` (mcp__*) | MCP 응답 prompt injection / 시크릿 유출 스캔 |
+| `PreToolUse` | 도구 호출 50회 도달 시 노트 저장 + 컴팩션 제안 |
+| `Stop` | TODO 미완료 시 계속 진행, 세션 학습 신호, 세션 요약, circuit breaker |
+| `SubagentStop` | 서브에이전트 결과 검증 알림 |
+| `TaskCompleted` | Two-Stage Review 트리거 (prompt 훅) |
+| `FileChanged` | `.env*` 변경 경고 |
+| `ConfigChange` | 설정 변경 알림 |
+| `InstructionsLoaded` | 프레임워크 로드 배너 |
 
 #### v2.0 안전장치
 
@@ -264,11 +262,18 @@ cd superclaude-plusplus
 scripts/sync-global.sh
 ```
 
+`sync-global.sh`는 프레임워크 `.md`, `optional/`, `scripts/`(훅 스크립트),
+`agents/`, 이 저장소가 배포하는 `skills/`, `skill-rules.json`을 `~/.claude/`로
+복사합니다. `~/.claude/skills`·`agents`에 있는 다른 항목은 건드리지 않습니다.
+`settings.json`은 병합됩니다 — `hooks`·`statusLine`은 프로젝트가 덮어쓰고,
+`permissions.allow/deny`·`enabledPlugins`·`extraKnownMarketplaces`·`env`는
+합집합, `permissions.defaultMode`와 프로젝트에 없는 키는 글로벌 값이 유지됩니다.
+`--dry-run`으로 미리 확인할 수 있습니다.
+
 ### 설치 후
 1. **Claude Code 재시작** - 변경 사항 적용
-2. `/config-doctor` - 설정 유효성 검증
+2. `/config-doctor` - 설정 유효성 검증 (`scripts/config-doctor.sh`)
 3. `/note --show` - 노트 시스템 확인
-4. 기존 `settings.json`이 있었다면 hooks 설정 병합 필요
 5. **fluent-korean output style 자동 적용** (v3.2.0+) - `settings.json`의
    `enabledPlugins` 선언에 따라 [snflkd/fluent-korean](https://github.com/snflkd/fluent-korean)
    플러그인이 자동 설치되고 `fluent-korean` output-style이 기본 적용됨 (한국어
@@ -305,24 +310,28 @@ superclaude-plusplus/                # 프로젝트 저장소 (source of truth)
 │   ├── team-implementer.md         # v2.0 신규 (Agent Teams)
 │   ├── team-reviewer.md            # v2.0 신규 (Agent Teams)
 │   └── ...                         # 9개 에이전트 정의
-├── scripts/                        # 17개 자동화 스크립트
-│   ├── skill-matcher.py            # v2.0: UserPromptSubmit hook 핸들러
-│   ├── circuit-breaker.sh          # v2.0: 에러 반복 자동 차단
-│   ├── injection-scanner.py        # v2.0: MCP injection 방어
-│   ├── statusline.sh               # 상태바 스크립트
-│   ├── checklist.sh                # 프로젝트 검증 (P0-P4)
-│   ├── convention-check.sh         # 네이밍 컨벤션 자동 체크
-│   ├── type-check.sh               # 타입 체크
-│   ├── auto-format.sh              # 자동 포맷팅
-│   ├── session-summary.py          # 세션 요약 자동 생성
-│   └── ...                         # 17개 스크립트
+├── scripts/                        # 17개 스크립트 (훅 13 + sync/doctor/lint/statusline)
+│   ├── lib/hook-common.sh          # 훅 공통: stdin JSON 파싱, 출력 계약
+│   ├── skill-matcher.py            # UserPromptSubmit: 스킬 자동 활성화
+│   ├── circuit-breaker.sh          # Stop: 동일 에러 3회 반복 차단
+│   ├── todo-continuation.sh        # Stop: TODO 미완료 시 계속 진행
+│   ├── injection-scanner.py        # PostToolUse(mcp__*): injection 방어
+│   ├── convention-check.sh         # PostToolUse: 네이밍 컨벤션 체크
+│   ├── type-check.sh               # PostToolUse: tsc 타입 체크
+│   ├── auto-format.sh              # PostToolUse: Prettier
+│   ├── session-summary.py          # Stop: 세션 요약 → ~/.claude/projects/*/memory/
+│   ├── config-doctor.sh            # 설정 정합성 진단 (/config-doctor, CI)
+│   ├── lint.sh                     # 로컬 CI: shellcheck + doctor + 훅 테스트
+│   ├── sync-global.sh              # 프로젝트 → ~/.claude 동기화
+│   └── statusline.sh               # 상태바 (cc-statusline 기반)
+├── tests/hooks/                    # 훅 계약 픽스처 테스트 (run.sh + fixtures/)
+├── .github/workflows/ci.yml        # shellcheck + config-doctor + 훅 테스트
 ├── config/                         # 설정 파일
-│   └── settings.json               # 9개 hook 타입 + 권한 설정
+│   └── settings.json               # 9개 hook 이벤트 + 권한 설정
 ├── .claude/                        # Claude Code 내부 설정
-│   ├── skill-rules.json            # v2.0: 스킬 자동 활성화 규칙
-│   ├── settings.local.json         # 로컬 설정 오버라이드
+│   ├── skill-rules.json            # 스킬 자동 활성화 규칙
 │   ├── context.md                  # 프로젝트 컨텍스트
-│   └── state/                      # 세션 상태 저장
+│   └── state/                      # 세션 상태 (gitignored)
 ├── optional/                       # 29개 선택적 로딩 문서
 │   ├── FLAGS.md                    # v3.0 이동: 플래그 정의
 │   ├── CONTEXTS.md                 # v3.0 이동: DEV/REVIEW/RESEARCH 컨텍스트 모드
@@ -335,8 +344,6 @@ superclaude-plusplus/                # 프로젝트 저장소 (source of truth)
 │   ├── GOAL_PATTERNS.md            # /goal 조건 패턴, 안티 패턴, /loop vs /goal 결정표
 │   ├── OVERENGINEERING_TRAPS.md    # v3.1 신규: Build Ladder 적용 규칙 3종 + rung 3 사례 카탈로그
 │   └── ...                         # PATTERNS, PROTOCOLS, PROJECT_RULES 등
-├── docs/
-│   └── PLAN-v2.0.md                # v2.0 마이그레이션 계획
 └── templates/                      # PDCA + 디자인 시스템 템플릿
     ├── plan.template.md
     ├── design.template.md
@@ -536,7 +543,7 @@ CLAUDE.md에서 변경:
 `config/settings.json`의 `hooks` 섹션에서 훅 스크립트 추가/제거 가능.
 
 ### StatusLine
-`scripts/statusline.sh`를 수정하여 표시 항목 커스터마이즈.
+`scripts/statusline.sh`를 수정하여 표시 항목 커스터마이즈 (`sync-global.sh`가 `~/.claude/scripts/statusline.sh`로 배포).
 
 ### Config Validation
 ```bash
@@ -564,8 +571,12 @@ scripts/sync-global.sh
 # Manual 방식 — 주의: ~/.claude 전체 삭제는 메모리/세션/개인 설정까지 지웁니다.
 # 프레임워크 파일만 선택 제거:
 rm -f ~/.claude/{CLAUDE,RULES,PRINCIPLES,MODES,CONVENTIONS}.md
-rm -rf ~/.claude/optional ~/.claude/skills ~/.claude/agents
+rm -rf ~/.claude/optional ~/.claude/scripts
 rm -f ~/.claude/skill-rules.json
+# skills/·agents/는 이 저장소 외 항목이 섞여 있을 수 있으니 이름을 확인하고 제거:
+#   for d in skills/*/; do rm -rf ~/.claude/skills/$(basename $d); done
+#   for f in agents/*.md; do rm -f ~/.claude/agents/$(basename $f); done
+# settings.json의 hooks/statusLine 항목은 직접 정리
 ```
 
 ## Requirements
@@ -584,7 +595,7 @@ rm -f ~/.claude/skill-rules.json
 | **Windows + WSL2** | Full | WSL2 내에서 실행 시 완전 호환 |
 | **Windows (네이티브)** | Not Supported | hook 시스템이 Bash 스크립트 기반으로 동작 불가 |
 
-> **Windows 사용자**: WSL2 (Windows Subsystem for Linux) 환경에서 실행해 주세요. 14개 hook 스크립트가 Bash 기반이므로 네이티브 Windows(cmd.exe, PowerShell)에서는 hook 시스템이 작동하지 않습니다. Git Bash는 부분적으로 동작할 수 있으나 공식 지원하지 않습니다.
+> **Windows 사용자**: WSL2 (Windows Subsystem for Linux) 환경에서 실행해 주세요. hook 스크립트가 Bash 기반이므로 네이티브 Windows(cmd.exe, PowerShell)에서는 hook 시스템이 작동하지 않습니다. Git Bash는 부분적으로 동작할 수 있으나 공식 지원하지 않습니다.
 
 ## Contributing
 
@@ -609,7 +620,7 @@ rm -f ~/.claude/skill-rules.json
 - **[Harness Engineering](https://openai.com/index/harness-engineering/)** - OpenAI의 에이전트 주도 개발 방법론 (Repository as Knowledge Base, Dependency Flow, Struggle = Signal, Codebase GC). [Martin Fowler의 분석](https://martinfowler.com/articles/exploring-gen-ai/harness-engineering.html) 참조
 - **[UI UX Pro Max](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill)** - BM25 기반 UI/UX 디자인 인텔리전스 (67 스타일, 96 팔레트, 57 폰트, 100 추론 규칙, 13 스택). MIT License
 - **[awesome-design-md](https://github.com/VoltAgent/awesome-design-md)** - 66개 브랜드 디자인 시스템 컬렉션 (Google Stitch DESIGN.md 포맷). `npx getdesign@latest add {brand}`로 즉시 사용. MIT License
-- **[Antigravity Kit](https://github.com/vudovn/antigravity-kit)** - Gemini 대상 AI 에이전트 프레임워크. Brainstorming Questioning Principles (결과 드러내는 질문, 트레이드오프 명시, 기본값 제공), 우선순위 기반 검증 파이프라인 (`checklist.sh` 영감). MIT License
+- **[Antigravity Kit](https://github.com/vudovn/antigravity-kit)** - Gemini 대상 AI 에이전트 프레임워크. Brainstorming Questioning Principles (결과 드러내는 질문, 트레이드오프 명시, 기본값 제공), 우선순위 기반 검증 파이프라인 (v2.x `checklist.sh`의 영감, v3.3에서 `/verify`로 통합). MIT License
 - **[oh-my-agent](https://github.com/first-fluke/oh-my-agent)** - 멀티 에이전트 하네스의 공유 프로토콜 (`_shared/`). 난이도 분기(difficulty-guide), 추론 템플릿(reasoning-templates), 컨텍스트 예산(context-budget/loading), 4요소 프롬프트(prompt-structure), Phase Gate 자동통과(phase-gates), Cascade Impact Review(multi-review-protocol), Clarification Debt(session-metrics). MIT License
 - **[oh-my-claudecode](https://github.com/Yeachan-Heo/oh-my-claudecode)** - 자동화 훅 및 워크플로우 아이디어
 - **[cc-statusline](https://www.npmjs.com/package/@chongdashu/cc-statusline)** - 상태바 구현 참고
