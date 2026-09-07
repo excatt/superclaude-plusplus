@@ -14,7 +14,7 @@
           {
             "type": "command",
             "command": "~/.claude/scripts/pre-compact-note.sh",
-            "timeout": 2000
+            "timeout": 2
           }
         ]
       },
@@ -24,7 +24,7 @@
           {
             "type": "command",
             "command": "python3 ~/.claude/scripts/skill-matcher.py",
-            "timeout": 3000
+            "timeout": 3
           }
         ]
       }
@@ -35,23 +35,33 @@
         "hooks": [
           {
             "type": "command",
-            "command": "CLAUDE_FILE_PATH=\"$CLAUDE_FILE_PATH\" ~/.claude/scripts/type-check.sh",
-            "timeout": 10000
+            "command": "~/.claude/scripts/type-check.sh",
+            "timeout": 10
           },
           {
             "type": "command",
-            "command": "CLAUDE_FILE_PATH=\"$CLAUDE_FILE_PATH\" ~/.claude/scripts/console-log-check.sh",
-            "timeout": 5000
+            "command": "~/.claude/scripts/console-log-check.sh",
+            "timeout": 5
           },
           {
             "type": "command",
-            "command": "CLAUDE_FILE_PATH=\"$CLAUDE_FILE_PATH\" ~/.claude/scripts/auto-format.sh",
-            "timeout": 10000
+            "command": "~/.claude/scripts/auto-format.sh",
+            "timeout": 10
           },
           {
             "type": "command",
-            "command": "CLAUDE_FILE_PATH=\"$CLAUDE_FILE_PATH\" ~/.claude/scripts/convention-check.sh",
-            "timeout": 5000
+            "command": "~/.claude/scripts/convention-check.sh",
+            "timeout": 5
+          }
+        ]
+      },
+      {
+        "matcher": "mcp__.*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 ~/.claude/scripts/injection-scanner.py",
+            "timeout": 5
           }
         ]
       }
@@ -63,17 +73,17 @@
           {
             "type": "command",
             "command": "~/.claude/scripts/todo-continuation.sh",
-            "timeout": 5000
+            "timeout": 5
           },
           {
             "type": "command",
             "command": "~/.claude/scripts/evaluate-session.sh",
-            "timeout": 5000
+            "timeout": 5
           },
           {
             "type": "command",
             "command": "python3 ~/.claude/scripts/session-summary.py",
-            "timeout": 5000
+            "timeout": 5
           }
         ]
       },
@@ -83,7 +93,7 @@
           {
             "type": "command",
             "command": "~/.claude/scripts/circuit-breaker.sh",
-            "timeout": 3000
+            "timeout": 3
           }
         ]
       }
@@ -95,7 +105,7 @@
           {
             "type": "command",
             "command": "~/.claude/scripts/suggest-compact.sh",
-            "timeout": 2000
+            "timeout": 2
           }
         ]
       }
@@ -118,7 +128,7 @@
           {
             "type": "command",
             "command": "echo '📋 서브에이전트 완료. 결과를 검증하세요.'",
-            "timeout": 1000
+            "timeout": 1
           }
         ]
       }
@@ -130,7 +140,7 @@
           {
             "type": "command",
             "command": "echo '⚠️ .env 파일 변경 감지. git에 커밋되지 않도록 .gitignore를 확인하세요.'",
-            "timeout": 1000
+            "timeout": 1
           }
         ]
       }
@@ -142,7 +152,7 @@
           {
             "type": "command",
             "command": "echo '🔧 설정 변경 감지. 유효성을 확인하세요.'",
-            "timeout": 1000
+            "timeout": 1
           }
         ]
       }
@@ -153,8 +163,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "echo 'SuperClaude++ v2.0 loaded'",
-            "timeout": 1000
+            "command": "echo 'SuperClaude++ v3.3 loaded'",
+            "timeout": 1
           }
         ]
       }
@@ -165,7 +175,7 @@
   },
   "statusLine": {
     "type": "command",
-    "command": "~/.claude/statusline.sh",
+    "command": "~/.claude/scripts/statusline.sh",
     "padding": 0
   },
   "language": "한국어",

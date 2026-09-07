@@ -1,48 +1,38 @@
 #!/bin/bash
-# Auto Type Check - PostToolUse hook for Edit operations
-# Runs TypeScript compiler on edited .ts/.tsx files
+# Auto Type Check - PostToolUse hook for Edit|Write
+# Runs tsc on the project of an edited .ts/.tsx file and reports errors
+# for that file back to Claude as additionalContext.
 
-set -e
+set -uo pipefail
+source "$(dirname "${BASH_SOURCE[0]}")/lib/hook-common.sh"
 
-# Get the edited file from hook context
-file_path="${CLAUDE_FILE_PATH:-}"
+file_path="$(hook_file_path)"
 
-# Skip if not a TypeScript file
-if [[ ! "$file_path" =~ \.(ts|tsx)$ ]]; then
-  exit 0
-fi
+[[ "$file_path" =~ \.(ts|tsx)$ ]] || exit 0
+[[ "$file_path" =~ (\.test\.|\.spec\.|__tests__|node_modules) ]] && exit 0
+[[ -f "$file_path" ]] || exit 0
+command -v npx >/dev/null 2>&1 || exit 0
 
-# Skip test files and node_modules
-if [[ "$file_path" =~ (\.test\.|\.spec\.|__tests__|node_modules) ]]; then
-  exit 0
-fi
-
-# Check if tsc is available
-if ! command -v npx &> /dev/null; then
-  exit 0
-fi
-
-# Find project root (look for tsconfig.json)
-dir=$(dirname "$file_path")
-while [[ "$dir" != "/" ]]; do
+# Find project root (nearest tsconfig.json)
+project_root=""
+dir="$(dirname "$file_path")"
+while [[ "$dir" != "/" && "$dir" != "." ]]; do
   if [[ -f "$dir/tsconfig.json" ]]; then
     project_root="$dir"
     break
   fi
-  dir=$(dirname "$dir")
+  dir="$(dirname "$dir")"
 done
+[[ -z "$project_root" ]] && exit 0
 
-if [[ -z "$project_root" ]]; then
-  exit 0
-fi
+# tsc --pretty false prints paths relative to the project root:
+#   src/foo.ts(12,5): error TS2322: ...
+cd "$project_root" || exit 0
+rel_path="${file_path#"$project_root"/}"
+errors="$(npx tsc --noEmit --pretty false 2>&1 | grep -F "${rel_path}(" | head -5 || true)"
 
-# Run type check on the specific file
-cd "$project_root"
-errors=$(npx tsc --noEmit --pretty false 2>&1 | grep -E "^${file_path}" | head -5 || true)
+[[ -z "$errors" ]] && exit 0
 
-if [[ -n "$errors" ]]; then
-  echo "⚠️  [TypeCheck] Type errors in $(basename "$file_path"):" >&2
-  echo "$errors" | while read -r line; do
-    echo "   $line" >&2
-  done
-fi
+hook_emit_context PostToolUse "⚠️ [TypeCheck] Type errors in ${rel_path}:
+${errors}"
+exit 0

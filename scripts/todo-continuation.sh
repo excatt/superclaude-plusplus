@@ -3,7 +3,8 @@
 # Checks for incomplete todos and prevents premature stopping
 # Inspired by oh-my-claudecode's stop-continuation
 
-set -e
+set -uo pipefail
+source "$(dirname "${BASH_SOURCE[0]}")/lib/hook-common.sh"
 
 # Configuration
 MAX_ITERATIONS=${MAX_ITERATIONS:-10}
@@ -14,7 +15,14 @@ ITERATION_FILE="${STATE_DIR}/iteration-count.json"
 mkdir -p "$STATE_DIR"
 
 # Read stdin (Claude Code provides session context)
-INPUT=$(cat)
+hook_read_input
+INPUT="$HOOK_INPUT"
+
+# If Claude is already continuing because a Stop hook blocked, never block
+# again from here — that would loop until MAX_ITERATIONS for nothing new.
+if hook_stop_hook_active; then
+  exit 0
+fi
 
 # Initialize iteration tracking
 get_iteration_count() {
@@ -28,7 +36,8 @@ get_iteration_count() {
 
 increment_iteration() {
   local session_id="$1"
-  local current=$(get_iteration_count "$session_id")
+  local current
+  current=$(get_iteration_count "$session_id")
   local new_count=$((current + 1))
 
   if command -v jq &> /dev/null; then
@@ -48,25 +57,27 @@ reset_iteration() {
   fi
 }
 
-# Get session ID if available
-SESSION_ID=""
-if command -v jq &> /dev/null; then
-  SESSION_ID=$(echo "$INPUT" | jq -r '.sessionId // .session_id // "default"' 2>/dev/null)
-fi
-[[ -z "$SESSION_ID" || "$SESSION_ID" == "null" ]] && SESSION_ID="default"
+# Session ID scopes both the iteration counter and the todo lookup
+SESSION_ID="$(hook_session_id)"
 
-# Check Claude's internal todo system
+# Check Claude's internal todo system — only THIS session's files
+# (~/.claude/todos/<session_id>-agent-<agent_id>.json). Counting every
+# session's todos let a stale todo from another project block this stop.
 TODOS_DIR="$HOME/.claude/todos"
 INCOMPLETE_COUNT=0
 
-if [[ -d "$TODOS_DIR" ]]; then
-  for todo_file in "$TODOS_DIR"/*.json; do
-    if [[ -f "$todo_file" ]]; then
-      if command -v jq &> /dev/null; then
-        COUNT=$(jq '[.[] | select(.status != "completed" and .status != "cancelled")] | length' "$todo_file" 2>/dev/null || echo "0")
-        INCOMPLETE_COUNT=$((INCOMPLETE_COUNT + COUNT))
-      fi
+if [[ -d "$TODOS_DIR" && "$SESSION_ID" != "default" ]]; then
+  for todo_file in "$TODOS_DIR"/"$SESSION_ID"*.json; do
+    [[ -f "$todo_file" ]] || continue
+    if command -v jq &> /dev/null; then
+      COUNT=$(jq '[.[] | select(.status != "completed" and .status != "cancelled")] | length' "$todo_file" 2>/dev/null || echo "0")
+    else
+      COUNT=$(python3 -c 'import json,sys
+try: print(sum(1 for t in json.load(open(sys.argv[1])) if t.get("status") not in ("completed","cancelled")))
+except Exception: print(0)' "$todo_file" 2>/dev/null || echo "0")
     fi
+    [[ "$COUNT" =~ ^[0-9]+$ ]] || COUNT=0
+    INCOMPLETE_COUNT=$((INCOMPLETE_COUNT + COUNT))
   done
 fi
 
@@ -103,13 +114,17 @@ if [[ "$INCOMPLETE_COUNT" -gt 0 ]]; then
   echo "   Continue working on the next pending task" >&2
   echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" >&2
 
-  # Return continuation message to Claude
-  cat << EOF
-{
-  "continue": false,
-  "reason": "[SYSTEM - PERSISTENCE ENFORCEMENT]\n\nIncomplete tasks remain ($INCOMPLETE_COUNT pending). Iteration $NEW_ITERATION/$MAX_ITERATIONS.\n\nContinue working:\n- Check TodoList for next pending task\n- Complete current in_progress tasks\n- Do not stop until all tasks are done\n- Mark tasks complete when finished"
-}
-EOF
+  # Stop-hook contract: decision "block" keeps Claude working.
+  # ("continue": false would do the opposite — halt Claude entirely.)
+  hook_emit_block "[SYSTEM - PERSISTENCE ENFORCEMENT]
+
+Incomplete tasks remain ($INCOMPLETE_COUNT pending). Iteration $NEW_ITERATION/$MAX_ITERATIONS.
+
+Continue working:
+- Check TodoList for next pending task
+- Complete current in_progress tasks
+- Do not stop until all tasks are done
+- Mark tasks complete when finished"
   exit 0
 fi
 

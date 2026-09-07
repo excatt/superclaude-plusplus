@@ -1,16 +1,15 @@
 #!/usr/bin/env python3
 """Injection Scanner - PostToolUse hook for mcp__* matchers
 
-Reads MCP tool output from stdin (or CLAUDE_TOOL_OUTPUT env var),
-scans for prompt injection patterns, data exfiltration attempts,
-encoded payloads, and secret leakage.
+Reads the PostToolUse event JSON from stdin, scans the tool_response for
+prompt injection patterns, data exfiltration attempts, encoded payloads,
+and secret leakage, and reports findings to Claude as additionalContext.
 
 Exit 0 always (warning only, non-blocking). Uses only Python stdlib.
 """
 
 import base64
 import json
-import os
 import re
 import sys
 from dataclasses import dataclass, field
@@ -233,28 +232,31 @@ def format_warning(findings: list[Finding], source: str) -> str:
 # Entry point
 # ---------------------------------------------------------------------------
 
-def get_tool_source() -> str:
-    """Determine which MCP tool produced the output, if available."""
-    return os.environ.get("CLAUDE_TOOL_NAME", "unknown MCP tool")
+def read_event() -> tuple[str, str]:
+    """Return (tool_name, tool_response_text) from the hook event on stdin.
 
-
-def read_input() -> str:
-    """Read tool output from stdin or CLAUDE_TOOL_OUTPUT env var."""
-    # Prefer env var if set (some hook frameworks pass output there)
-    env_output = os.environ.get("CLAUDE_TOOL_OUTPUT", "")
-    if env_output:
-        return env_output
-
-    # Fall back to stdin
-    if not sys.stdin.isatty():
-        return sys.stdin.read()
-
-    return ""
+    Only the tool_response is scanned — scanning the whole envelope made the
+    scanner match its own field names (e.g. "tool_input").
+    """
+    if sys.stdin.isatty():
+        return "", ""
+    raw = sys.stdin.read()
+    try:
+        event = json.loads(raw)
+    except (json.JSONDecodeError, ValueError):
+        return "unknown MCP tool", raw
+    if not isinstance(event, dict):
+        return "unknown MCP tool", raw
+    tool = event.get("tool_name") or "unknown MCP tool"
+    response = event.get("tool_response", "")
+    if not isinstance(response, str):
+        response = json.dumps(response, ensure_ascii=False)
+    return tool, response
 
 
 def main() -> None:
     try:
-        content = read_input()
+        source, content = read_event()
         if not content:
             sys.exit(0)
 
@@ -262,9 +264,13 @@ def main() -> None:
         if not findings:
             sys.exit(0)
 
-        source = get_tool_source()
         warning = format_warning(findings, source)
-        print(warning)
+        print(json.dumps({
+            "hookSpecificOutput": {
+                "hookEventName": "PostToolUse",
+                "additionalContext": warning,
+            }
+        }, ensure_ascii=False))
 
     except Exception:
         # Never crash; exit silently on any unexpected error

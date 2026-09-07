@@ -1,46 +1,48 @@
 #!/usr/bin/env bash
 # Circuit Breaker for Claude Code Stop hook
-# Detects repeated error patterns and blocks premature stops
-# when the same error appears 3+ times in the last 10 minutes.
+# Detects repeated error patterns in the assistant's final message and
+# blocks the stop when the same error appears THRESHOLD times within
+# WINDOW_SECONDS for this session. Diagnosis only — no auto-fix.
 
-set -euo pipefail
+set -uo pipefail
+source "$(dirname "${BASH_SOURCE[0]}")/lib/hook-common.sh"
 
-# --- Config ---
-STATE_DIR=".claude/state"
-ERROR_LOG="${STATE_DIR}/error-history.log"
 WINDOW_SECONDS=600  # 10 minutes
 THRESHOLD=3
+MAX_KEY_LEN=200
 
-# --- Ensure state directory exists ---
-mkdir -p "${STATE_DIR}"
+hook_read_input
+[[ -z "$HOOK_INPUT" ]] && exit 0
 
-# --- Read stop context from env or stdin ---
-stop_context="${CLAUDE_STOP_REASON:-}"
-if [ -z "${stop_context}" ]; then
-  if [ ! -t 0 ]; then
-    stop_context="$(cat)"
-  fi
-fi
-
-# Exit silently if no context provided
-if [ -z "${stop_context}" ]; then
+# Never re-block while Claude is already continuing from a blocked stop —
+# the same pattern would still match and we would loop forever.
+if hook_stop_hook_active; then
   exit 0
 fi
 
-# --- Extract error patterns ---
-# Pull lines containing error-like keywords
-error_lines="$(printf '%s\n' "${stop_context}" | grep -iE '(Error:|FAIL|failed|Exception|TypeError|SyntaxError|ReferenceError|RuntimeError|ImportError|ModuleNotFoundError|KeyError|ValueError|AttributeError|NameError|IndexError|panic|FATAL|Cannot find|cannot read|is not defined|is not a function|unexpected token)' 2>/dev/null || true)"
+session_id="$(hook_session_id)"
 
-# Exit silently if no errors found
-if [ -z "${error_lines}" ]; then
-  exit 0
-fi
+# Analyse only the assistant's last message, not the whole JSON envelope
+# (field names like "transcript_path" must not become "error patterns").
+stop_context="$(hook_json_get '.last_assistant_message')"
+[[ -z "$stop_context" ]] && exit 0
 
-# --- Normalize error pattern ---
-# Strip line numbers, file paths, and volatile details to get a stable key
+# State lives with the project when we know it, else under ~/.claude.
+project_dir="$(hook_json_get '.cwd')"
+[[ -d "${project_dir:-}" ]] || project_dir="$HOME/.claude"
+STATE_DIR="${project_dir}/.claude/state"
+[[ "$project_dir" == "$HOME/.claude" ]] && STATE_DIR="$HOME/.claude/state"
+ERROR_LOG="${STATE_DIR}/error-history.log"
+mkdir -p "$STATE_DIR" 2>/dev/null || exit 0
+
+# --- Extract error-like lines ---
+error_lines="$(printf '%s\n' "$stop_context" | grep -iE '(Error:|FAIL|failed|Exception|TypeError|SyntaxError|ReferenceError|RuntimeError|ImportError|ModuleNotFoundError|KeyError|ValueError|AttributeError|NameError|IndexError|panic|FATAL|Cannot find|cannot read|is not defined|is not a function|unexpected token)' || true)"
+[[ -z "$error_lines" ]] && exit 0
+
+# --- Normalize: strip paths, line numbers, addresses, big numbers ---
 normalize_pattern() {
-  local line="$1"
-  printf '%s' "${line}" \
+  printf '%s' "$1" \
+    | tr -d '|' \
     | sed -E 's|/[^ :]+/||g' \
     | sed -E 's|[^ :]+\.[a-zA-Z]{1,4}:[0-9]+:[0-9]+||g' \
     | sed -E 's|[^ :]+\.[a-zA-Z]{1,4}:[0-9]+||g' \
@@ -48,58 +50,42 @@ normalize_pattern() {
     | sed -E 's|at 0x[0-9a-fA-F]+||g' \
     | sed -E 's|[0-9]{4,}||g' \
     | sed -E 's|  +| |g' \
-    | sed -E 's|^ +||;s| +$||'
+    | sed -E 's|^ +||;s| +$||' \
+    | cut -c1-"$MAX_KEY_LEN"
 }
 
-# --- Log each error pattern with timestamp ---
 now_epoch="$(date +%s)"
 now_iso="$(date '+%Y-%m-%dT%H:%M:%S')"
-normalized=""
+first_pattern=""
 
+# Log format: epoch|iso|session_id|pattern   (pattern has no '|')
 while IFS= read -r line; do
-  [ -z "${line}" ] && continue
-  pattern="$(normalize_pattern "${line}")"
-  [ -z "${pattern}" ] && continue
-  printf '%s|%s|%s\n' "${now_epoch}" "${now_iso}" "${pattern}" >> "${ERROR_LOG}"
-  # Keep the first normalized pattern for checking
-  if [ -z "${normalized}" ]; then
-    normalized="${pattern}"
-  fi
-done <<< "${error_lines}"
+  [[ -z "$line" ]] && continue
+  pattern="$(normalize_pattern "$line")"
+  [[ -z "$pattern" ]] && continue
+  printf '%s|%s|%s|%s\n' "$now_epoch" "$now_iso" "$session_id" "$pattern" >> "$ERROR_LOG"
+  [[ -z "$first_pattern" ]] && first_pattern="$pattern"
+done <<< "$error_lines"
+[[ -z "$first_pattern" ]] && exit 0
 
-# Exit silently if normalization produced nothing
-if [ -z "${normalized}" ]; then
-  exit 0
-fi
-
-# --- Count occurrences of this pattern within the time window ---
+# --- Count this session's occurrences of the pattern inside the window ---
 cutoff_epoch=$(( now_epoch - WINDOW_SECONDS ))
 count=0
+while IFS='|' read -r ts _ sid logged_pattern; do
+  [[ "${ts:-0}" -ge "$cutoff_epoch" ]] 2>/dev/null || continue
+  [[ "$sid" == "$session_id" && "$logged_pattern" == "$first_pattern" ]] && count=$(( count + 1 ))
+done < "$ERROR_LOG"
 
-while IFS='|' read -r ts _ logged_pattern; do
-  # Skip entries outside the time window
-  if [ "${ts}" -ge "${cutoff_epoch}" ] 2>/dev/null; then
-    if [ "${logged_pattern}" = "${normalized}" ]; then
-      count=$(( count + 1 ))
-    fi
-  fi
-done < "${ERROR_LOG}"
-
-# --- Circuit breaker decision ---
-if [ "${count}" -ge "${THRESHOLD}" ]; then
-  printf '{"decision":"block","reason":"\\u26a0\\ufe0f Circuit Breaker: \\ub3d9\\uc77c \\uc5d0\\ub7ec 3\\ud68c \\ubc18\\ubcf5 \\uac10\\uc9c0. \\uc544\\ud0a4\\ud14d\\ucc98 \\ub9ac\\ubdf0\\uac00 \\ud544\\uc694\\ud569\\ub2c8\\ub2e4. /debug \\ub610\\ub294 \\uadfc\\ubcf8 \\uc6d0\\uc778 \\ubd84\\uc11d\\uc744 \\uc2dc\\uc791\\ud558\\uc138\\uc694."}\n'
+if [[ "$count" -ge "$THRESHOLD" ]]; then
+  hook_emit_block "⚠️ Circuit Breaker: 동일 에러 ${count}회 반복 감지 (${first_pattern}). 추가 수정 시도를 멈추고 아키텍처 리뷰 + Agent Struggle Report를 작성하세요 (RULES.md Circuit Breaker 절차)."
 fi
 
-# --- Prune old entries (older than 1 hour) to keep log small ---
+# --- Prune entries older than 1 hour ---
 prune_cutoff=$(( now_epoch - 3600 ))
-if [ -f "${ERROR_LOG}" ]; then
-  tmp_log="${ERROR_LOG}.tmp"
-  while IFS='|' read -r ts rest; do
-    if [ "${ts}" -ge "${prune_cutoff}" ] 2>/dev/null; then
-      printf '%s|%s\n' "${ts}" "${rest}"
-    fi
-  done < "${ERROR_LOG}" > "${tmp_log}" 2>/dev/null
-  mv "${tmp_log}" "${ERROR_LOG}" 2>/dev/null || true
-fi
+tmp_log="${ERROR_LOG}.tmp"
+while IFS='|' read -r ts rest; do
+  [[ "${ts:-0}" -ge "$prune_cutoff" ]] 2>/dev/null && printf '%s|%s\n' "$ts" "$rest"
+done < "$ERROR_LOG" > "$tmp_log" 2>/dev/null
+mv "$tmp_log" "$ERROR_LOG" 2>/dev/null || true
 
 exit 0

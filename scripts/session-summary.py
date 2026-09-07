@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 """Session Summary Generator - Stop hook script
 
-Every Stop, parses the current session transcript and overwrites
-<project>/memory/last-session.md with a concise summary.
+Every Stop, parses the current session transcript (path taken from the Stop
+event JSON on stdin) and overwrites
+~/.claude/projects/<project-slug>/memory/last-session.md — the same
+per-project directory Claude Code uses for auto-memory — with a concise summary.
 Next session, Claude can read this for prior context.
 """
 
@@ -14,26 +16,22 @@ from pathlib import Path
 
 
 def find_transcript():
-    path = os.environ.get("CLAUDE_TRANSCRIPT_PATH", "")
+    """Transcript path comes from the hook event JSON on stdin.
+
+    No filesystem fallback: scanning ~/.claude/projects for the newest .jsonl
+    could pick another project's session and stat()s every transcript on
+    the machine on every Stop.
+    """
+    if sys.stdin.isatty():
+        return None
+    try:
+        event = json.load(sys.stdin)
+    except (json.JSONDecodeError, ValueError):
+        return None
+    path = event.get("transcript_path", "") if isinstance(event, dict) else ""
     if path and os.path.isfile(path):
         return path
-
-    # Fallback: most recent .jsonl in project directories
-    projects_dir = Path.home() / ".claude" / "projects"
-    if not projects_dir.exists():
-        return None
-
-    latest = None
-    latest_mtime = 0
-    for jsonl in projects_dir.rglob("*.jsonl"):
-        if jsonl.parent.name in ("memory", "backup", "logs"):
-            continue
-        mtime = jsonl.stat().st_mtime
-        if mtime > latest_mtime:
-            latest_mtime = mtime
-            latest = jsonl
-
-    return str(latest) if latest else None
+    return None
 
 
 def parse_transcript(path):

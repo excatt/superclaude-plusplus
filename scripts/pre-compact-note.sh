@@ -4,27 +4,11 @@
 #
 # Runs on UserPromptSubmit to intercept /compact
 
-set -e
+set -uo pipefail
+source "$(dirname "${BASH_SOURCE[0]}")/lib/hook-common.sh"
 
-# Read stdin (JSON input from Claude Code)
-INPUT=$(cat)
-
-# Extract the prompt text
-PROMPT=""
-if command -v jq &> /dev/null; then
-  PROMPT=$(echo "$INPUT" | jq -r '
-    if .prompt then .prompt
-    elif .message then .message
-    elif .content then .content
-    else ""
-    end
-  ' 2>/dev/null)
-fi
-
-# Fallback if jq fails
-if [[ -z "$PROMPT" || "$PROMPT" == "null" ]]; then
-  PROMPT=$(echo "$INPUT" | grep -oE '"(prompt|message|content)"[[:space:]]*:[[:space:]]*"[^"]+"' | head -1 | sed 's/.*:[[:space:]]*"//;s/"$//')
-fi
+# UserPromptSubmit input carries the text in .prompt
+PROMPT="$(hook_json_get '.prompt')"
 
 # Exit if no prompt
 if [[ -z "$PROMPT" ]]; then
@@ -51,7 +35,7 @@ if echo "$PROMPT_LOWER" | grep -qE '^\s*/compact\b'; then
   # Count Working Memory entries
   WM_COUNT=0
   if [[ -n "$NOTEPAD_FILE" ]]; then
-    WM_COUNT=$(grep -c '^\[' "$NOTEPAD_FILE" 2>/dev/null || echo "0")
+    WM_COUNT="$(count_matches '^\[' "$NOTEPAD_FILE")"
   fi
 
   # Inject pre-compact reminder
@@ -60,13 +44,19 @@ if echo "$PROMPT_LOWER" | grep -qE '^\s*/compact\b'; then
   echo "📋 [Pre-Compact] Notepad has $WM_COUNT entries" >&2
   echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" >&2
 
-  # Return instruction
-  cat << EOF
-{
-  "continue": true,
-  "message": "[PRE-COMPACT CHECK]\n\nBefore compaction completes, verify:\n\n✅ Current task/progress saved to notepad?\n✅ Key file paths and line numbers noted?\n✅ Important discoveries preserved?\n\nNotepad entries: $WM_COUNT\nLocation: ${NOTEPAD_FILE:-none}\n\nIf critical info is missing, use /note FIRST."
-}
-EOF
+  # UserPromptSubmit contract: additionalContext (not "message")
+  hook_emit_context UserPromptSubmit "[PRE-COMPACT CHECK]
+
+Before compaction completes, verify:
+
+✅ Current task/progress saved to notepad?
+✅ Key file paths and line numbers noted?
+✅ Important discoveries preserved?
+
+Notepad entries: $WM_COUNT
+Location: ${NOTEPAD_FILE:-none}
+
+If critical info is missing, use /note FIRST."
 fi
 
 exit 0

@@ -1,0 +1,1 @@
+{"session_id":"sess-A","transcript_path":"/nonexistent.jsonl","cwd":"__CWD__","hook_event_name":"Stop","stop_hook_active":false,"last_assistant_message":"Tried again.\nTypeError: Cannot read properties of undefined (reading map) at /Users/x/src/app.ts:12:5\nWill retry."}

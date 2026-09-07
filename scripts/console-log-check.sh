@@ -1,35 +1,22 @@
 #!/bin/bash
-# Console.log Detection - PostToolUse hook for Edit operations
-# Warns about debug statements in source code
+# Console.log Detection - PostToolUse hook for Edit|Write
+# Warns Claude about debug statements left in JS/TS source files.
 
-set -e
+set -uo pipefail
+source "$(dirname "${BASH_SOURCE[0]}")/lib/hook-common.sh"
 
-# Get the edited file from hook context
-file_path="${CLAUDE_FILE_PATH:-}"
+file_path="$(hook_file_path)"
 
-# Skip if empty
-if [[ -z "$file_path" ]] || [[ ! -f "$file_path" ]]; then
-  exit 0
-fi
+[[ -n "$file_path" && -f "$file_path" ]] || exit 0
+[[ "$file_path" =~ (\.test\.|\.spec\.|__tests__|node_modules|\.config\.|jest\.|vite\.|next\.config) ]] && exit 0
+[[ "$file_path" =~ \.(js|jsx|ts|tsx)$ ]] || exit 0
 
-# Skip test files, config files, and node_modules
-if [[ "$file_path" =~ (\.test\.|\.spec\.|__tests__|node_modules|\.config\.|jest\.|vite\.|next\.config) ]]; then
-  exit 0
-fi
+matches="$(grep -n 'console\.\(log\|debug\|info\|warn\|error\)' "$file_path" 2>/dev/null \
+  | grep -v '// eslint-disable' | grep -v '// noqa' | head -3 || true)"
 
-# Check for JavaScript/TypeScript files
-if [[ ! "$file_path" =~ \.(js|jsx|ts|tsx)$ ]]; then
-  exit 0
-fi
+[[ -z "$matches" ]] && exit 0
 
-# Find console.log/debug statements
-matches=$(grep -n "console\.\(log\|debug\|info\|warn\|error\)" "$file_path" 2>/dev/null | grep -v "// eslint-disable" | grep -v "// noqa" | head -3 || true)
-
-if [[ -n "$matches" ]]; then
-  count=$(echo "$matches" | wc -l | tr -d ' ')
-  echo "⚠️  [Debug] Found $count console statement(s) in $(basename "$file_path"):" >&2
-  echo "$matches" | while read -r line; do
-    echo "   $line" >&2
-  done
-  echo "   💡 Consider removing before commit" >&2
-fi
+count="$(printf '%s\n' "$matches" | wc -l | tr -d ' ')"
+hook_emit_context PostToolUse "⚠️ [Debug] ${count} console statement(s) in $(basename "$file_path") — consider removing before commit:
+${matches}"
+exit 0

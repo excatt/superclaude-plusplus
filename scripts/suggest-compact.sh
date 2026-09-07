@@ -8,29 +8,29 @@
 # - After completing a milestone
 # - When tool count reaches threshold
 
-set -e
+set -uo pipefail
+source "$(dirname "${BASH_SOURCE[0]}")/lib/hook-common.sh"
 
 # Configuration
 INITIAL_THRESHOLD=${COMPACT_INITIAL_THRESHOLD:-50}
 REMINDER_INTERVAL=${COMPACT_REMINDER_INTERVAL:-25}
-COUNTER_FILE="/tmp/claude-tool-counter-$$"
-NOTEPAD_FILE="${PWD}/.claude/notepad.md"
-GLOBAL_NOTEPAD="${HOME}/.claude/notepad.md"
 
-# Use project notepad if exists, otherwise global
-if [[ -f "$NOTEPAD_FILE" ]]; then
-  ACTIVE_NOTEPAD="$NOTEPAD_FILE"
-else
-  ACTIVE_NOTEPAD="$GLOBAL_NOTEPAD"
-fi
-
+# Counter is keyed by session_id. ($$ was the hook's own PID — a new one on
+# every call — so the count never got past 1 and /tmp filled with files.)
+SESSION_ID="$(hook_session_id)"
+COUNTER_DIR="${HOME}/.claude/state"
+COUNTER_FILE="${COUNTER_DIR}/tool-counter-${SESSION_ID}"
+mkdir -p "$COUNTER_DIR" 2>/dev/null || exit 0
+# Drop counters from sessions that ended more than a day ago
+find "$COUNTER_DIR" -name 'tool-counter-*' -mtime +1 -delete 2>/dev/null || true
 # Initialize counter file if not exists
 if [[ ! -f "$COUNTER_FILE" ]]; then
   echo "0" > "$COUNTER_FILE"
 fi
 
 # Read and increment counter
-count=$(cat "$COUNTER_FILE")
+count=$(cat "$COUNTER_FILE" 2>/dev/null || echo 0)
+[[ "$count" =~ ^[0-9]+$ ]] || count=0
 count=$((count + 1))
 echo "$count" > "$COUNTER_FILE"
 
@@ -57,11 +57,25 @@ if [[ "$should_suggest" == "true" ]]; then
   echo "📝 [MANDATORY] Before /compact, save important context:" >&2
   echo "" >&2
 
-  # Return instruction to Claude to save notes before compaction
-  cat << 'EOF'
-{
-  "continue": true,
-  "message": "[PRE-COMPACT PROTOCOL]\n\nContext threshold reached. BEFORE running /compact:\n\n1. **SAVE CRITICAL INFO** to notepad:\n   - Current task status and progress\n   - Key discoveries or decisions made\n   - File paths and line numbers being worked on\n   - Any errors being debugged\n\n2. Use these commands:\n   - `/note <info>` for working memory\n   - `/note --priority <info>` for must-remember info\n\n3. Then run `/compact` when ready.\n\n**DO NOT skip note-saving.** Information lost to compaction cannot be recovered."
-}
-EOF
+  # PreToolUse contract: additionalContext reaches Claude; a bare
+  # {"continue":true,"message":...} object has no "message" field and
+  # was being injected as raw JSON text.
+  hook_emit_context PreToolUse "[PRE-COMPACT PROTOCOL]
+
+Context threshold reached ($suggestion_reason). BEFORE running /compact:
+
+1. **SAVE CRITICAL INFO** to notepad:
+   - Current task status and progress
+   - Key discoveries or decisions made
+   - File paths and line numbers being worked on
+   - Any errors being debugged
+
+2. Use these commands:
+   - \`/note <info>\` for working memory
+   - \`/note --priority <info>\` for must-remember info
+
+3. Then run \`/compact\` when ready.
+
+**DO NOT skip note-saving.** Information lost to compaction cannot be recovered."
 fi
+exit 0

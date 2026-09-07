@@ -1,8 +1,12 @@
 #!/bin/bash
-# Convention Check Hook
-# Checks naming conventions based on CONVENTIONS.md
+# Convention Check Hook - PostToolUse hook for Edit|Write
+# Checks naming conventions based on CONVENTIONS.md and reports
+# violations back to Claude as additionalContext.
 
-FILE_PATH="${CLAUDE_FILE_PATH:-}"
+set -uo pipefail
+source "$(dirname "${BASH_SOURCE[0]}")/lib/hook-common.sh"
+
+FILE_PATH="$(hook_file_path)"
 
 # Exit if no file path
 [[ -z "$FILE_PATH" ]] && exit 0
@@ -127,11 +131,10 @@ case "$EXT" in
     ;;
 esac
 
-# Output warnings if any
+# Report warnings to Claude if any
 if [[ -n "$warnings" ]]; then
-  echo -e "\n📋 Convention Check ($FILE_PATH):"
-  echo -e "$warnings"
-  echo "📖 참고: ~/.claude/CONVENTIONS.md"
+  hook_emit_context PostToolUse "📋 Convention Check ($FILE_PATH):
+$(printf '%b' "$warnings")📖 참고: ~/.claude/CONVENTIONS.md"
 fi
 
 exit 0
