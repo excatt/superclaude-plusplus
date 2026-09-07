@@ -21,23 +21,42 @@ Analyze problem-solving patterns, debugging techniques, and workarounds from ses
 
 ## Pattern Extraction Focus
 
+**Gate question**: *Would a future session, starting cold, save real time because
+this was written down?* If the answer is "it would have figured this out from the
+code or from general knowledge in under a minute", do not save it. Every saved
+line is prompt context; it has to earn its place.
+
 ### Include ✅
-| Category | Examples |
-|----------|----------|
-| **Error Resolution Patterns** | TypeScript type error fixes, build failure repairs |
-| **Debugging Techniques** | Specific tool combinations, log analysis methods |
-| **Library Quirks** | Undocumented behaviors, version-specific differences |
-| **API Workarounds** | Rate limit bypasses, authentication patterns |
-| **Project Conventions** | Naming rules, file structure, code style |
-| **Architecture Decisions** | Pattern selection rationale, trade-offs |
+| Category | Examples | Why it earns its place |
+|----------|----------|------------------------|
+| **Commands/workflows discovered** | The build variant that actually works, the test invocation with the required flag (`--runInBand` for shared DB state) | Saves re-discovery on every session |
+| **Error Resolution Patterns** | TypeScript type error fixes, build failure repairs | Prevents repeating a debugging session |
+| **Debugging Techniques** | Specific tool combinations, log analysis methods | Not derivable from code |
+| **Library Quirks** | Undocumented behaviors, version-specific differences | Invisible in the codebase |
+| **API / Config Quirks** | Rate-limit workarounds, `NEXT_PUBLIC_*` must be set at build time, Redis needs `?family=0` for IPv6 | Environment knowledge that costs an outage to learn |
+| **Module Relationships** | "`auth` needs `crypto` initialized first; import order in `bootstrap.ts` matters" | Architecture knowledge the code does not state |
+| **Testing approaches that worked** | Which helper/factory to use instead of inline mocks | Establishes a pattern others will follow |
+| **Project Conventions** | Naming rules, file structure, code style **beyond** what CONVENTIONS.md already says | Only the project-specific delta |
+| **Architecture Decisions** | Pattern selection rationale, trade-offs | The "why" is never in the code |
 
 ### Exclude ❌
-| Category | Reason |
-|----------|--------|
-| Simple typo fixes | No reuse value |
-| One-time issues | External service outages, etc. |
-| Syntax errors | Basic knowledge scope |
-| Environment-specific configs | Lacks generalizability |
+| Category | Reason | Bad example |
+|----------|--------|-------------|
+| **Obvious from code** | The name or signature already says it | "`UserService` handles user operations" |
+| **Generic best practice** | Universal advice, not project-specific; the model already knows it | "Always write tests", "use meaningful names" |
+| **One-off fixes** | Will not recur; clutters the file | "Fixed login button bug in commit abc123" |
+| **Verbose explanations** | A one-liner carries the same information | A paragraph on what JWT is → `Auth: JWT HS256, Bearer header` |
+| Simple typo / syntax fixes | No reuse value | — |
+| Transient external issues | Service outage, flaky network | — |
+| Machine-specific paths/secrets | Not generalizable; secrets never | `/Users/me/...`, tokens |
+| Already in CLAUDE.md / RULES.md / CONVENTIONS.md | Duplicate context is pure cost | — |
+
+### Where it goes
+| Learning type | Destination |
+|---------------|-------------|
+| Reusable across projects (library quirk, debugging technique) | `~/.claude/skills/learned/<name>.md` (this skill) |
+| Project-specific command, gotcha, module relationship | Project `CLAUDE.md` (team) or `CLAUDE.local.md` (personal, gitignored) — one line per concept, `<command or pattern>` - `<why>` |
+| Must survive compaction in *this* session only | `/note` |
 
 ---
 
@@ -255,10 +274,17 @@ Apply? [y/N]
 ### Value Assessment
 | Criterion | Weight |
 |-----------|--------|
-| Resolution complexity | 30% |
 | Reusability potential | 40% |
+| Resolution complexity | 30% |
 | Time-saving impact | 20% |
 | Documentation value | 10% |
+
+### Pre-save Checklist (all must be true)
+- [ ] Project- or library-specific — not generic advice
+- [ ] Not already obvious from the code, and not already in CLAUDE.md / RULES.md / CONVENTIONS.md
+- [ ] Commands were actually run and work; file paths are real
+- [ ] Expressed in the most concise form (one line per concept where possible)
+- [ ] A new session would find it *before* needing it (name and tags are searchable)
 
 ### Extraction Threshold
 - **Low**: Extract most patterns (noisy)
@@ -303,7 +329,7 @@ async function Page() {
 \`\`\`
 ```
 
-### Pattern to Avoid
+### Patterns to Avoid
 ```markdown
 # Fix Typo in Config  ❌
 ## Problem
@@ -313,3 +339,21 @@ Fix typo
 
 → No reuse value, do not save
 ```
+
+```markdown
+# UserService  ❌
+The `UserService` class handles user operations.
+
+→ Obvious from the code, do not save
+```
+
+```markdown
+# JWT Authentication  ❌
+JWT (JSON Web Tokens) are an open standard (RFC 7519) that defines a compact
+and self-contained way for securely transmitting information ... (12 lines)
+
+→ Verbose; the useful residue is one line: `Auth: JWT HS256, Bearer header`
+```
+
+*Include/Exclude criteria and the bad examples above are adapted from Anthropic's
+`claude-md-management` plugin (`update-guidelines.md`, Apache 2.0) — see NOTICE.md.*

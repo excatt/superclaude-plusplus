@@ -138,6 +138,18 @@ v3.3(2026-09-07)에 `skills/document-skills/` 중첩 위치에서 `skills/{docx,
 
 ---
 
+## claude-md-management (Anthropic, Apache 2.0) — 기준 차용
+
+[anthropics/claude-plugins-official](https://github.com/anthropics/claude-plugins-official/tree/main/plugins/claude-md-management)의
+`skills/claude-md-improver/references/update-guidelines.md`에 있는 "What TO Add / What
+NOT to Add" 기준과 나쁜 예시를 `skills/learn/SKILL.md`의 Include/Exclude 표·Pre-save
+Checklist·Patterns to Avoid에 **각색해 반영**(v3.3, 2026-09-07). 플러그인 코드나 문서를
+재배포하지 않으며, 플러그인 자체는 필요 시 `claude-plugins-official` 마켓플레이스에서
+설치한다. 검토 결과와 미채택 사유(`.claude.local.md` 파일명 오류, `@import` 미인식,
+아키텍처 가점이 "저장소 자체가 지식 베이스" 원칙과 충돌)는 CHANGELOG 3.3.0 참고.
+
+---
+
 ## 기타 선재 통합 구성요소
 
 `skills/` 내 위에 나열되지 않은 외부 유래 skill(`ui-ux-pro-max`, `agent-browser` 등)의
