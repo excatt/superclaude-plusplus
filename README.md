@@ -202,27 +202,6 @@ v2.0에서 스킬 자동 활성화는 `.claude/skill-rules.json`에 선언적으
 | **Skill Matcher** | 프롬프트 패턴 기반 스킬 자동 활성화 (UserPromptSubmit 훅) |
 | **Config Doctor** | AGENT.md frontmatter, skill-rules.json, 훅 경로 유효성 검증 |
 
-### Sound Notifications (peon-ping)
-
-[peon-ping](https://github.com/PeonPing/peon-ping) 연동으로 AI 코딩 에이전트 이벤트를 게임 캐릭터 음성으로 알림합니다.
-
-| 기능 | 설명 |
-|------|------|
-| **오디오 알림** | 작업 완료, 에러, 입력 요청 시 게임 캐릭터 보이스 재생 |
-| **데스크톱 오버레이** | macOS JXA 기반 화면 상단 배너 (멀티스크린 지원) |
-| **모바일 푸시** | ntfy.sh / Pushover / Telegram 연동 |
-| **MCP 서버** | Claude가 대화 중 `play_sound` tool로 직접 사운드 재생 |
-
-**설치된 사운드 팩**: Orc Peon, Human Peasant, GLaDOS (Portal), Sarah Kerrigan (StarCraft), Battlecruiser
-
-**Quick controls**:
-```bash
-peon toggle           # 음소거/해제
-peon volume 0.7       # 볼륨 조절
-peon packs use glados # 팩 변경
-/peon-ping-toggle     # Claude Code 내에서 토글
-```
-
 ### Flags & Modes
 
 전체 플래그 정의는 `optional/FLAGS.md` (v3.0부터 온디맨드 로드).
@@ -338,8 +317,7 @@ superclaude-plusplus/                # 프로젝트 저장소 (source of truth)
 │   ├── session-summary.py          # 세션 요약 자동 생성
 │   └── ...                         # 17개 스크립트
 ├── config/                         # 설정 파일
-│   ├── settings.json               # 16개 hook 타입 + 권한 + MCP 설정
-│   └── peon-ping.json              # peon-ping 설정 (포터블)
+│   └── settings.json               # 9개 hook 타입 + 권한 설정
 ├── .claude/                        # Claude Code 내부 설정
 │   ├── skill-rules.json            # v2.0: 스킬 자동 활성화 규칙
 │   ├── settings.local.json         # 로컬 설정 오버라이드
@@ -685,7 +663,7 @@ v3.0 = "모델이 못 하는 것만 남긴다" (harness-aware slim):
 - oh-my-agent 프로토콜 (난이도 분기, 추론 템플릿, 컨텍스트 예산)
 - Karpathy Guidelines (가정 투명성, 수술적 변경, 코드 단순성)
 - Harness Engineering (Agent Struggle Report, Dependency Flow, codebase-gc)
-- Note 시스템, UI/UX Pro Max, peon-ping 사운드 알림
+- Note 시스템, UI/UX Pro Max
 - gstack 통합 (Search Before Building, AI Slop Detection, LLM Security Audit)
 - ECC 통합 (TDD RED/GREEN Gate, Session Save, Confidence-Based Review Filtering)
 - 패키지 관리 규칙 강제 (uv/pnpm)

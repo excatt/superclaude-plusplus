@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-# Sync project framework files and sound config to global ~/.claude/
+# Sync project framework files to global ~/.claude/
 # Usage: bash scripts/sync-global.sh [--dry-run]
 #
 # Direction: project (source of truth) → global (~/.claude/)
-# Syncs: framework .md files, peon-ping config (plain copy)
+# Syncs: framework .md files
 #        settings.json (top-level MERGE + ~ path expansion — global-only keys survive)
 
 set -euo pipefail
@@ -11,7 +11,6 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
 GLOBAL_DIR="$HOME/.claude"
-PEON_DIR="$GLOBAL_DIR/hooks/peon-ping"
 
 DRY_RUN=false
 [[ "${1:-}" == "--dry-run" ]] && DRY_RUN=true
@@ -71,11 +70,6 @@ for file in FLAGS.md CONTEXTS.md MCP_SERVERS.md KNOWLEDGE.md; do
     fi
   fi
 done
-
-# --- Peon-ping config ---
-echo ""
-echo "=== Peon-ping Config ==="
-sync_file "$PROJECT_DIR/config/peon-ping.json" "$PEON_DIR/config.json" "peon-ping config"
 
 # --- Settings.json (merge, not overwrite; expand ~ to $HOME) ---
 #
