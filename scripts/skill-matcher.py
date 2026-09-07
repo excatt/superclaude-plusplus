@@ -19,6 +19,8 @@ from pathlib import Path
 
 RULES_FILENAME = ".claude/skill-rules.json"
 DEFAULT_LOG_PATH = ".claude/state/skill-activation.log"
+LOG_MAX_LINES = 500      # rotate when the log grows past this ...
+LOG_KEEP_LINES = 250     # ... keeping only the newest entries
 
 
 def load_rules(project_dir: str) -> dict | None:
@@ -37,11 +39,17 @@ def load_rules(project_dir: str) -> dict | None:
     return None
 
 
-def read_log(log_path: Path) -> dict[str, float]:
-    """Read activation log and return {skill_name: last_activation_timestamp}."""
+def read_log(log_path: Path, session_id: str = "") -> tuple[dict[str, float], int]:
+    """Read the activation log.
+
+    Returns ({skill_name: last_activation_timestamp}, auto_count_this_session).
+    The per-session auto count is what makes settings.max_auto_per_session a
+    real session limit instead of a per-prompt one.
+    """
     activations: dict[str, float] = {}
+    session_auto = 0
     if not log_path.is_file():
-        return activations
+        return activations, session_auto
     try:
         with open(log_path, "r", encoding="utf-8") as f:
             for line in f:
@@ -50,24 +58,46 @@ def read_log(log_path: Path) -> dict[str, float]:
                     continue
                 try:
                     entry = json.loads(line)
-                    skill = entry.get("skill", "")
-                    ts = entry.get("timestamp", 0.0)
-                    if skill and ts:
-                        activations[skill] = max(activations.get(skill, 0.0), ts)
                 except json.JSONDecodeError:
                     continue
+                skill = entry.get("skill", "")
+                ts = entry.get("timestamp", 0.0)
+                if skill and ts:
+                    activations[skill] = max(activations.get(skill, 0.0), ts)
+                if (
+                    session_id
+                    and entry.get("mode") == "auto"
+                    and entry.get("session_id") == session_id
+                ):
+                    session_auto += 1
     except OSError:
         pass
-    return activations
+    return activations, session_auto
 
 
-def write_log_entry(log_path: Path, skill: str, mode: str, prompt_snippet: str) -> None:
+def rotate_log(log_path: Path) -> None:
+    """Keep the log bounded: past LOG_MAX_LINES, retain the newest LOG_KEEP_LINES."""
+    try:
+        with open(log_path, "r", encoding="utf-8") as f:
+            lines = f.readlines()
+        if len(lines) <= LOG_MAX_LINES:
+            return
+        with open(log_path, "w", encoding="utf-8") as f:
+            f.writelines(lines[-LOG_KEEP_LINES:])
+    except OSError:
+        pass
+
+
+def write_log_entry(
+    log_path: Path, skill: str, mode: str, prompt_snippet: str, session_id: str = ""
+) -> None:
     """Append a single activation entry to the log file."""
     log_path.parent.mkdir(parents=True, exist_ok=True)
     entry = {
         "timestamp": time.time(),
         "skill": skill,
         "mode": mode,
+        "session_id": session_id,
         "prompt_snippet": prompt_snippet[:80],
     }
     try:
@@ -75,6 +105,7 @@ def write_log_entry(log_path: Path, skill: str, mode: str, prompt_snippet: str) 
             f.write(json.dumps(entry, ensure_ascii=False) + "\n")
     except OSError:
         pass
+    rotate_log(log_path)
 
 
 def is_cooldown_active(
@@ -127,46 +158,61 @@ MAX_WALK_DEPTH = 4
 MAX_WALK_ENTRIES = 20000
 
 
-def matches_file_patterns(file_patterns: list[str], project_dir: str) -> bool:
-    """Check if any file matching the glob patterns exists in the project.
+class ProjectFiles:
+    """Lazily-built, bounded listing of project files for glob matching.
 
-    Uses a shallow check: walks the project tree once and tests each
-    filename against the patterns. Skips hidden dirs and node_modules
-    for performance. Refuses to scan the home directory or filesystem
-    root (not real projects), and bounds depth/entries so a large tree
-    cannot stall the prompt hook.
+    The tree is walked at most once per hook invocation, and only when a rule
+    actually needs a file check (i.e. its prompt patterns already matched).
+    Skips hidden dirs and node_modules; refuses to scan the home directory or
+    filesystem root; bounds depth/entries so a large tree cannot stall the
+    prompt hook.
     """
-    import fnmatch
 
-    project = Path(project_dir).resolve()
-    if project == Path.home() or project == Path(project.anchor):
-        return False
+    SKIP_DIRS = {".git", "node_modules", ".next", "__pycache__", ".venv", "venv"}
 
-    skip_dirs = {".git", "node_modules", ".next", "__pycache__", ".venv", "venv"}
-    base_depth = len(project.parts)
-    seen = 0
+    def __init__(self, project_dir: str) -> None:
+        self.project = Path(project_dir).resolve()
+        self._names: list[str] | None = None      # basenames
+        self._rel_paths: list[str] | None = None  # paths relative to project
 
-    for pattern in file_patterns:
-        # Strip leading **/ for simple filename matching
-        simple_pattern = pattern.lstrip("*").lstrip("/")
-
-        for root, dirs, files in os.walk(project):
-            # Prune hidden, heavy, and too-deep directories
+    def _walk(self) -> None:
+        self._names, self._rel_paths = [], []
+        if self.project == Path.home() or self.project == Path(self.project.anchor):
+            return
+        base_depth = len(self.project.parts)
+        seen = 0
+        for root, dirs, files in os.walk(self.project):
             if len(Path(root).parts) - base_depth >= MAX_WALK_DEPTH:
                 dirs[:] = []
             else:
-                dirs[:] = [d for d in dirs if d not in skip_dirs and not d.startswith(".")]
-
+                dirs[:] = [d for d in dirs if d not in self.SKIP_DIRS and not d.startswith(".")]
             for filename in files:
                 seen += 1
                 if seen > MAX_WALK_ENTRIES:
-                    return False
-                rel_path = os.path.relpath(os.path.join(root, filename), project)
-                if fnmatch.fnmatch(filename, simple_pattern) or fnmatch.fnmatch(
-                    rel_path, pattern
-                ):
+                    return
+                self._names.append(filename)
+                self._rel_paths.append(os.path.relpath(os.path.join(root, filename), self.project))
+
+    def matches_any(self, file_patterns: list[str]) -> bool:
+        import fnmatch
+
+        if self._names is None:
+            self._walk()
+        assert self._names is not None and self._rel_paths is not None
+        for pattern in file_patterns:
+            # "**/x" means "x at any depth"; a pattern without "/" is a basename glob.
+            bare = pattern[3:] if pattern.startswith("**/") else pattern
+            if "/" in bare:
+                if any(fnmatch.fnmatch(rp, bare) for rp in self._rel_paths):
                     return True
-    return False
+            elif any(fnmatch.fnmatch(name, bare) for name in self._names):
+                return True
+        return False
+
+
+def matches_file_patterns(file_patterns: list[str], project_dir: str) -> bool:
+    """One-off convenience wrapper around ProjectFiles (tests, callers)."""
+    return ProjectFiles(project_dir).matches_any(file_patterns)
 
 
 def evaluate_conditions(conditions: list[str], project_dir: str) -> bool:
@@ -210,14 +256,21 @@ def match_rules(
     prompt: str,
     rules_data: dict,
     project_dir: str,
+    session_id: str = "",
 ) -> list[tuple[dict, str]]:
-    """Match prompt against all rules and return matched (rule, output_text) pairs."""
+    """Match prompt against all rules and return matched (rule, output_text) pairs.
+
+    Auto-mode activations are capped by settings.max_auto_per_session, counted
+    across the whole session via the activation log; suggestions are never capped.
+    """
     rules = rules_data.get("rules", [])
     settings = rules_data.get("settings", {})
     log_rel = settings.get("log_file", DEFAULT_LOG_PATH)
     log_path = Path(project_dir) / log_rel
+    max_auto = settings.get("max_auto_per_session", 10)
 
-    activations = read_log(log_path)
+    activations, session_auto = read_log(log_path, session_id)
+    files = ProjectFiles(project_dir)
     now = time.time()
     matched: list[tuple[dict, str]] = []
 
@@ -231,24 +284,9 @@ def match_rules(
         if mode == "auto" and is_cooldown_active(skill, cooldown, activations, now):
             continue
 
-        # Evaluate prompt patterns
         prompt_patterns = triggers.get("prompt_patterns", [])
-        has_prompt_match = matches_prompt_patterns(prompt, prompt_patterns) if prompt_patterns else False
-
-        # Evaluate file patterns
         file_patterns = triggers.get("file_patterns", [])
-        has_file_match = matches_file_patterns(file_patterns, project_dir) if file_patterns else False
-
-        # Evaluate conditions
         conditions = triggers.get("conditions", [])
-        conditions_met = evaluate_conditions(conditions, project_dir) if conditions else True
-
-        # Determine if rule triggers:
-        # - If both prompt_patterns and file_patterns exist, both must match
-        # - If only prompt_patterns, prompt must match
-        # - If only file_patterns, file must match
-        # - If only conditions, conditions must be met
-        # - conditions are always required when present
         has_prompt_spec = len(prompt_patterns) > 0
         has_file_spec = len(file_patterns) > 0
         has_conditions = len(conditions) > 0
@@ -256,20 +294,17 @@ def match_rules(
         if not has_prompt_spec and not has_file_spec and not has_conditions:
             continue
 
-        if has_conditions and not conditions_met:
+        # Session-wide cap on auto activations (suggestions are never capped)
+        if mode == "auto" and session_auto >= max_auto:
             continue
 
-        if has_prompt_spec and has_file_spec:
-            triggered = has_prompt_match and has_file_match
-        elif has_prompt_spec:
-            triggered = has_prompt_match
-        elif has_file_spec:
-            triggered = has_file_match
-        else:
-            # Only conditions, already verified above
-            triggered = True
-
-        if not triggered:
+        # Cheapest checks first; the filesystem walk runs only when a rule
+        # still can trigger after its prompt patterns matched.
+        if has_prompt_spec and not matches_prompt_patterns(prompt, prompt_patterns):
+            continue
+        if has_conditions and not evaluate_conditions(conditions, project_dir):
+            continue
+        if has_file_spec and not files.matches_any(file_patterns):
             continue
 
         # Build output
@@ -279,9 +314,11 @@ def match_rules(
             output = rule.get("message", f"💡 제안: /{skill} (Y/n)")
 
         matched.append((rule, output))
+        if mode == "auto":
+            session_auto += 1
 
-        # Log the activation
-        write_log_entry(log_path, skill, mode, prompt)
+        # Log the activation (auto entries feed the cooldown and the session cap)
+        write_log_entry(log_path, skill, mode, prompt, session_id)
 
     return matched
 
@@ -305,30 +342,34 @@ def find_project_dir(cwd_hint: str = "") -> str:
     return str(cwd)
 
 
-def read_hook_input() -> tuple[str, str]:
-    """Read the UserPromptSubmit payload from stdin.
+def read_hook_input() -> tuple[str, str, str]:
+    """Read the UserPromptSubmit payload from stdin → (prompt, cwd, session_id).
 
     Claude Code sends a JSON object like {"prompt": ..., "cwd": ...,
-    "transcript_path": ...}. Only the prompt field may be pattern-matched;
-    matching the raw payload makes patterns hit path fragments such as
-    "projects" on every message. Raw text stdin is kept as a fallback for
-    manual testing.
+    "session_id": ..., "transcript_path": ...}. Only the prompt field may be
+    pattern-matched; matching the raw payload makes patterns hit path
+    fragments such as "projects" on every message. Raw text stdin is kept as
+    a fallback for manual testing.
     """
     if sys.stdin.isatty():
-        return "", ""
+        return "", "", ""
     raw = sys.stdin.read().strip()
     if raw.startswith("{"):
         try:
             payload = json.loads(raw)
-            return str(payload.get("prompt", "")), str(payload.get("cwd", ""))
+            return (
+                str(payload.get("prompt", "")),
+                str(payload.get("cwd", "")),
+                str(payload.get("session_id", "")),
+            )
         except json.JSONDecodeError:
             pass
-    return raw, ""
+    return raw, "", ""
 
 
 def main() -> None:
     try:
-        prompt, cwd_hint = read_hook_input()
+        prompt, cwd_hint, session_id = read_hook_input()
 
         if not prompt:
             sys.exit(0)
@@ -338,21 +379,10 @@ def main() -> None:
         if not rules_data:
             sys.exit(0)
 
-        settings = rules_data.get("settings", {})
-        max_auto = settings.get("max_auto_per_session", 10)
+        matches = match_rules(prompt, rules_data, project_dir, session_id)
 
-        matches = match_rules(prompt, rules_data, project_dir)
-
-        # Respect max_auto_per_session: count only auto-mode activations
-        auto_count = 0
-        output_lines = []
-        for rule, text in matches:
-            if rule.get("mode") == "auto":
-                auto_count += 1
-                if auto_count > max_auto:
-                    continue
-            output_lines.append(text)
-
+        # UserPromptSubmit: plain stdout on exit 0 is injected as context.
+        output_lines = [text for _, text in matches]
         if output_lines:
             print("\n".join(output_lines))
 

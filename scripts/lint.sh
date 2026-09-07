@@ -16,4 +16,5 @@ fi
 echo "▶ python syntax"; python3 -m py_compile scripts/*.py || rc=1
 echo "▶ config-doctor";  bash scripts/config-doctor.sh --quiet || rc=1
 echo "▶ hook tests";     bash tests/hooks/run.sh | tail -1 || rc=1
+echo "▶ skill-matcher";  python3 -m unittest tests/test_skill_matcher.py 2>&1 | tail -1 || rc=1
 exit $rc

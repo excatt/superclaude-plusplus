@@ -21,6 +21,7 @@
 - **`scripts/sync-global.sh`가 훅 스크립트를 설치하지 않았음** — `.md`와 `settings.json`만 복사했으므로 새로 clone한 사용자는 모든 훅이 조용히 실패. `scripts/`(+`lib/`, 실행권한), `agents/`, 이 저장소가 배포하는 `skills/<name>/`(다른 스킬은 불변), `.claude/skill-rules.json` 동기화 추가.
   - `settings.json` 병합에 중첩 정책 추가: `permissions.allow/deny`·`enabledPlugins`·`extraKnownMarketplaces`·`env`는 합집합, `permissions.defaultMode`는 글로벌 유지. 3.1.1의 최상위 키 병합만으로는 `defaultMode: auto`, figma 플러그인 등록 등 머신 로컬 값이 sync마다 지워졌다.
 - **statusLine 경로 불일치** — `~/.claude/statusline.sh`(동기화 대상 아님) → `~/.claude/scripts/statusline.sh`. 글로벌에 있던 최신본(단일 jq 호출 최적화, 경량 로깅)을 `scripts/statusline.sh`로 역반영.
+- **`skill-matcher.py` 잔여 결함 4건** — ① `file_patterns`가 있는 규칙 5개가 프롬프트 매치 여부와 무관하게 매 프롬프트마다 `os.walk`를 각각 실행 → 프롬프트·조건이 통과한 뒤에만, 호출당 한 번만 순회(`ProjectFiles`). ② `pattern.lstrip("*")`가 `*.tsx`를 `.tsx`로 바꿔 basename 매치가 항상 실패 → `**/` 접두만 제거하고 `/` 유무로 basename/상대경로 매치 분기. ③ `max_auto_per_session`이 로컬 변수로 프롬프트당 집계 → 이벤트의 `session_id`를 로그에 기록하고 세션 누적 auto 수로 상한 적용(suggest는 상한 없음). ④ 활성화 로그 무회전 → 500줄 초과 시 최근 250줄 유지. `tests/test_skill_matcher.py` 10건 추가.
 - **스킬 frontmatter 누락 6건** (`algorithmic-art` `artifacts-builder` `brand-guidelines` `canvas-design` `slack-gif-creator` `webapp-testing`) — upstream(anthropics/skills) frontmatter 이식. 이들 스킬이 참조하던 누락 자산(`algorithmic-art/templates/viewer.html`, `artifacts-builder/scripts/{init,bundle}-artifact.sh` + `shadcn-components.tar.gz`, `webapp-testing/scripts/with_server.py`)을 upstream에서 가져옴.
 
 ### Changed

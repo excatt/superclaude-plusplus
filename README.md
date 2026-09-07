@@ -328,7 +328,7 @@ superclaude-plusplus/                # 프로젝트 저장소 (source of truth)
 │   ├── lint.sh                     # 로컬 CI: shellcheck + doctor + 훅 테스트
 │   ├── sync-global.sh              # 프로젝트 → ~/.claude 동기화
 │   └── statusline.sh               # 상태바 (cc-statusline 기반)
-├── tests/hooks/                    # 훅 계약 픽스처 테스트 (run.sh + fixtures/)
+├── tests/                          # hooks/run.sh (훅 계약 28건), test_skill_matcher.py (10건)
 ├── .github/workflows/ci.yml        # shellcheck + config-doctor + 훅 테스트
 ├── config/                         # 설정 파일
 │   └── settings.json               # 9개 hook 이벤트 + 권한 설정

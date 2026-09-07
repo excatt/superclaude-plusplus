@@ -31,3 +31,6 @@ jobs:
 
       - name: hook contract tests
         run: bash tests/hooks/run.sh
+
+      - name: skill-matcher unit tests
+        run: python3 -m unittest tests/test_skill_matcher.py
