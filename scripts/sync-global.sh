@@ -136,7 +136,7 @@ sync_file "$PROJECT_DIR/.claude/skill-rules.json" "$GLOBAL_DIR/skill-rules.json"
 echo ""
 echo "=== Stale Files ==="
 # Root .md files moved to optional/ (v3.0) and scripts removed in v3.3.
-for file in FLAGS.md CONTEXTS.md MCP_SERVERS.md KNOWLEDGE.md optional/PATTERNS.md \
+for file in FLAGS.md CONTEXTS.md MCP_SERVERS.md KNOWLEDGE.md optional/KNOWLEDGE.md optional/PATTERNS.md \
             scripts/post-write-check.sh scripts/pre-compact-save.sh scripts/checklist.sh; do
   if [[ -f "$GLOBAL_DIR/$file" ]]; then
     if $DRY_RUN; then
