@@ -43,7 +43,7 @@ stress-test) · `/security-audit` · `/react-best-practices` ·
 `/algorithmic-art`
 
 ## Documents & Tooling
-`/pdf` · `/pptx` · `/xlsx` · `/internal-comms` · `/artifacts-builder` ·
+`/pdf` · `/pptx` · `/xlsx` · `/docx` · `/internal-comms` · `/artifacts-builder` ·
 `/slack-gif-creator` · `/mcp-builder` · `/skill-creator` · `/webapp-testing` ·
 `/agent-browser` · `/pytest-runner` · `/uv-package`
 
