@@ -7,7 +7,7 @@ argument-hint: "[topic/idea] [--strategy systematic|agile|enterprise] [--depth s
 
 # Interactive Requirements Discovery
 
-> **Context Framework Note**: This file provides behavioral instructions for Claude Code when users type `/sc:brainstorm` patterns. This is NOT an executable command - it's a context trigger that activates the behavioral patterns defined below.
+> **Context Framework Note**: This file provides behavioral instructions for Claude Code when users type `/brainstorm` patterns. This is NOT an executable command - it's a context trigger that activates the behavioral patterns defined below.
 
 ## Triggers
 - Ambiguous project ideas requiring structured exploration
@@ -17,7 +17,7 @@ argument-hint: "[topic/idea] [--strategy systematic|agile|enterprise] [--depth s
 
 ## Context Trigger Pattern
 ```
-/sc:brainstorm [topic/idea] [--strategy systematic|agile|enterprise] [--depth shallow|normal|deep] [--parallel]
+/brainstorm [topic/idea] [--strategy systematic|agile|enterprise] [--depth shallow|normal|deep] [--parallel]
 ```
 **Usage**: Type this pattern in your Claude Code conversation to activate brainstorming behavioral mode with systematic exploration and multi-persona coordination.
 
@@ -71,28 +71,28 @@ Key behaviors:
 
 ### Systematic Product Discovery
 ```
-/sc:brainstorm "AI-powered project management tool" --strategy systematic --depth deep
+/brainstorm "AI-powered project management tool" --strategy systematic --depth deep
 # Multi-persona analysis: architect (system design), analyzer (feasibility), project-manager (requirements)
 # Sequential MCP provides structured exploration framework
 ```
 
 ### Agile Feature Exploration
 ```
-/sc:brainstorm "real-time collaboration features" --strategy agile --parallel
+/brainstorm "real-time collaboration features" --strategy agile --parallel
 # Parallel exploration paths with frontend, backend, and security personas
 # Context7 and Magic MCP for framework and UI pattern analysis
 ```
 
 ### Enterprise Solution Validation
 ```
-/sc:brainstorm "enterprise data analytics platform" --strategy enterprise --validate
+/brainstorm "enterprise data analytics platform" --strategy enterprise --validate
 # Comprehensive validation with security, devops, and architect personas
 # Serena MCP for cross-session persistence and enterprise requirements tracking
 ```
 
 ### Cross-Session Refinement
 ```
-/sc:brainstorm "mobile app monetization strategy" --depth normal
+/brainstorm "mobile app monetization strategy" --depth normal
 # Serena MCP manages cross-session context and iterative refinement
 # Progressive dialogue enhancement with memory-driven insights
 ```

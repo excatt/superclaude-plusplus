@@ -14,7 +14,9 @@ See MODES.md Mode Quick Reference for details.
 
 ## MCP Server Flags
 
-See MCP_SERVERS.md for details.
+See MCP_SERVERS.md for details. **Servers are not bundled** — a flag is a no-op
+unless that server is installed in the current project/machine; MCP_SERVERS.md
+lists the built-in fallback for each.
 
 `--c7`/`--context7` Context7 | `--seq`/`--sequential` Sequential | `--magic` Magic | `--morph`/`--morphllm` Morphllm | `--serena` Serena | `--play`/`--playwright` Playwright | `--tavily` Tavily | `--all-mcp` All | `--no-mcp` None
 

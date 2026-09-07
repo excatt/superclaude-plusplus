@@ -4,7 +4,7 @@
 
 ### Example 1: Strategic Plan Analysis
 ```bash
-/sc:business-panel @strategy_doc.pdf
+/business-panel @strategy_doc.pdf
 
 # Output: Discussion mode with Porter, Collins, Meadows, Doumont
 # Analysis focuses on competitive positioning, organizational capability, 
@@ -13,7 +13,7 @@
 
 ### Example 2: Innovation Assessment  
 ```bash
-/sc:business-panel "We're developing AI-powered customer service" --experts "christensen,drucker,godin"
+/business-panel "We're developing AI-powered customer service" --experts "christensen,drucker,godin"
 
 # Output: Discussion mode focusing on jobs-to-be-done, customer value, 
 # and remarkability/tribe building
@@ -21,7 +21,7 @@
 
 ### Example 3: Risk Analysis with Debate
 ```bash
-/sc:business-panel @risk_assessment.md --mode debate
+/business-panel @risk_assessment.md --mode debate
 
 # Output: Debate mode with Taleb challenging conventional risk assessments,
 # other experts defending their frameworks, systems perspective on conflicts
@@ -29,7 +29,7 @@
 
 ### Example 4: Strategic Learning Session
 ```bash
-/sc:business-panel "Help me understand competitive strategy" --mode socratic
+/business-panel "Help me understand competitive strategy" --mode socratic
 
 # Output: Socratic mode with strategic questions from multiple frameworks,
 # progressive questioning based on user responses
@@ -39,21 +39,21 @@
 
 ### Multi-Document Analysis
 ```bash
-/sc:business-panel @market_research.pdf @competitor_analysis.xlsx @financial_projections.csv --synthesis-only
+/business-panel @market_research.pdf @competitor_analysis.xlsx @financial_projections.csv --synthesis-only
 
 # Comprehensive analysis across multiple documents with focus on synthesis
 ```
 
 ### Domain-Specific Analysis
 ```bash
-/sc:business-panel @product_strategy.md --focus "innovation" --experts "christensen,drucker,meadows"
+/business-panel @product_strategy.md --focus "innovation" --experts "christensen,drucker,meadows"
 
 # Innovation-focused analysis with disruption theory, management principles, systems thinking
 ```
 
 ### Structured Communication Focus
 ```bash
-/sc:business-panel @exec_presentation.pptx --focus "communication" --structured
+/business-panel @exec_presentation.pptx --focus "communication" --structured
 
 # Analysis focused on message clarity, audience needs, cognitive load optimization
 ```
@@ -134,7 +134,7 @@ quick_assessment:
 
 ### Executive Summary Format
 ```bash
-/sc:business-panel @doc.pdf --structured --synthesis-only
+/business-panel @doc.pdf --structured --synthesis-only
 
 # Output:
 ## 🎯 Strategic Assessment
@@ -147,7 +147,7 @@ quick_assessment:
 
 ### Framework-by-Framework Format  
 ```bash
-/sc:business-panel @doc.pdf --verbose
+/business-panel @doc.pdf --verbose
 
 # Output:
 ## 📚 CHRISTENSEN - Disruption Analysis
@@ -162,7 +162,7 @@ quick_assessment:
 
 ### Question-Driven Format
 ```bash
-/sc:business-panel @doc.pdf --questions
+/business-panel @doc.pdf --questions
 
 # Output:
 ## 🤔 Strategic Questions for Consideration
@@ -181,16 +181,16 @@ quick_assessment:
 ### Business Strategy Development
 ```yaml
 workflow_stages:
-  stage_1: "/sc:business-panel @market_research.pdf --mode discussion"
-  stage_2: "/sc:business-panel @competitive_analysis.md --mode debate"  
-  stage_3: "/sc:business-panel 'synthesize findings' --mode socratic"
+  stage_1: "/business-panel @market_research.pdf --mode discussion"
+  stage_2: "/business-panel @competitive_analysis.md --mode debate"  
+  stage_3: "/business-panel 'synthesize findings' --mode socratic"
   stage_4: "/design strategy --business-panel --experts 'porter,kim_mauborgne'"
 ```
 
 ### Innovation Pipeline Assessment
 ```yaml
 workflow_stages:
-  stage_1: "/sc:business-panel @innovation_portfolio.xlsx --focus innovation"
+  stage_1: "/business-panel @innovation_portfolio.xlsx --focus innovation"
   stage_2: "/improve @product_roadmap.md --business-panel"
   stage_3: "/analyze @market_opportunities.pdf --business-panel --think"
 ```
@@ -198,8 +198,8 @@ workflow_stages:
 ### Risk Management Review
 ```yaml  
 workflow_stages:
-  stage_1: "/sc:business-panel @risk_register.pdf --experts 'taleb,meadows,porter'"
-  stage_2: "/sc:business-panel 'challenge risk assumptions' --mode debate"
+  stage_1: "/business-panel @risk_register.pdf --experts 'taleb,meadows,porter'"
+  stage_2: "/business-panel 'challenge risk assumptions' --mode debate"
   stage_3: "/implement risk_mitigation --business-panel --validate"
 ```
 
@@ -208,35 +208,35 @@ workflow_stages:
 ### Expert Behavior Modification
 ```bash
 # Focus specific expert on particular aspect
-/sc:business-panel @doc.pdf --christensen-focus "disruption-potential"
-/sc:business-panel @doc.pdf --porter-focus "competitive-moats"
+/business-panel @doc.pdf --christensen-focus "disruption-potential"
+/business-panel @doc.pdf --porter-focus "competitive-moats"
 
 # Adjust expert interaction style  
-/sc:business-panel @doc.pdf --interaction "collaborative" # softer debate mode
-/sc:business-panel @doc.pdf --interaction "challenging" # stronger debate mode
+/business-panel @doc.pdf --interaction "collaborative" # softer debate mode
+/business-panel @doc.pdf --interaction "challenging" # stronger debate mode
 ```
 
 ### Output Customization
 ```bash
 # Symbol density control
-/sc:business-panel @doc.pdf --symbols minimal  # reduce symbol usage
-/sc:business-panel @doc.pdf --symbols rich     # full symbol system
+/business-panel @doc.pdf --symbols minimal  # reduce symbol usage
+/business-panel @doc.pdf --symbols rich     # full symbol system
 
 # Analysis depth control
-/sc:business-panel @doc.pdf --depth surface    # high-level overview
-/sc:business-panel @doc.pdf --depth detailed   # comprehensive analysis
+/business-panel @doc.pdf --depth surface    # high-level overview
+/business-panel @doc.pdf --depth detailed   # comprehensive analysis
 ```
 
 ### Time and Resource Management
 ```bash
 # Quick analysis for time constraints
-/sc:business-panel @doc.pdf --quick --experts-max 3
+/business-panel @doc.pdf --quick --experts-max 3
 
 # Comprehensive analysis for important decisions  
-/sc:business-panel @doc.pdf --comprehensive --all-experts
+/business-panel @doc.pdf --comprehensive --all-experts
 
 # Resource-aware analysis
-/sc:business-panel @doc.pdf --budget 10000  # token limit
+/business-panel @doc.pdf --budget 10000  # token limit
 ```
 
 ## Quality Validation

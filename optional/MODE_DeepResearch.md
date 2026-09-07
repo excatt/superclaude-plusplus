@@ -7,7 +7,7 @@ category: mode
 # Deep Research Mode
 
 ## Activation Triggers
-- /sc:research command
+- `--research` flag, "조사해줘", "알아봐줘" (v2.0+: `/sc:research` command removed; delegates to `deep-research-agent`)
 - Research-related keywords: investigate, explore, discover, analyze
 - Questions requiring current information
 - Complex research requirements
@@ -56,3 +56,6 @@ category: mode
 - Clear evidence presentation
 - Transparent methodology
 - Actionable insights
+
+## Configuration
+Defaults (depth, source limits, confidence thresholds): [`RESEARCH_CONFIG.md`](RESEARCH_CONFIG.md)

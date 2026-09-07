@@ -107,10 +107,10 @@ Inter-agent handoff document:
 
 ### Workflow Invocation
 ```
-/sc:orchestrate feature "implement user auth system"
-/sc:orchestrate bugfix "infinite loading on login failure"
-/sc:orchestrate refactor "separate API layer"
-/sc:orchestrate security "payment module security review"
+--orchestrate "implement user auth system"  # feature
+--orchestrate "fix infinite loading on login failure"  # bugfix
+--orchestrate "separate API layer"  # refactor
+--orchestrate "payment module security review"  # security
 ```
 
 ---

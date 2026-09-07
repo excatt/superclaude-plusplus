@@ -68,11 +68,11 @@ Circuit Breaker가 발동했을 때 Claude가 작성하는 **진단 전용** 보
 
 ### Persona
 
-Claude가 작업 중 일시적으로 채택하는 전문가 역할(architect, security, frontend 등). Agent와 달리 *독립 인스턴스가 아니라 단일 Claude의 모드 전환*이다. `/brainstorm`이 다중 페르소나 코디네이션을 수행할 때는 한 Claude가 차례로 여러 페르소나를 입었다 벗었다 한다.
+Claude가 작업 중 일시적으로 채택하는 전문가 역할(architect, security, frontend 등). Agent와 달리 *독립 인스턴스가 아니라 단일 Claude의 모드 전환*이다. `/brainstorm`이 다중 페르소나 코디네이션을 수행할 때는 한 Claude가 차례로 여러 페르소나를 입었다 벗었다 한다. v3.0에서 페르소나별 Agent 파일(architect, frontend 등 14개)은 삭제되었고, 이 개념은 `/brainstorm`·`/business-panel` 내부의 역할 전환으로만 남아 있다.
 
 ### MCP Server
 
-Model Context Protocol을 통해 Claude에 외부 도구·자원을 제공하는 서버. Context7(공식 문서), Magic(UI 생성), Sequential(다단 추론), Serena(시맨틱 코드 이해), Playwright(브라우저 자동화), Morphllm(대량 편집), Tavily(웹 검색) 등이 있다. *Tool*과 다른 개념 — MCP Server가 Tool들을 묶어 노출한다.
+Model Context Protocol을 통해 Claude에 외부 도구·자원을 제공하는 서버. `optional/MCP_*.md`가 다루는 Context7(공식 문서), Magic(UI 생성), Sequential(다단 추론), Serena(시맨틱 코드 이해), Playwright(브라우저 자동화), Morphllm(대량 편집), Tavily(웹 검색)는 **프레임워크에 번들되지 않고** 프로젝트/머신 단위로 설치한다. *Tool*과 다른 개념 — MCP Server가 Tool들을 묶어 노출한다.
 
 ### Worktree (Isolation)
 

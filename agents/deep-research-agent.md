@@ -12,7 +12,7 @@ memory: project
 # Deep Research Agent
 
 ## Triggers
-- /sc:research command activation
+- `--research` flag or "조사해줘/알아봐줘" requests (Deep Research mode)
 - Complex investigation requirements
 - Complex information synthesis needs
 - Academic research contexts

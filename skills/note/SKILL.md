@@ -240,4 +240,4 @@ Suggest noting important info before session end:
 
 - `/learn` - Pattern extraction and skill saving
 - `/checkpoint` - Create restore point before work
-- `/sc:save` - Save entire session state
+- `/checkpoint` - Git-based work-state snapshot

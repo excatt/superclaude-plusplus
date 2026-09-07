@@ -29,6 +29,7 @@
 - **README** — 훅 표를 실제 `settings.json`(9 이벤트·17 훅)과 일치시킴(peon-ping 제거 잔재 7행 삭제), 헤드라인 "16개 훅 타입"→"9개 훅 이벤트", 디렉토리 구조·설치/삭제 안내 갱신, `document-skills`→`docx`.
 - `plugin.json` version `3.2.0 → 3.3.0`; `InstructionsLoaded` 배너 `v2.0`→`v3.3`; CHANGELOG 요약 표에 3.1.0/3.1.1/3.2.0 누락 행 보충.
 - `NOTICE.md` — vercel-labs 유래 3종(`react-best-practices` `web-design-guidelines` `composition-patterns`)과 anthropics/skills 유래 문서 스킬 4종 출처 명시.
+- **잔존 문서 드리프트 정리** — v1 `/sc:` 명령 네임스페이스 잔재(`/sc:business-panel` `/sc:brainstorm` `/sc:research` `/sc:load` `/sc:save` `/sc:orchestrate`)를 현행 스킬/플래그 표기로 교체. MCP 서버가 **번들되지 않음**을 `MCP_SERVERS.md`·`FLAGS.md`·README·`CONTEXT.md`에 명시하고 미설치 시 폴백 표 추가. 어디서도 참조되지 않던 `optional/` 3종(`BUSINESS_PANEL_EXAMPLES` `BUSINESS_SYMBOLS` `RESEARCH_CONFIG`)과 `templates/` 3종(`context` `session` `notepad`)을 해당 MODE 문서·CLAUDE.md·PROTOCOLS.md·README에서 연결. `CONTEXT.md` Persona 항목에 v3.0 페르소나 에이전트 삭제 반영.
 - `.gitignore` — `.claude/settings.local.json`, `.claude/state/`, `.claude/agent-memory/`, `scripts/__pycache__/` 명시(기존에는 글로벌 git ignore에 의존).
 
 ### Removed
@@ -36,6 +37,7 @@
 - `.superclaude-metadata.json` — v2.0 설치 메타데이터(MCP 서버 8종 "installed" 등), `/config-doctor`가 여기서 "2.0.0"을 읽고 있었음.
 - `docs/PLAN-v2.0.md` — 완료된 마이그레이션 계획.
 - `scripts/post-write-check.sh`(4종 훅이 stdin을 직접 읽으므로 불필요), `scripts/pre-compact-save.sh`(어디에도 연결되지 않은 스냅샷), `scripts/checklist.sh`(참조 없음).
+- `optional/PATTERNS.md` — API 응답 형식·페이지네이션 같은 범용 코드 패턴 모음. 어디서도 참조되지 않았고, v3.0이 삭제한 "모델이 네이티브로 아는 주제 가이드" 기준에 해당. optional/ 29 → 28.
 
 ### Added
 - `tests/hooks/run.sh` + `tests/hooks/fixtures/*.json` — 실제 Claude Code 이벤트 JSON을 각 훅에 먹여 exit code와 stdout 계약을 검증하는 28개 테스트. `timeout` 없는 macOS에서도 동작.

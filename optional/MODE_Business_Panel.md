@@ -11,7 +11,8 @@ Multi-expert business analysis mode with adaptive interaction strategies and int
 4. **Communication System**: Symbol-based efficiency with structured clarity
 
 ### Mode Activation
-- **Primary Trigger**: `/sc:business-panel` command
+- **Primary Trigger**: `/business-panel` command
+- **References**: [`BUSINESS_PANEL_EXAMPLES.md`](BUSINESS_PANEL_EXAMPLES.md) (usage scenarios), [`BUSINESS_SYMBOLS.md`](BUSINESS_SYMBOLS.md) (symbol system for compressed output)
 - **Auto-Activation**: Business document analysis, strategic planning requests
 - **Context Integration**: Works with all personas and MCP servers
 

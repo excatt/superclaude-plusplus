@@ -10,7 +10,7 @@
 - Academic research requiring recent publications
 - Fact-checking and verification needs
 - Deep research investigations requiring multi-source analysis
-- `/sc:research` command activation
+- Deep Research mode (`--research` flag) activation
 
 ## Choose When
 - **Over WebSearch**: When you need structured search with advanced filtering

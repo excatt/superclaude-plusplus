@@ -45,8 +45,9 @@ Claude 5 세대(Fable/Opus 5)부터는 검증 후 완료 선언, 지속 실행, 
 | **CONVENTIONS.md** | 네이밍 컨벤션 + 패키지 관리 규칙 (uv/pnpm 필수) |
 
 온디맨드(`optional/`)로 이동: **FLAGS.md**(플래그 정의), **CONTEXTS.md**(컨텍스트 모드),
-**MCP_SERVERS.md**(MCP 선택 매트릭스), **PATTERNS.md**(코드 패턴).
-**KNOWLEDGE.md**는 v3.0에서 제거 (근거 없는 수치와 모델 기본값 중복).
+**MCP_SERVERS.md**(MCP 선택 매트릭스).
+**KNOWLEDGE.md**는 v3.0에서 제거 (근거 없는 수치와 모델 기본값 중복), **PATTERNS.md**(범용
+코드 패턴 모음)는 v3.3에서 제거 — 모델이 네이티브로 아는 주제 가이드라는 v3.0 삭제 기준에 해당.
 
 ### Agent System (9개, v3.0에서 23개 → 9개로 통폐합)
 
@@ -161,9 +162,9 @@ v2.0에서 스킬 자동 활성화는 `.claude/skill-rules.json`에 선언적으
 | 상황 | 제안 도구 | 트리거 조건 |
 |------|----------|-------------|
 | 보안 관련 | `security-engineer`, `/security-audit` | 로그인, JWT, 보안, LLM 보안 |
-| 프레임워크 | **Context7** MCP | React, Next.js, Vue |
-| UI 컴포넌트 | **Magic** MCP | button, form, modal |
-| 복잡한 분석 | **Sequential** MCP | 디버깅 3회+, 설계 |
+| 프레임워크 | **Context7** MCP (설치 시) | React, Next.js, Vue |
+| UI 컴포넌트 | **Magic** MCP (설치 시) / `/frontend-design` | button, form, modal |
+| 복잡한 분석 | **Sequential** MCP (설치 시) / `--think-hard` | 디버깅 3회+, 설계 |
 | 프로젝트 규칙 검증 | `/audit` | commit, PR + `.claude/audit-rules/` 존재 시 |
 | 테스트 가능 기능 | `/tdd` | 새 기능 + tests/ 존재, 버그 수정 |
 | UI/UX 디자인 | `/ui-ux-pro-max` | landing page, 디자인 시스템 |
@@ -212,13 +213,16 @@ v2.0에서 스킬 자동 활성화는 `.claude/skill-rules.json`에 선언적으
 | `--ultrathink` | ~32K | 시스템 재설계 |
 
 #### MCP Server Flags
-| Flag | 서버 | 용도 |
-|------|------|------|
-| `--c7` | Context7 | 공식 문서 조회 |
-| `--magic` | Magic | UI 컴포넌트 생성 |
-| `--seq` | Sequential | 다단계 추론 |
-| `--serena` | Serena | 시맨틱 코드 이해 |
-| `--tavily` | Tavily | 웹 검색/리서치 |
+MCP 서버는 프레임워크에 **번들되지 않습니다**. 프로젝트 `.mcp.json`이나 `claude mcp add`로
+설치한 경우에만 플래그가 의미 있고, 미설치 시 폴백은 `optional/MCP_SERVERS.md` 참고.
+
+| Flag | 서버 | 용도 | 미설치 폴백 |
+|------|------|------|------------|
+| `--c7` | Context7 | 공식 문서 조회 | `WebFetch` |
+| `--magic` | Magic | UI 컴포넌트 생성 | `/frontend-design` |
+| `--seq` | Sequential | 다단계 추론 | `--think-hard` |
+| `--serena` | Serena | 시맨틱 코드 이해 | `Grep`/`Read` |
+| `--tavily` | Tavily | 웹 검색/리서치 | `WebSearch` |
 
 #### Context Modes
 | Flag | 모드 | 특성 |
@@ -332,7 +336,7 @@ superclaude-plusplus/                # 프로젝트 저장소 (source of truth)
 │   ├── skill-rules.json            # 스킬 자동 활성화 규칙
 │   ├── context.md                  # 프로젝트 컨텍스트
 │   └── state/                      # 세션 상태 (gitignored)
-├── optional/                       # 29개 선택적 로딩 문서
+├── optional/                       # 28개 선택적 로딩 문서
 │   ├── FLAGS.md                    # v3.0 이동: 플래그 정의
 │   ├── CONTEXTS.md                 # v3.0 이동: DEV/REVIEW/RESEARCH 컨텍스트 모드
 │   ├── MCP_SERVERS.md              # v3.0 이동: MCP 선택 매트릭스
@@ -343,13 +347,16 @@ superclaude-plusplus/                # 프로젝트 저장소 (source of truth)
 │   ├── WORKER_TEMPLATES.md         # 워커 에이전트 프롬프트 템플릿
 │   ├── GOAL_PATTERNS.md            # /goal 조건 패턴, 안티 패턴, /loop vs /goal 결정표
 │   ├── OVERENGINEERING_TRAPS.md    # v3.1 신규: Build Ladder 적용 규칙 3종 + rung 3 사례 카탈로그
-│   └── ...                         # PATTERNS, PROTOCOLS, PROJECT_RULES 등
-└── templates/                      # PDCA + 디자인 시스템 템플릿
-    ├── plan.template.md
-    ├── design.template.md
+│   └── ...                         # PROTOCOLS, PROJECT_RULES, MODE_*, MCP_* 등
+└── templates/                      # PDCA + 디자인 시스템 + 세션 템플릿
+    ├── plan.template.md            # PDCA Plan
+    ├── design.template.md          # PDCA Design
+    ├── analysis.template.md        # PDCA Check (gap analysis)
+    ├── report.template.md          # PDCA Report
     ├── visual-design.template.md   # DESIGN.md 템플릿 (Google Stitch 9-section)
-    ├── analysis.template.md
-    └── report.template.md
+    ├── context.template.md         # .claude/context.md 초기 템플릿
+    ├── session.template.md         # 세션 스냅샷 (optional/PROTOCOLS.md)
+    └── notepad.md                  # /note 노트패드 초기 템플릿
 ```
 
 ## Key Concepts

@@ -43,3 +43,10 @@ Claude auto-records to `~/.claude/projects/<project>/memory/`:
 | Team rules | `./CLAUDE.md`, `.claude/rules/` |
 | Personal global | `~/.claude/CLAUDE.md` |
 | Personal project | `./CLAUDE.local.md` |
+
+## Templates
+| Template | Used by |
+|----------|---------|
+| `templates/notepad.md` | `/note` — initial `.claude/notepad.md` |
+| `templates/session.template.md` | Session snapshot (Session Save/Restore above) |
+| `templates/context.template.md` | Initial `.claude/context.md` for a new project |
